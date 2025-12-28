@@ -13,6 +13,9 @@ from .commands.config import *
 # === Mixed === #
 from .commands.mixed import *
 
+# === Model Info === #
+from .commands.model_info import *
+
 # === More Interesting Tools === #
 from .commands.more_interesting_tools import *
 

@@ -8,6 +8,12 @@ from ._chat_core import (
 from ._context_core import (
     ContextCore,
 )
+from ._model_info import (
+    ModelInfoCore,
+    ModelInfo,
+    ModelType,
+    MODEL_TYPES
+)
 from ._prompt_core import (
     PromptCore,
 )
