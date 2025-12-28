@@ -15,11 +15,6 @@ async def handle_get_model_list(bot: Bot, event: MessageEvent, args: Message = C
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
     sendmsg = SendMsg("Model.Get_Model_List", get_model_list, persona_info)
 
-    try:
-        auto_save_context = str_to_bool(persona_info.message_str)
-    except ValueError:
-        await sendmsg.send_error("Not a valid boolean value")
-
     if sendmsg.is_debug_mode:
         await sendmsg.send_debug_mode()
     else:
