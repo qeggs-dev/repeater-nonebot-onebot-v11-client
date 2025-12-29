@@ -438,11 +438,11 @@ class SendMsg:
         :param reply: 是否携带引用
         :param continue_handler: 是否继续运行当前处理流程
         """
-        image = await self.text_render(text)
+        image = await self.text_render(text_to_render)
         await self._send(
             Message(
                 [
-                    MessageSegment.text(text_to_render),
+                    MessageSegment.text(text),
                     image,
                 ]
             ),
