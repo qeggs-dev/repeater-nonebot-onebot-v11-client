@@ -410,7 +410,7 @@ class SendMsg:
             self,
             text: str,
             text_to_render: str,
-            reply: bool = False,
+            reply: bool = True,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -419,7 +419,7 @@ class SendMsg:
             self,
             text: str,
             text_to_render: str,
-            reply: bool = False,
+            reply: bool = True,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -427,7 +427,7 @@ class SendMsg:
             self,
             text: str,
             text_to_render: str,
-            reply: bool = False,
+            reply: bool = True,
             continue_handler: bool = False
         ):
         """
@@ -579,7 +579,7 @@ class SendMsg:
     async def send_any(
             self,
             message: str | Message | MessageSegment,
-            reply: bool = False,
+            reply: bool = True,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
 
@@ -587,7 +587,7 @@ class SendMsg:
     async def send_any(
             self,
             message: str | Message | MessageSegment,
-            reply: bool = False,
+            reply: bool = True,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
