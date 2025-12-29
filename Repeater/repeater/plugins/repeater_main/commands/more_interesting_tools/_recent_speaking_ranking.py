@@ -65,7 +65,10 @@ async def recent_speaking_ranking_handle(bot: Bot, event: MessageEvent, args: Me
         line_count = text.count("\n") + 1
         
         if line_count > 10:
-            await sendmsg.send_mixed_render(text)
+            await sendmsg.send_mixed_render(
+                text,
+                prompt_mode = True,
+            )
         else:
             await sendmsg.send_prompt(text)
     else:

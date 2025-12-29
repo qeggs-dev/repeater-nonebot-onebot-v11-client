@@ -43,7 +43,10 @@ async def choose_group_member_handle(bot: Bot, event: MessageEvent, args: Messag
             text_list.append(f"{index}. {nickname}")
         text = "\n".join(text_list)
         if n > 10:
-            await sendmsg.send_mixed_render(text)
+            await sendmsg.send_mixed_render(
+                text,
+                prompt_mode = True
+            )
         else:
             await sendmsg.send_prompt(text)
     else:
