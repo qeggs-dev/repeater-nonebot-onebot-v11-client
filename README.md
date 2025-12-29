@@ -67,7 +67,7 @@ PS: 此处的长度评分函数并非实际算法，仅为演示使用
 
 ---
 
-## [依赖](LICENSES.md)
+## 依赖
 | Name       | Version | License      | License Text Link                                                      | Where it is used              |
 |------------|---------|--------------|------------------------------------------------------------------------|-------------------------------|
 | httpx      | 0.28.1  | BSD License  | [BSD-3-Clause](https://github.com/encode/httpx/blob/master/LICENSE.md) | *Entire Project*              |
@@ -78,6 +78,7 @@ PS: 此处的长度评分函数并非实际算法，仅为演示使用
 | orjson     | 3.11.3  | Apache Software License; MIT License | [Apache-2.0](https://github.com/ijl/orjson/blob/master/LICENSE-APACHE) / [MIT](https://github.com/ijl/orjson/blob/master/LICENSE-MIT) | `storage` |
 | loguru     | 0.7.3   | MIT License  | [MIT](https://github.com/Delgan/loguru/blob/master/LICENSE)            | *Entire Project*              |
 
+具体依赖的License请查看[LICENSES.md](LICENSES.md)
 
 ---
 
