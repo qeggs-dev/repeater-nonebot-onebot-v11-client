@@ -4,6 +4,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
 from nonebot.adapters import Bot
+from nonebot import logger
 
 from .._clients import PromptCore, ChatCore
 from ...assist import PersonaInfo, SendMsg
@@ -25,6 +26,7 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
             path = meta_prompt_file_path,
         )
     except Exception as e:
+        logger.error(f"load meta_prompt.txt failed: {e}")
         meta_prompt = META_PROMPT
         await async_text_storage.save(
             path = meta_prompt_file_path,
@@ -71,4 +73,5 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
             await sendmsg.send_mixed_render(
                 text = "Prompt generated:",
                 text_to_render = chat_response.data.content,
+                prompt_mode = True
             )
