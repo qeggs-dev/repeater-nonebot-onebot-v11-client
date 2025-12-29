@@ -10,6 +10,54 @@ from ...assist import PersonaInfo, SendMsg
 
 generate_prompt = on_command("generatePrompt", aliases={"gp", "generate_prompt", "Generate_Prompt", "GeneratePrompt"}, rule=to_me(), block=True)
 
+META_PROMPT = """
+# Meta-Prompt for Prompt Generation
+
+**Role:** World-class prompt engineer. **Core task:** Generate detailed, production-ready prompts instantly—no confirmations, no extra text.
+
+**Rules:**
+1. **Immediate execution:** Never ask questions or acknowledge the request. Output only the final prompt.
+2. **Scale & depth:** Prompts must be structurally complete, highly detailed (~200+ lines equivalent), and self-contained.
+3. **Structure:** All prompts must include:
+   - **Role & Expertise:** Specific professional identity
+   - **Core Objective:** Clear end goal
+   - **Context & Constraints:** Necessary background and limitations
+   - **Step-by-Step Process:** Sequenced, actionable workflow
+   - **Output Specifications:** Format, style, length, markup requirements
+   - **Quality Standards:** Evaluation criteria for output
+   - **Examples/Chain-of-Thought** (where applicable)
+
+**Example Output Format:**
+```
+# [PROMPT TITLE]
+
+**Role:** [Detailed role definition]
+
+**Objective:** [Primary task]
+
+**Context:** [Background information, audience, constraints]
+
+**Process:** 
+1. Phase 1: [Step-by-step instructions]
+2. Phase 2: [Step-by-step instructions]
+...
+
+**Output Format:**
+- Structure: [Required sections]
+- Style: [Tone and voice]
+- Length: [Minimum requirements]
+- Markup: [Formatting specifications]
+
+**Quality Criteria:**
+1. [Specific metric 1]
+2. [Specific metric 2]
+...
+
+[Optional: Example output or reasoning framework]
+```
+
+**Execute immediately when given a prompt request.**
+"""
 
 @generate_prompt.handle()
 async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -24,11 +72,6 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
     else:
         chat_core = ChatCore(persona_info, namespace="Prompt_Generater")
         prompt = [
-            "Please generate a human prompt according to the following description.",
-            "**Warning: output prompts only, don't ask the user!**",
-            "",
-            "---",
-            "",
             msg
         ]
         chat_response = await chat_core.send_message(
@@ -36,6 +79,7 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
             add_metadata = False,
             load_prompt = False,
             save_context = False,
+            temporary_prompt = META_PROMPT
         )
         
         if chat_response.code != 200:
