@@ -36,6 +36,7 @@ class ChatCore:
         message: str | None = None,
         add_metadata: bool = True,
         role_name: str | None = None,
+        temporary_prompt: str | None = None,
         model_uid: str | None = None,
         image_url: str | list[str] | None = None,
         load_prompt: bool | None = None,
@@ -57,6 +58,7 @@ class ChatCore:
             message = message,
             add_metadata = add_metadata,
             role_name = role_name,
+            temporary_prompt = temporary_prompt,
             model_uid = model_uid,
             image_url = image_url,
             load_prompt = load_prompt,
@@ -96,6 +98,7 @@ class ChatCore:
         message: str,
         add_metadata: bool = True,
         role_name: str | None = None,
+        temporary_prompt: str | None = None,
         model_uid: str | None = None,
         image_url: str | list[str] | None = None,
         load_prompt: bool | None = None,
@@ -118,6 +121,7 @@ class ChatCore:
             message = message,
             add_metadata = add_metadata,
             role_name = role_name,
+            temporary_prompt = temporary_prompt,
             model_uid = model_uid,
             image_url = image_url,
             load_prompt = load_prompt,
@@ -145,6 +149,7 @@ class ChatCore:
         message: str | None = None,
         add_metadata: bool = True,
         role_name: str | None = None,
+        temporary_prompt: str | None = None,
         model_uid: str | None = None,
         image_url: str | list[str] | None = None,
         load_prompt: bool | None = None,
@@ -179,6 +184,8 @@ class ChatCore:
             data["reference_context_id"] = reference_context_id
         if continue_completion is not None:
             data["continue_completion"] = continue_completion
+        if temporary_prompt is not None:
+            data["temporary_prompt"] = temporary_prompt
         if stream:
             data["stream"] = stream
         if message:
