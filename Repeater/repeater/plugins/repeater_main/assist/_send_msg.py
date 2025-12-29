@@ -249,10 +249,17 @@ class SendMsg:
             continue_handler = continue_handler
         )
     
+    @property
+    def prompt_str(self) -> str:
+        return (
+            f"==== {self._component} ====\n"
+            f"> [{self._persona_info.namespace}]\n"
+        )
+    
     @overload
     async def send_prompt(
             self,
-            prompt: str,
+            prompt: Message | str,
             reply: bool = True,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
@@ -260,14 +267,14 @@ class SendMsg:
     @overload
     async def send_prompt(
             self,
-            prompt: str,
+            prompt: Message | str,
             reply: bool = True,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
     async def send_prompt(
             self,
-            prompt: str,
+            prompt: Message | str,
             reply: bool = True,
             continue_handler: bool = False
         ):
@@ -278,15 +285,23 @@ class SendMsg:
         :param reply: 是否携带引用
         :param continue_handler: 是否继续运行当前处理流程
         """
-        await self._send(
-            (
-                f"==== {self._component} ====\n"
-                f"> [{self._persona_info.namespace}]\n"
-                f"{prompt}"
-            ),
-            reply = reply,
-            continue_handler = continue_handler
-        )
+        if isinstance(prompt, Message):
+            await self._send(
+                Message(
+                    self.prompt_str,
+                ).extend(prompt),
+                prompt,
+                reply = reply,
+                continue_handler = continue_handler
+            )
+        elif isinstance(prompt, str):
+            await self._send(
+                self.prompt_str + prompt,
+                reply = reply,
+                continue_handler = continue_handler
+            )
+        else:
+            raise TypeError("prompt must be str or Message")
     
     @overload
     async def send_error(
@@ -408,8 +423,9 @@ class SendMsg:
     @overload
     async def send_mixed_render(
             self,
-            text: str,
             text_to_render: str,
+            text: str | None = None,
+            prompt_mode: bool = False,
             reply: bool = True,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
@@ -417,16 +433,18 @@ class SendMsg:
     @overload
     async def send_mixed_render(
             self,
-            text: str,
             text_to_render: str,
+            text: str | None = None,
+            prompt_mode: bool = False,
             reply: bool = True,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
     async def send_mixed_render(
             self,
-            text: str,
             text_to_render: str,
+            text: str | None = None,
+            prompt_mode: bool = False,
             reply: bool = True,
             continue_handler: bool = False
         ):
@@ -439,16 +457,31 @@ class SendMsg:
         :param continue_handler: 是否继续运行当前处理流程
         """
         image = await self.text_render(text_to_render)
-        await self._send(
-            Message(
+
+        if text is None:
+            message = Message(
+                image
+            )
+        else:
+            message = Message(
                 [
                     MessageSegment.text(text),
                     image,
                 ]
-            ),
-            reply=reply,
-            continue_handler = continue_handler
-        )
+            )
+        
+        if prompt_mode:
+            await self.send_prompt(
+                message,
+                reply=reply,
+                continue_handler = continue_handler
+            )
+        else:
+            await self._send(
+                message,
+                reply=reply,
+                continue_handler = continue_handler
+            )
 
     @overload
     async def send_render(
