@@ -60,14 +60,13 @@ async def recent_speaking_ranking_handle(bot: Bot, event: MessageEvent, args: Me
             text_list.append(f"{index}. {name}: {speech_count}")
         text = "\n".join(text_list)
 
-        sendmsg.add_prefix("====More.Recent_Speaking_Ranking====\n")
         if validation_failure_counter > 0:
             await sendmsg.send_warning(f"Warning: There are {validation_failure_counter} message verification failures.\n")
         line_count = text.count("\n") + 1
         
         if line_count > 10:
-            await sendmsg.send_render(text)
+            await sendmsg.send_mixed_render(text)
         else:
-            await sendmsg.send_text(text)
+            await sendmsg.send_prompt(text)
     else:
         await sendmsg.send_error("The input must be a positive integer!")

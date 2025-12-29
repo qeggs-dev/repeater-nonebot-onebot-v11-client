@@ -42,10 +42,9 @@ async def choose_group_member_handle(bot: Bot, event: MessageEvent, args: Messag
                 nickname = member.get("nickname")
             text_list.append(f"{index}. {nickname}")
         text = "\n".join(text_list)
-        sendmsg.add_prefix("====More.Choose_Group_Member====\n")
         if n > 10:
-            await sendmsg.send_render(text)
+            await sendmsg.send_mixed_render(text)
         else:
-            await sendmsg.send_text(text)
+            await sendmsg.send_prompt(text)
     else:
         await sendmsg.send_error("The input must be a positive integer!")

@@ -57,7 +57,7 @@ async def handle_summary_chat_record(bot: Bot, event: MessageEvent, args: Messag
             save_context = False
         )
         chat_sendmsg = ChatSendMsg(
-            "More.Summary_Chat_Record",
+            sendmsg.component,
             persona_info,
             summary_chat_record,
             response
