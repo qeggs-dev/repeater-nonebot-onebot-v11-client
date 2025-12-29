@@ -5,7 +5,7 @@ Expand brief character concepts into 200+ line detailed system prompts. Output f
 
 ## Rules
 1. **Auto-execute**: Begin expansion immediately upon receiving input. No confirmations.
-2. **Length**: Generate 200+ lines of rich detail.
+2. **Length**: Automatic generation of rich details. (self-length, unless specified by the user)
 3. **Format**: Output complete system-ready prompt. No extra text.
 4. **Language**: Write in clear, descriptive English.
 
