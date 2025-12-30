@@ -5,7 +5,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo, ImageDownloader
+from ...assist import PersonaInfo, Namespace
 from ...logger import logger
 
 reference = on_command("Reference", aliases={"ref", "Reference"}, rule=to_me(), block=True)
@@ -31,7 +31,8 @@ async def handle_reference(bot: Bot, event: MessageEvent, args: Message = Comman
         await reference.finish("==== Reference ==== \n Please at a member to get reference.")
         
     response = await chat_core.send_message(
-        message = message.extract_plain_text().strip(), reference_context_id=persona_info.noself_at_list[0],
+        message = message.extract_plain_text().strip(),
+        reference_context_id=persona_info.noself_at_list[0],
         image_url = images
     )
 
