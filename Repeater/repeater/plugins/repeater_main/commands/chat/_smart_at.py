@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from ...logger import logger
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo, SendMsg, MessageSource, ImageDownloader
+from ...assist import PersonaInfo, SendMsg, MessageSource
 
 smart_at: type[Matcher] = on_message(rule=to_me(), priority=100, block=True)
 

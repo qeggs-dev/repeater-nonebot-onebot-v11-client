@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from ...logger import logger
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo, ImageDownloader
+from ...assist import PersonaInfo
 
 chat: type[Matcher] = on_command("chat", aliases={"c", "Chat"}, rule=to_me(), block=True)
 

@@ -5,7 +5,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo, ImageDownloader
+from ...assist import PersonaInfo
 from ...logger import logger
 from ...core_net_configs import storage_configs
 

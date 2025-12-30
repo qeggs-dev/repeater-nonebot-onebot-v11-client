@@ -5,7 +5,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo, ImageDownloader
+from ...assist import PersonaInfo
 from ...logger import logger
 
 public_space_chat = on_command("publicSpaceChat", aliases={"psc", "public_space_chat", "Public_Space_Chat", "PublicSpaceChat"}, rule=to_me(), block=True)

@@ -3,7 +3,7 @@ from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Message
 from nonebot.params import CommandArg
 
-from ...assist import PersonaInfo, ImageDownloader
+from ...assist import PersonaInfo
 from ...chattts import ChatTTSAPI
 from .._clients import ChatCore, ChatSendMsg
 from ...logger import logger
