@@ -13,7 +13,10 @@ set_top_p = on_command("setTopP", aliases={"stp", "set_top_p", "Set_Top_P", "Set
 @set_top_p.handle()
 async def handle_set_top_p(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Top_P", set_top_p, persona_info)
+    send_msg = SendMsg("Config.Set_Top_P", set_top_p, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = persona_info.message_str.strip()
 
@@ -24,14 +27,14 @@ async def handle_set_top_p(bot: Bot, event: MessageEvent, args: Message = Comman
         else:
             top_p = float(msg)
     except ValueError:
-        await sendmsg.send_error("Top_P setting error, please enter a floating-point number or percentage between 0 and 1!")
+        await send_msg.send_error("Top_P setting error, please enter a floating-point number or percentage between 0 and 1!")
     if top_p < -2 or top_p > 2:
-        await sendmsg.send_error("Top_P setting error, please enter a floating-point number or percentage between 0 and 1!")
+        await send_msg.send_error("Top_P setting error, please enter a floating-point number or percentage between 0 and 1!")
 
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("top_p", top_p)
 
-        await sendmsg.send_response(response, f"Set Top_P to {top_p}")
+        await send_msg.send_response(response, f"Set Top_P to {top_p}")

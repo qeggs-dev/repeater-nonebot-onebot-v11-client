@@ -13,7 +13,10 @@ set_temperature = on_command("setTemperature", aliases={"st", "set_temperature",
 @set_temperature.handle()
 async def handle_set_temperature(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Temperature", set_temperature, persona_info)
+    send_msg = SendMsg("Config.Set_Temperature", set_temperature, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = persona_info.message_str.strip()
 
@@ -24,13 +27,13 @@ async def handle_set_temperature(bot: Bot, event: MessageEvent, args: Message = 
         else:
             temperature = float(msg)
     except ValueError:
-        await sendmsg.send_error("Temperature is set incorrectly. Please enter a floating-point number or percentage between 0 and 2!")
+        await send_msg.send_error("Temperature is set incorrectly. Please enter a floating-point number or percentage between 0 and 2!")
     if temperature < 0 or temperature > 2:
-        await sendmsg.send_error("Temperature is set incorrectly. Please enter a floating-point number or percentage between 0 and 2!")
+        await send_msg.send_error("Temperature is set incorrectly. Please enter a floating-point number or percentage between 0 and 2!")
 
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("temperature", temperature)
-        await sendmsg.send_response(response, f"Set Temperature to {temperature}")
+        await send_msg.send_response(response, f"Set Temperature to {temperature}")

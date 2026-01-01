@@ -13,16 +13,19 @@ set_save_text_only = on_command("setSaveTextOnly", aliases={"ssto", "set_save_te
 @set_save_text_only.handle()
 async def handle_set_save_text_only(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Save_Text_Only", set_save_text_only, persona_info)
+    send_msg = SendMsg("Config.Set_Save_Text_Only", set_save_text_only, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     try:
         auto_save_context = str_to_bool(persona_info.message_str)
     except ValueError:
-        await sendmsg.send_error("Not a valid boolean value")
+        await send_msg.send_error("Not a valid boolean value")
 
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("save_text_only", auto_save_context)
-        await sendmsg.send_response(response, f"Save Text Only set to {auto_save_context}")
+        await send_msg.send_response(response, f"Save Text Only set to {auto_save_context}")

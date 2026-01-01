@@ -13,11 +13,14 @@ write_user_profile = on_command("writeUserProfile", aliases={"wup", "write_user_
 @write_user_profile.handle()
 async def handle_write_user_profile(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Write_User_Profile", write_user_profile, persona_info)
+    send_msg = SendMsg("Config.Write_User_Profile", write_user_profile, persona_info)
 
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("user_profile", persona_info.message_str)
-        await sendmsg.send_response(response, f"Write_User_Profile seted")
+        await send_msg.send_response(response, f"Write_User_Profile seted")

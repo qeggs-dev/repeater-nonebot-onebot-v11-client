@@ -13,13 +13,16 @@ set_render_style = on_command("setRenderStyle", aliases={"srs", "set_render_styl
 @set_render_style.handle()
 async def handle_set_render_style(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Render_Style", set_render_style, persona_info)
+    send_msg = SendMsg("Config.Set_Render_Style", set_render_style, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = persona_info.message_str.strip()
 
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("render_style", msg)
-        await sendmsg.send_response(response, f"Set Render_Style to {msg}")
+        await send_msg.send_response(response, f"Set Render_Style to {msg}")

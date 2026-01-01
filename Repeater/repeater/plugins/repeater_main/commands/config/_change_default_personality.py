@@ -13,12 +13,15 @@ change_default_personality = on_command("changeDefaultPersonality", aliases={"cd
 @change_default_personality.handle()
 async def handle_change_default_personality(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Change_Default_Personality", change_default_personality, persona_info)
+    send_msg = SendMsg("Config.Change_Default_Personality", change_default_personality, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("parset_prompt_name", persona_info.message_str)
-        await sendmsg.send_response(response, f"Change Default Personality to {persona_info.message_str}")
+        await send_msg.send_response(response, f"Change Default Personality to {persona_info.message_str}")
         

@@ -15,6 +15,9 @@ async def handle_change_config_branch(bot: Bot, event: MessageEvent, args: Messa
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
     send_msg = SendMsg("Config.Change_Config_Branch", change_config_branch, persona_info)
 
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
+
     config_core = ConfigCore(persona_info)
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()

@@ -13,21 +13,24 @@ set_timezone = on_command("setTimezone", aliases={"stz", "set_timezone", "Set_Ti
 @set_timezone.handle()
 async def handle_set_timezone(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Timezone", set_timezone, persona_info)
+    send_msg = SendMsg("Config.Set_Timezone", set_timezone, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = persona_info.message_str.strip()
 
     try:
         timezone = float(msg)
     except ValueError:
-        await sendmsg.send_error("Invalid timezone value. Please enter a valid number.")
+        await send_msg.send_error("Invalid timezone value. Please enter a valid number.")
     
     if timezone <= -12 or timezone >= 14:
-        await sendmsg.send_error("Invalid timezone value. Please enter a number between -12 and 14.")
+        await send_msg.send_error("Invalid timezone value. Please enter a number between -12 and 14.")
 
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("timezone", timezone)
-        await sendmsg.send_response(response, f"Set Timezone to {timezone}")
+        await send_msg.send_response(response, f"Set Timezone to {timezone}")

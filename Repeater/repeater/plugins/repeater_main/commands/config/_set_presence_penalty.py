@@ -13,7 +13,10 @@ set_presence_penalty = on_command("setPresencePenalty", aliases={"spp", "set_pre
 @set_presence_penalty.handle()
 async def handle_set_presence_penalty(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Presence_Penalty", set_presence_penalty, persona_info)
+    send_msg = SendMsg("Config.Set_Presence_Penalty", set_presence_penalty, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = persona_info.message_str.strip()
 
@@ -24,14 +27,14 @@ async def handle_set_presence_penalty(bot: Bot, event: MessageEvent, args: Messa
         else:
             presence_penalty = float(msg)
     except ValueError:
-        await sendmsg.send_error("Presence_Penalty is set incorrectly. Please enter a floating-point number or percentage between -2 and 2!")
+        await send_msg.send_error("Presence_Penalty is set incorrectly. Please enter a floating-point number or percentage between -2 and 2!")
     if presence_penalty < -2 or presence_penalty > 2:
-        await sendmsg.send_error("Presence_Penalty is set incorrectly. Please enter a floating-point number or percentage between -2 and 2!")
+        await send_msg.send_error("Presence_Penalty is set incorrectly. Please enter a floating-point number or percentage between -2 and 2!")
 
 
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("presence_penalty", presence_penalty)
-        await sendmsg.send_response(response, f"Set Presence_Penalty to {presence_penalty}")
+        await send_msg.send_response(response, f"Set Presence_Penalty to {presence_penalty}")

@@ -56,19 +56,19 @@ class BatchRegistration:
         @matcher.handle()
         async def handle(bot: Bot, event: MessageEvent, matcher: Matcher, args: Message = CommandArg()):
             persona_info = PersonaInfo(bot=bot, event=event, args=args)
-            sendmsg = SendMsg(component, matcher, persona_info)
+            send_msg = SendMsg(component, matcher, persona_info)
+
+            if send_msg.is_debug_mode:
+                await send_msg.send_debug_mode()
             
             chat_core = ConfigCore(persona_info)
-            if sendmsg.is_debug_mode:
-                await sendmsg.send_debug_mode()
+            if callable(command.type_converter):
+                value = command.type_converter(persona_info)
             else:
-                if callable(command.type_converter):
-                    value = command.type_converter(persona_info)
-                else:
-                    value = persona_info.message_str
-                response = await chat_core.set_config(command.config_key, value)
-                if callable(command.prompt):
-                    prompt = command.prompt(persona_info)
-                else:
-                    prompt = command.prompt
-                await sendmsg.send_response(response, prompt)
+                value = persona_info.message_str
+            response = await chat_core.set_config(command.config_key, value)
+            if callable(command.prompt):
+                prompt = command.prompt(persona_info)
+            else:
+                prompt = command.prompt
+            await send_msg.send_response(response, prompt)

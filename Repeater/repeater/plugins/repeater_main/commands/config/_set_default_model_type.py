@@ -13,11 +13,14 @@ set_default_model_type = on_command("setDefaultModel", aliases={"sdm", "set_defa
 @set_default_model_type.handle()
 async def handle_set_default_model_type(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Default_Model", set_default_model_type, persona_info)
+    send_msg = SendMsg("Config.Set_Default_Model", set_default_model_type, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("model_uid", persona_info.message_str)
-        await sendmsg.send_response(response, f"Set Default Model to {persona_info.message_str}")
+        await send_msg.send_response(response, f"Set Default Model to {persona_info.message_str}")

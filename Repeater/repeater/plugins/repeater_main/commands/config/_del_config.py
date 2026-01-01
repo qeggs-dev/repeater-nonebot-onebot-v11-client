@@ -13,11 +13,14 @@ del_config = on_command("delConfig", aliases={"dcfg", "delete_config", "Delete_C
 @del_config.handle()
 async def handle_del_config(bot: Bot, event: MessageEvent):
     persona_info = PersonaInfo(bot, event)
-    sendmsg = SendMsg("Config.Delete_Config", del_config, persona_info)
+    send_msg = SendMsg("Config.Delete_Config", del_config, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     config_core = ConfigCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await config_core.delete_config()
-        await sendmsg.send_response(response, f"Delete Config {persona_info.namespace_str}")
+        await send_msg.send_response(response, f"Delete Config {persona_info.namespace_str}")

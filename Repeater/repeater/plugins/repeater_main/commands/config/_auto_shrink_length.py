@@ -13,16 +13,19 @@ set_auto_shrink_length = on_command("setAutoShrinkLength", aliases={"sasl", "set
 @set_auto_shrink_length.handle()
 async def handle_set_auto_shrink_length(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Config.Set_Auto_Shrink_Length", set_auto_shrink_length, persona_info)
+    send_msg = SendMsg("Config.Set_Auto_Shrink_Length", set_auto_shrink_length, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     try:
         auto_shrink_length = int(persona_info.message_str)
     except ValueError:
-        await sendmsg.send_error("Message must be a number")
+        await send_msg.send_error("Message must be a number")
 
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("context_shrink_limit", auto_shrink_length)
-        await sendmsg.send_response(response, f"Auto shrink length set to {auto_shrink_length}")
+        await send_msg.send_response(response, f"Auto shrink length set to {auto_shrink_length}")
