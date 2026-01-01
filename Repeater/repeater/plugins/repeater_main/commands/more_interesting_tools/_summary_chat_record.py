@@ -12,17 +12,20 @@ summary_chat_record = on_command("summaryChatRecord", aliases={"scr", "summary_c
 @summary_chat_record.handle()
 async def handle_summary_chat_record(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
-    sendmsg = SendMsg("More.Summary_Chat_Record", summary_chat_record, persona_info)
+    send_msg = SendMsg("More.Summary_Chat_Record", summary_chat_record, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     
     if persona_info.source == MessageSource.PRIVATE:
-        await sendmsg.send_error("The current feature cannot be used in private chat.")
+        await send_msg.send_error("The current feature cannot be used in private chat.")
     
     group_id = persona_info.group_id
     
     try:
         n = int(args.extract_plain_text())
     except (ValueError, TypeError):
-        await sendmsg.send_error("Please enter a valid number.")
+        await send_msg.send_error("Please enter a valid number.")
     if n > 0:
         texts: list[str] = []
         message_list = await bot.get_group_msg_history(
@@ -57,7 +60,7 @@ async def handle_summary_chat_record(bot: Bot, event: MessageEvent, args: Messag
             save_context = False
         )
         chat_sendmsg = ChatSendMsg(
-            sendmsg.component,
+            send_msg.component,
             persona_info,
             summary_chat_record,
             response
@@ -65,4 +68,4 @@ async def handle_summary_chat_record(bot: Bot, event: MessageEvent, args: Messag
         await chat_sendmsg.send()
         
     else:
-        await sendmsg.send_error("The input must be a positive integer!")
+        await send_msg.send_error("The input must be a positive integer!")

@@ -18,17 +18,20 @@ recent_speaking_ranking = on_command("recentSpeakingRanking", aliases={"rsr","re
 @recent_speaking_ranking.handle()
 async def recent_speaking_ranking_handle(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
-    sendmsg = SendMsg("More.ChooseGroupMember", recent_speaking_ranking, persona_info)
+    send_msg = SendMsg("More.ChooseGroupMember", recent_speaking_ranking, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     
     if persona_info.source == MessageSource.PRIVATE:
-        await sendmsg.send_error("The current feature cannot be used in private chat.")
+        await send_msg.send_error("The current feature cannot be used in private chat.")
     
     group_id = persona_info.group_id
     
     try:
         n = int(args.extract_plain_text())
     except (ValueError, TypeError):
-        await sendmsg.send_error("Please enter a valid number.")
+        await send_msg.send_error("Please enter a valid number.")
     if n > 0:
         text = ""
         message_list = await bot.get_group_msg_history(
@@ -61,15 +64,15 @@ async def recent_speaking_ranking_handle(bot: Bot, event: MessageEvent, args: Me
         text = "\n".join(text_list)
 
         if validation_failure_counter > 0:
-            await sendmsg.send_warning(f"Warning: There are {validation_failure_counter} message verification failures.\n")
+            await send_msg.send_warning(f"Warning: There are {validation_failure_counter} message verification failures.\n")
         line_count = text.count("\n") + 1
         
         if line_count > 10:
-            await sendmsg.send_mixed_render(
+            await send_msg.send_mixed_render(
                 text,
                 prompt_mode = True,
             )
         else:
-            await sendmsg.send_prompt(text)
+            await send_msg.send_prompt(text)
     else:
-        await sendmsg.send_error("The input must be a positive integer!")
+        await send_msg.send_error("The input must be a positive integer!")
