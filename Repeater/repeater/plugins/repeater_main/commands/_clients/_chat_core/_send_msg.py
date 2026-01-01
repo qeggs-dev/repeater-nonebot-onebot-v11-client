@@ -17,7 +17,7 @@ class SendMsg(BaseSendMsg):
             matcher: Type[Matcher],
             response: Response[ChatResponse | None],
         ):
-        super().__init__(f"Chat.{component}", matcher, persona_info)
+        super().__init__(component, matcher, persona_info)
         self._response: Response[ChatResponse | None] = response
         self._chat_tts_api = ChatTTSAPI()
     
@@ -32,21 +32,18 @@ class SendMsg(BaseSendMsg):
 
 
     async def send(self):
-        if self.is_debug_mode:
-            await self.send_debug_mode()
-        else:
-            if self._response.code == 200 and self._response.data is not None:
-                score = self.text_length_score(self._response.data.content)
-                threshold = self.text_length_score_threshold
-                logger.info(f"Response content socre: {score}")
-                if score >= threshold:
-                    logger.warning(f"Response content socre to high: {score}, Expected to be below {threshold} ")
-                    logger.warning("The text will be rendered as an image output.")
-                    await self.send_image_mode()
-                else:
-                    await self.send_text_mode()
+        if self._response.code == 200 and self._response.data is not None:
+            score = self.text_length_score(self._response.data.content)
+            threshold = self.text_length_score_threshold
+            logger.info(f"Response content socre: {score}")
+            if score >= threshold:
+                logger.warning(f"Response content socre to high: {score}, Expected to be below {threshold} ")
+                logger.warning("The text will be rendered as an image output.")
+                await self.send_image_mode()
             else:
-                await self._send_error_message()
+                await self.send_text_mode()
+        else:
+            await self._send_error_message()
     
     async def send_tts_mode(self, text: str | None = None) -> NoReturn:
         if self.is_debug_mode:
