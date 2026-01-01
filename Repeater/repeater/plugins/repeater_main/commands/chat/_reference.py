@@ -5,7 +5,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo, Namespace
+from ...assist import PersonaInfo, SendMsg
 from ...logger import logger
 
 reference = on_command("Reference", aliases={"ref", "Reference"}, rule=to_me(), block=True)
@@ -13,12 +13,20 @@ reference = on_command("Reference", aliases={"ref", "Reference"}, rule=to_me(), 
 @reference.handle()
 async def handle_reference(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
+    send_msg = SendMsg(
+        "Chat.Reference",
+        reference,
+        persona_info
+    )
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     logger.info(
         "Received a message {message} from {namespace}",
         message = persona_info.message_str,
         namespace = persona_info.namespace_str,
-        module = "Chat.Reference"
+        module = send_msg.component
     )
 
     message = persona_info.message
@@ -37,7 +45,7 @@ async def handle_reference(bot: Bot, event: MessageEvent, args: Message = Comman
     )
 
     send_msg = ChatSendMsg(
-        "Reference",
+        send_msg.component,
         persona_info,
         reference,
         response

@@ -5,7 +5,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo
+from ...assist import PersonaInfo, SendMsg
 from ...logger import logger
 from ...core_net_configs import storage_configs
 
@@ -14,12 +14,20 @@ reason = on_command("reason", aliases={"r", "Reason"}, rule=to_me(), block=True)
 @reason.handle()
 async def reason_handle(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
+    send_msg = SendMsg(
+        "Chat.Reason",
+        reason,
+        persona_info,
+    )
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     logger.info(
         "Received a message {message} from {namespace}",
         message = persona_info.message_str,
         namespace = persona_info.namespace_str,
-        module = "Chat.Reason"
+        module = send_msg.component
     )
 
     message = persona_info.message
@@ -35,7 +43,7 @@ async def reason_handle(bot: Bot, event: MessageEvent, args: Message = CommandAr
     )
     
     send_msg = ChatSendMsg(
-        "Reason",
+        send_msg.component,
         persona_info,
         reason,
         response

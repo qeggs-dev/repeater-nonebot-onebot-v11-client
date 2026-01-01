@@ -12,20 +12,24 @@ smart_at: type[Matcher] = on_message(rule=to_me(), priority=100, block=True)
 @smart_at.handle()
 async def handle_smart_at(bot: Bot, event: MessageEvent):
     persona_info = PersonaInfo(bot, event)
-    sendmsg = SendMsg("Chat.Smart_at", smart_at, persona_info)
+    send_msg = SendMsg(
+        "Chat.Smart_at",
+        smart_at,
+        persona_info
+    )
 
     logger.info(
         "Received a message {message} from {namespace}",
         message = persona_info.message_str,
         namespace = persona_info.namespace_str,
-        module = "Chat.Smart_at"
+        module = send_msg.component
     )
 
     message = persona_info.message
     
     if not persona_info:
         if persona_info.source == MessageSource.GROUP:
-            await sendmsg.send_hello()
+            await send_msg.send_hello()
         else:
             return
     
@@ -40,7 +44,7 @@ async def handle_smart_at(bot: Bot, event: MessageEvent):
     )
     
     chat_send_msg = ChatSendMsg(
-        "Chat.Smart_at",
+        send_msg.component,
         persona_info,
         smart_at,
         response

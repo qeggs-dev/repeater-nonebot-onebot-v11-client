@@ -7,19 +7,27 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from ...logger import logger
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo
+from ...assist import PersonaInfo, SendMsg
 
 chat: type[Matcher] = on_command("chat", aliases={"c", "Chat"}, rule=to_me(), block=True)
 
 @chat.handle()
 async def handle_chat(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
+    send_msg = SendMsg(
+        "Chat.Chat",
+        chat,
+        persona_info
+    )
+
+    if send_msg.is_debug_mode:
+        send_msg.send_debug_mode()
 
     logger.info(
         "Received a message {message} from {namespace}",
         message = persona_info.message_str,
         namespace = persona_info.namespace_str,
-        module = "Chat.Chat"
+        module = send_msg.component
     )
 
     message = persona_info.message
@@ -34,7 +42,7 @@ async def handle_chat(bot: Bot, event: MessageEvent, args: Message = CommandArg(
     )
 
     send_msg = ChatSendMsg(
-        "Chat.Chat",
+        send_msg.component,
         persona_info,
         chat,
         response

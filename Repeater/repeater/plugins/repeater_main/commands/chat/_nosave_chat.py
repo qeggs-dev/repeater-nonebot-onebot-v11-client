@@ -7,19 +7,27 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from ...logger import logger
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo
+from ...assist import PersonaInfo, SendMsg
 
 nosave_chat: type[Matcher] = on_command("noSaveChat", aliases={"nsc", "no_save_chat", "NoSaveChat", "No_Save_Chat"}, rule=to_me(), block=True)
 
 @nosave_chat.handle()
 async def handle_nosave_chat(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
+    send_msg = SendMsg(
+        "Chat.No_Save_Chat",
+        nosave_chat,
+        persona_info
+    )
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     logger.info(
         "Received a message {message} from {namespace}",
         message = persona_info.message_str,
         namespace = persona_info.namespace_str,
-        module = "Chat.No_Save_Chat"
+        module = send_msg.component
     )
 
     message = persona_info.message
@@ -35,7 +43,7 @@ async def handle_nosave_chat(bot: Bot, event: MessageEvent, args: Message = Comm
     )
 
     send_msg = ChatSendMsg(
-        "Chat.No_Save_Chat",
+        send_msg.component,
         persona_info,
         nosave_chat,
         response

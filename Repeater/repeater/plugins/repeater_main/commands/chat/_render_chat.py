@@ -5,20 +5,28 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment
 
 from .._clients import ChatCore, ChatSendMsg
-from ...assist import PersonaInfo
+from ...assist import PersonaInfo, SendMsg
 from ...logger import logger
 
-renderChat = on_command("renderChat", aliases={"rc", "render_chat", "Render_Chat", "RenderChat"}, rule=to_me(), block=True)
+render_chat = on_command("renderChat", aliases={"rc", "render_chat", "Render_Chat", "RenderChat"}, rule=to_me(), block=True)
 
-@renderChat.handle()
+@render_chat.handle()
 async def handle_render_chat(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
+    send_msg = SendMsg(
+        "Chat.Render_Chat",
+        render_chat,
+        persona_info
+    )
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     logger.info(
         "Received a message {message} from {namespace}",
         message = persona_info.message_str,
         namespace = persona_info.namespace_str,
-        module = "Chat.Render_Chat"
+        module = send_msg.component
     )
     
     message = persona_info.message
@@ -33,9 +41,9 @@ async def handle_render_chat(bot: Bot, event: MessageEvent, args: Message = Comm
     )
 
     send_msg = ChatSendMsg(
-        "Render_Chat",
+        send_msg.component,
         persona_info,
-        renderChat,
+        render_chat,
         response
     )
     await send_msg.send_image_mode()
