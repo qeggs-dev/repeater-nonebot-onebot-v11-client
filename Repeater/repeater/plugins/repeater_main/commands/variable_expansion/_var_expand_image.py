@@ -13,16 +13,19 @@ var_expand_image = on_command("varExpandImage", aliases={"vei", "var_expand_imag
 @var_expand_image.handle()
 async def handle_var_expand_image(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("VarExpandImage", var_expand_image, persona_info)
+    send_msg = SendMsg("VarExpandImage", var_expand_image, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = args.extract_plain_text().strip()
 
     variable_expansion_core = VariableExpansionCore(persona_info)
-    if sendmsg.is_debug_mode:
-        sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        send_msg.send_debug_mode()
     else:
         response = await variable_expansion_core.expand_variable(text=msg)
         if response.code == 200:
-            await sendmsg.send_render(response.text)
+            await send_msg.send_render(response.text)
         else:
-            await sendmsg.send_response(response, "Error: VariableExpansion")
+            await send_msg.send_response(response, "Error: VariableExpansion")

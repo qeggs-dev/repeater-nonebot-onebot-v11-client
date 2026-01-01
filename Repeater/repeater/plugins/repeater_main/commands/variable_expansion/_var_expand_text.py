@@ -13,16 +13,16 @@ var_expand_text = on_command("varExpandText", aliases={"vet", "var_expand_text",
 @var_expand_text.handle()
 async def handle_var_expand_text(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("VarExpandText", var_expand_text, persona_info)
+    send_msg = SendMsg("VarExpandText", var_expand_text, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = args.extract_plain_text().strip()
 
     variable_expansion_core = VariableExpansionCore(persona_info)
-    if sendmsg.is_debug_mode:
-        sendmsg.send_debug_mode()
+    response = await variable_expansion_core.expand_variable(text=msg)
+    if response.code == 200:
+        await send_msg.send_text(response.text)
     else:
-        response = await variable_expansion_core.expand_variable(text=msg)
-        if response.code == 200:
-            await sendmsg.send_text(response.text)
-        else:
-            await sendmsg.send_response(response, "Error: VariableExpansion")
+        await send_msg.send_response(response, "Error: VariableExpansion")
