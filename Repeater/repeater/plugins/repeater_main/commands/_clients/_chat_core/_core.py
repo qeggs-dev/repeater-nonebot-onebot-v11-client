@@ -41,6 +41,7 @@ class ChatCore:
         image_url: str | list[str] | None = None,
         load_prompt: bool | None = None,
         save_context: bool | None = None,
+        save_new_only: bool | None = None,
         enable_md_prompt: bool = True,
         reference_context_id: str | None = None,
         continue_completion: bool | None = None,
@@ -64,6 +65,7 @@ class ChatCore:
             load_prompt = load_prompt,
             enable_md_prompt = enable_md_prompt,
             save_context = save_context,
+            save_new_only = save_new_only,
             reference_context_id = reference_context_id,
             continue_completion = continue_completion,
         )
@@ -103,6 +105,7 @@ class ChatCore:
         image_url: str | list[str] | None = None,
         load_prompt: bool | None = None,
         save_context: bool | None = None,
+        save_new_only: bool | None = None,
         enable_md_prompt: bool = True,
         reference_context_id: str | None = None,
         continue_completion: bool | None = None,
@@ -127,6 +130,7 @@ class ChatCore:
             load_prompt = load_prompt,
             enable_md_prompt = enable_md_prompt,
             save_context = save_context,
+            save_new_only = save_new_only,
             reference_context_id = reference_context_id,
             continue_completion = continue_completion,
             stream = True,
@@ -144,6 +148,14 @@ class ChatCore:
 
                 yield StreamChatChunkResponse(**json.loads(line))
     
+    @staticmethod
+    def _merge_dict(base: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
+        base_copy = base.copy()
+        for key, value in kwargs.items():
+            if value is not None:
+                base_copy[key] = value
+        return base_copy
+    
     def _prepare_request_body(
         self,
         message: str | None = None,
@@ -154,13 +166,14 @@ class ChatCore:
         image_url: str | list[str] | None = None,
         load_prompt: bool | None = None,
         save_context: bool | None = None,
+        save_new_only: bool | None = None,
         enable_md_prompt: bool = True,
         reference_context_id: str | None = None,
         continue_completion: bool | None = None,
-        stream: bool = False,
+        stream: bool | None = None,
     ):
         # 表单数据格式 (Form Data)
-        data = {
+        base_data = {
             "user_info": {
                 "username" : self._persona_info.nickname,
                 "nickname" : self._persona_info.display_name,
@@ -168,26 +181,27 @@ class ChatCore:
                 "gender": self._persona_info.gender,
             },
         }
-        if load_prompt is not None:
-            data["load_prompt"] = load_prompt
-        if save_context is not None:
-            data["save_context"] = save_context
-        if model_uid is not None:
-            data["model_uid"] = model_uid
+        data = self._merge_dict(
+            base = data,
+            load_prompt = load_prompt,
+            save_context = save_context,
+            save_new_only = save_new_only,
+            model_uid = model_uid,
+            continue_completion = continue_completion,
+            temporary_prompt = temporary_prompt,
+            stream = stream,
+        )
         if image_url:
-            data["image_url"] = image_url
+            base_data["image_url"] = image_url
+        
         if role_name is not None:
-            data["role_name"] = role_name
+            base_data["role_name"] = role_name
         elif storage_configs.merge_group_id:
-            data["role_name"] = self._persona_info.nickname
+            base_data["role_name"] = self._persona_info.nickname
+        
         if reference_context_id:
-            data["reference_context_id"] = reference_context_id
-        if continue_completion is not None:
-            data["continue_completion"] = continue_completion
-        if temporary_prompt is not None:
-            data["temporary_prompt"] = temporary_prompt
-        if stream:
-            data["stream"] = stream
+            base_data["reference_context_id"] = reference_context_id
+        
         if message:
             message_buffer:list[str] = []
             if add_metadata:
@@ -202,8 +216,8 @@ class ChatCore:
                     message_buffer.append(">     Guest Mode(User: {username}), Citation context is turned on!!")
                 message_buffer.append("\n---\n")
             message_buffer.append(message)
-            data["message"] = "\n".join(message_buffer)
-        return data
+            base_data["message"] = "\n".join(message_buffer)
+        return base_data
     
     exit_register.register()
     async def close(self):
