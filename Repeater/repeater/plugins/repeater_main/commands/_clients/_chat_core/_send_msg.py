@@ -23,7 +23,9 @@ class SendMsg(BaseSendMsg):
     
     async def _send_error_message(self) -> NoReturn:
         if self._response.data is None:
-            await self.send_response(self._response)
+            await self.send_response(
+                self._response
+            )
         else:
             await self.send_response(
                 self._response,
