@@ -13,11 +13,14 @@ delprompt = on_command("deletePrompt", aliases={"dp", "delete_prompt", "Delete_P
 @delprompt.handle()
 async def handle_delete_prompt(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
-    sendmsg = SendMsg("Prompt.Delete_Prompt", delprompt, persona_info)
+    send_msg = SendMsg("Prompt.Delete_Prompt", delprompt, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     
     prompt_core = PromptCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await prompt_core.delete_prompt()
-        await sendmsg.send_response(response, f"Delete Prompt from {persona_info.namespace_str}")
+        await send_msg.send_response(response, f"Delete Prompt from {persona_info.namespace_str}")

@@ -16,7 +16,10 @@ generate_prompt = on_command("generatePrompt", aliases={"gp", "generate_prompt",
 @generate_prompt.handle()
 async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Prompt.Generater", generate_prompt, persona_info)
+    send_msg = SendMsg("Prompt.Generater", generate_prompt, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     msg = persona_info.message_str.strip()
 
@@ -32,46 +35,43 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
             path = meta_prompt_file_path,
             data = meta_prompt
         )
-
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    
+    chat_core = ChatCore(persona_info, namespace="Prompt_Generater")
+    prompt = [
+        msg
+    ]
+    chat_response = await chat_core.send_message(
+        "\n".join(prompt),
+        add_metadata = False,
+        save_context = False,
+        temporary_prompt = meta_prompt
+    )
+    
+    if chat_response.code != 200:
+        await send_msg.send_response(
+            chat_response, "Generate Prompt failed."
+        )
+    if chat_response.data is None:
+        await send_msg.send_error(
+            "No prompt generated."
+        )
+    if not chat_response.data.content:
+        await send_msg.send_error(
+            "No prompt content generated."
+        )
+    
+    prompt_core = PromptCore(persona_info)
+    prompt_response = await prompt_core.set_prompt(
+        chat_response.data.content
+    )
+    if prompt_response.code != 200:
+        await send_msg.send_response(
+            prompt_response,
+            "Set Prompt failed"
+        )
     else:
-        chat_core = ChatCore(persona_info, namespace="Prompt_Generater")
-        prompt = [
-            msg
-        ]
-        chat_response = await chat_core.send_message(
-            "\n".join(prompt),
-            add_metadata = False,
-            save_context = False,
-            temporary_prompt = meta_prompt
+        await send_msg.send_mixed_render(
+            text = "Prompt generated:",
+            text_to_render = chat_response.data.content,
+            prompt_mode = True
         )
-        
-        if chat_response.code != 200:
-            await sendmsg.send_response(
-                chat_response, "Generate Prompt failed."
-            )
-        if chat_response.data is None:
-            await sendmsg.send_error(
-                "No prompt generated."
-            )
-        if not chat_response.data.content:
-            await sendmsg.send_error(
-                "No prompt content generated."
-            )
-        
-        prompt_core = PromptCore(persona_info)
-        prompt_response = await prompt_core.set_prompt(
-            chat_response.data.content
-        )
-        if prompt_response.code != 200:
-            await sendmsg.send_response(
-                prompt_response,
-                "Set Prompt failed"
-            )
-        else:
-            await sendmsg.send_mixed_render(
-                text = "Prompt generated:",
-                text_to_render = chat_response.data.content,
-                prompt_mode = True
-            )
