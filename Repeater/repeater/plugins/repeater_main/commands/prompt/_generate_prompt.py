@@ -21,7 +21,7 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
 
-    msg = persona_info.message_str.strip()
+    message = persona_info.message_str.strip()
 
     meta_prompt_file_path = "prompts/generate_prompt/meta_prompt.txt"
     try:
@@ -37,13 +37,12 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
         )
     
     chat_core = ChatCore(persona_info, namespace="Prompt_Generater")
-    prompt = [
-        msg
-    ]
+    image_url = await persona_info.get_images_url()
     chat_response = await chat_core.send_message(
-        "\n".join(prompt),
+        message,
         add_metadata = False,
         save_context = False,
+        image_url = image_url,
         temporary_prompt = meta_prompt
     )
     
