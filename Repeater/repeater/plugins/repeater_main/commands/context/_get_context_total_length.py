@@ -13,19 +13,22 @@ get_context_total_length = on_command("getContextTotalLength", aliases={"gctl", 
 @get_context_total_length.handle()
 async def handle_total_context_length(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Context.Get_Context_Total_Length", get_context_total_length, persona_info)
+    send_msg = SendMsg("Context.Get_Context_Total_Length", get_context_total_length, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     
     context_core = ContextCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await context_core.get_context_total_length()
 
         if response.code == 200:
-            await sendmsg.send_prompt(
+            await send_msg.send_prompt(
                 f"length: {response.data.context_length}\n"
                 f"total_text_length: {response.data.total_context_length}\n"
                 f"average_content_length: {response.data.average_content_length}\n"
             )
         else:
-            await sendmsg.send_response(response, "Get Context Total Length Failed")
+            await send_msg.send_response(response, "Get Context Total Length Failed")

@@ -13,11 +13,14 @@ delcontext = on_command("deleteContext", aliases={"dc", "delete_context", "Delet
 @delcontext.handle()
 async def handle_delete_context(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Context.Delete_Context", delcontext, persona_info)
+    send_msg = SendMsg("Context.Delete_Context", delcontext, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     
     context_core = ContextCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await context_core.delete_context()
-        await sendmsg.send_response(response, f"Delete Context from {persona_info.namespace_str}")
+        await send_msg.send_response(response, f"Delete Context from {persona_info.namespace_str}")

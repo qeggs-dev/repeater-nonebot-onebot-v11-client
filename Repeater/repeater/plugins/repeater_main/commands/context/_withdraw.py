@@ -13,30 +13,33 @@ withdraw = on_command("withdraw", aliases={"w", "Withdraw"}, rule=to_me(), block
 @withdraw.handle()
 async def handle_withdraw(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Context.Withdraw", withdraw, persona_info)
+    send_msg = SendMsg("Context.Withdraw", withdraw, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
 
     context_core = ContextCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         if persona_info.args_str:
             try:
                 num = int(persona_info.args_str)
             except ValueError:
-                await sendmsg.send_error("Please input a valid number")
+                await send_msg.send_error("Please input a valid number")
             
             if num < 1:
-                await sendmsg.send_error("Please input a number greater than 0")
+                await send_msg.send_error("Please input a number greater than 0")
         else:
             num = 1
 
         response = await context_core.withdraw(num)
 
         if response.code == 200:
-            await sendmsg.send_prompt(
+            await send_msg.send_prompt(
                 f"Deleted: {response.data.deleted}\n"
                 f"Remaining: {len(response.data.context)}\n"
             )
             
         else:
-            await sendmsg.send_response(response, "Withdraw Failed")
+            await send_msg.send_response(response, "Withdraw Failed")

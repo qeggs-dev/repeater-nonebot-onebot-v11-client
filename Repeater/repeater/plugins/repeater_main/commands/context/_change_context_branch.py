@@ -13,13 +13,16 @@ change_context_branch = on_command("changeContextBranch", aliases={"ccb", "chang
 @change_context_branch.handle()
 async def handle_change_context_branch(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    sendmsg = SendMsg("Context.Change_Context_Branch", change_context_branch, persona_info)
+    send_msg = SendMsg("Context.Change_Context_Branch", change_context_branch, persona_info)
+
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     
     msg = persona_info.message_str.strip()
     
     context_core = ContextCore(persona_info)
-    if sendmsg.is_debug_mode:
-        await sendmsg.send_debug_mode()
+    if send_msg.is_debug_mode:
+        await send_msg.send_debug_mode()
     else:
         response = await context_core.change_context_branch(msg)
-        await sendmsg.send_response(response, f"Change Context Branch to {msg}")
+        await send_msg.send_response(response, f"Change Context Branch to {msg}")
