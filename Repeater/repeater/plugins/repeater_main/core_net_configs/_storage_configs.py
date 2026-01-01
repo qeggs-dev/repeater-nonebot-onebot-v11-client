@@ -32,6 +32,7 @@ class StorageConfigs(BaseModel):
     server_api_timeout:ServerAPITimeout = Field(default_factory = ServerAPITimeout)
     use_base64_visual_input: bool = True
     download_visual_input_timeout: float = 600.0
+    summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
 
 loader: Loader[StorageConfigs] = Loader(
     model=StorageConfigs,
