@@ -9,6 +9,7 @@ from ._keep_answering import handle_keep_answering
 from ._keep_reasoning import handle_keep_reasoning
 from ._reference import handle_reference
 from ._public_space_chat import handle_public_space_chat
+from ._summarize_and_contract import handle_summarize_and_contract
 from ._tts_chat import handle_tts_chat
 
 __all__ = [
@@ -23,5 +24,6 @@ __all__ = [
     "handle_keep_reasoning",
     "handle_reference",
     "handle_public_space_chat",
+    "handle_summarize_and_contract",
     "handle_tts_chat",
 ]
