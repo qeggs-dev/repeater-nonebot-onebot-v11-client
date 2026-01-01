@@ -290,7 +290,6 @@ class SendMsg:
                 Message(
                     self.prompt_str,
                 ).extend(prompt),
-                prompt,
                 reply = reply,
                 continue_handler = continue_handler
             )
@@ -676,10 +675,10 @@ class SendMsg:
     @overload
     async def _send(
             self,
-            message: str | Message | MessageSegment,
-            reply: bool = True,
-            continue_handler: Literal[True] = True
-        ) -> None: ...
+            message: str | Message | MessageSegment,  # 消息内容，可以是字符串、Message对象或MessageSegment对象
+            reply: bool = True,  # 是否回复消息，默认为True
+            continue_handler: Literal[True] = True  # 是否继续处理消息处理器，默认为True
+        ) -> None: ...  # 异步方法，不返回任何值
     
     async def _send(
             self,
