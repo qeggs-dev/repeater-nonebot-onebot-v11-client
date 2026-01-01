@@ -182,7 +182,7 @@ class ChatCore:
             },
         }
         data = self._merge_dict(
-            base = data,
+            base = base_data,
             load_prompt = load_prompt,
             save_context = save_context,
             save_new_only = save_new_only,
@@ -192,15 +192,15 @@ class ChatCore:
             stream = stream,
         )
         if image_url:
-            base_data["image_url"] = image_url
+            data["image_url"] = image_url
         
         if role_name is not None:
-            base_data["role_name"] = role_name
+            data["role_name"] = role_name
         elif storage_configs.merge_group_id:
-            base_data["role_name"] = self._persona_info.nickname
+            data["role_name"] = self._persona_info.nickname
         
         if reference_context_id:
-            base_data["reference_context_id"] = reference_context_id
+            data["reference_context_id"] = reference_context_id
         
         if message:
             message_buffer:list[str] = []
@@ -216,8 +216,8 @@ class ChatCore:
                     message_buffer.append(">     Guest Mode(User: {username}), Citation context is turned on!!")
                 message_buffer.append("\n---\n")
             message_buffer.append(message)
-            base_data["message"] = "\n".join(message_buffer)
-        return base_data
+            data["message"] = "\n".join(message_buffer)
+        return data
     
     exit_register.register()
     async def close(self):
