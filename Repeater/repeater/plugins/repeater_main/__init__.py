@@ -1,31 +1,37 @@
 # === Chat === #
-from .command.chat import *
+from .commands.chat import *
 
 # === Context === #
-from .command.context import *
+from .commands.context import *
 
 # === Prompt === #
-from .command.prompt import *
+from .commands.prompt import *
 
 # === Config === #
-from .command.config import *
+from .commands.config import *
 
 # === Mixed === #
-from .command.mixed import *
+from .commands.mixed import *
+
+# === Model Info === #
+from .commands.model_info import *
 
 # === More Interesting Tools === #
-from .command.more_interesting_tools import *
+from .commands.more_interesting_tools import *
 
 # === Var Expand === #
-from .command.variable_expansion import *
+from .commands.variable_expansion import *
 
 # === UserDataFile === #
-from .command.user_file import (
+from .commands.user_file import (
     handle_send_user_data_file,
 )
 
 # === SessionID === #
-from .command.get_namespace import handle_get_namespace
+from .commands.get_namespace import handle_get_namespace
 
 # === Readme === #
-from .command.send_readme_file import handle_send_readme_file
+from .commands.send_readme_file import handle_send_readme_file
+
+# === TextRender === #
+from .commands.text_render import handle_text_render

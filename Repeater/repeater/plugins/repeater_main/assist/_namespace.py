@@ -15,8 +15,8 @@ class Namespace:
     用户命名空间
     """
     mode: MessageSource = MessageSource.GROUP
-    group_id: str | None = None
-    user_id: str = ""
+    group_id: int | None = None
+    user_id: int = 0
 
     @property
     def namespace(self) -> str:

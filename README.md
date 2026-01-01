@@ -1,28 +1,10 @@
 # @复读机Repeater
 **- Only Chat, Focus Chat. -**
 
-*注：本仓库仅为NoneBot插件，需要配合[后端项目](#相关仓库)使用*
+*注：本仓库仅为客户端实现，需要配合[后端项目](#相关仓库)使用*
 
-一个基于[`NoneBot`](https://nonebot.dev/)和[`OpenAI SDK`](https://pypi.org/project/openai/)开发的**实验性**QQ聊天机器人
-**此仓库仅为后端实现，NoneBot插件部分请查看[`Repater-Nonebot-Plugin`](https://github.com/qeggs-dev/repeater-qq-ai-chatbot-nonebot-plugins)**
-将原始会话数据的处理直接公开给用户使用
-接近直接操作API的灵活度体验
-
-与其他QQ机器人相比，复读机具有以下特点：
-
- - 平行数据管理：支持平行数据管理，用户可以随意切换平行数据，而不需要担心数据丢失。
- - 多模型支持：支持OpenAI接口的模型即可调用，可以根据需要选择不同的模型进行对话。
- - 超高自由度：用户可以自定义会话注入、切换、删除，以及自定义提示词
- - MD图片渲染：可以将回复以图片的形式渲染发送，降低其妨碍用户正常聊天的程度（但鬼知道为什么这东西竟然不支持Emoji渲染！！！）
- - 命令别名触发：不管是缩写还是全文，都可以触发命令操作
- - 用户自治设计：用户可以自己管理自己的所有用户数据
- - 多预设人设：复读机支持多预设人设，用户可以自由选择自己喜欢的人设进行对话
-> 注：拟人化并非复读机的赛道，复读机不对拟人化需求做过多保证，如有需要请自行引导或编写提示词。
-
-## 注意事项:
- - 本服务由一位 `16岁自学开发者`(现在17了) 使用AI辅助开发，公益项目，如果你愿意捐赠，可以在机器人的**QQ空间**中找到赞赏码以支持项目运营(或是支持开发者)。
- - 使用者需确认生成内容的合法性，并自行承担使用本服务可能产生的风险。
- - 如果你觉得这个Bot非常好用，请去看一下[`Deepseek`](https://www.deepseek.com/)的官网吧，这个Bot最初就是基于他们的模型API开发的。
+一个基于[`NoneBot`](https://nonebot.dev/)和[`Repeater Backend`](https://github.com/qeggs-dev/repeater-ai-chatbot-backend)开发的 AI QQ Bot
+**此仓库仅为 Repeater 的 NoneBot OneBot v11 适配客户端**
 
 ---
 
@@ -52,6 +34,7 @@ def length_score(text: str) -> float:
         ) / 3
     return length_score
 ```
+PS: 此处的长度评分函数并非实际算法，仅为演示使用
 如果长度评分超过阈值，则会向后端请求将文本渲染为图片，以保证不会影响其他用户正常聊天。
 
 ---
@@ -84,18 +67,18 @@ def length_score(text: str) -> float:
 
 ---
 
-## [依赖](LICENSES.md)
-| Name       | Version | License      | License Text Link                                                    | Where it is used              |
-|------------|---------|--------------|----------------------------------------------------------------------|-------------------------------|
-| httpx      | 0.28.1  | BSD License  | [BSD-3-Clause](https://github.com/encode/httpx/blob/master/LICENSE.md)         | *Entire Project*              |
-| nonebot    | 2.4.3   | MIT License  | [MIT](https://github.com/nonebot/nonebot2/blob/master/LICENSE)       | *Entire Project*              |
-| pydantic   | 2.12.0  | MIT License  | [MIT](https://github.com/pydantic/pydantic/blob/main/LICENSE)        | *Entire Project*              |
-| aiofiles   | 25.1.0  | MIT License  | [Apache-2.0](https://github.com/Tinche/aiofiles/blob/main/LICENSE)   | `storage`                     |
-| pyyaml     | 6.0.3   | MIT License  | [MIT](https://github.com/yaml/pyyaml/blob/main/LICENSE)              | `storage`                     |
+## 依赖
+| Name       | Version | License      | License Text Link                                                      | Where it is used              |
+|------------|---------|--------------|------------------------------------------------------------------------|-------------------------------|
+| httpx      | 0.28.1  | BSD License  | [BSD-3-Clause](https://github.com/encode/httpx/blob/master/LICENSE.md) | *Entire Project*              |
+| nonebot    | 2.4.3   | MIT License  | [MIT](https://github.com/nonebot/nonebot2/blob/master/LICENSE)         | *Entire Project*              |
+| pydantic   | 2.12.0  | MIT License  | [MIT](https://github.com/pydantic/pydantic/blob/main/LICENSE)          | *Entire Project*              |
+| aiofiles   | 25.1.0  | MIT License  | [Apache-2.0](https://github.com/Tinche/aiofiles/blob/main/LICENSE)     | `storage`                     |
+| pyyaml     | 6.0.3   | MIT License  | [MIT](https://github.com/yaml/pyyaml/blob/main/LICENSE)                | `storage`                     |
 | orjson     | 3.11.3  | Apache Software License; MIT License | [Apache-2.0](https://github.com/ijl/orjson/blob/master/LICENSE-APACHE) / [MIT](https://github.com/ijl/orjson/blob/master/LICENSE-MIT) | `storage` |
-| numpy      | 2.3.4   | BSD License  | [BSD-3-Clause](https://github.com/numpy/numpy/blob/main/LICENSE.txt) | `command._clients._chat_core` |
-| loguru     | 0.7.3   | MIT License  | [MIT](https://github.com/Delgan/loguru/blob/master/LICENSE)          | *Entire Project*              |
+| loguru     | 0.7.3   | MIT License  | [MIT](https://github.com/Delgan/loguru/blob/master/LICENSE)            | *Entire Project*              |
 
+具体依赖的License请查看[LICENSES.md](LICENSES.md)
 
 ---
 
@@ -227,7 +210,20 @@ main_api.json
         "4": "Repeater is Online!\n\n疯狂星期四! ! !\n复读机想要 50,000,000 Token ，求求了（>^< ;)"
     },
     // 是否在群聊中让所有人使用同一个User_ID
-    "merge_group_id": false
+    "merge_group_id": false,
+
+    // Repeater API超时时间
+    "server_api_timeout": {
+        "chat": 600.0,
+        "context": 10.0,
+        "prompt": 10.0,
+        "config": 10.0,
+        "variable_expansion": 40.0,
+        "render": 600.0
+    },
+
+    // 在用户输入图片的时候，是否将其下载为 Base64 以防止链接失效
+    "use_base64_visual_input": true
 }
 ```
 配置了一些主要的参数，如文本长度评分、推理模型使用的UID、欢迎消息等。
@@ -276,24 +272,24 @@ PS：该配置文件是专门用于对接ChatTTS的
 
 | Command                    | Abridge | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
 | :---                       | :---    | :---                      | :---:       | :---:          | :---:                         | :---:                                     | :---:   |
-| `chat`                     | `c`     | `Chat`                    | `CHAT`      | 4.0 Beta       | 与机器人对话                   | 自然语言输入                               | 默认命令，可被`to_me`消息调起 |
+| ` `                        | ` `     | ` `                       | `CHAT`      | 4.0 Beta       | 默认命令，自然语言对话          | 自然语言输入                               | 当你@复读机的时候，如果没有命中其他命令就会执行这个，并把所有内容作为输入 |
+| `chat`                     | `c`     | `Chat`                    | `CHAT`      | 4.0 Beta       | 与机器人对话                   | 自然语言输入                               | 强制模型用文字输出，绕过Markdown渲染检查 |
 | `keepAnswering`            | `ka`    | `KeepAnswering`           | `CHAT`      | 4.0 Beta       | 持续对话(常规)                 | 无                                        | 无须输入，AI再次回复 |
 | `keepReasoning`            | `kr`    | `KeepReasoning`           | `CHAT`      | 4.0 Beta       | 持续对话(推理)                 | 无                                        | 无须输入，AI再次使用推理回复 |
 | `renderChat`               | `rc`    | `RenderChat`              | `CHAT`      | 4.0 Beta       | 渲染Markdown回复               | 自然语言输入                               | 强制渲染图片输出 |
 | `setRenderStyle`           | `srs`   | `SetRenderStyle`          | `CONFIG`    | 4.0 Beta       | 设置渲染样式                   | [渲染样式](#Markdown图片渲染样式)           | 设置Markdown图片渲染样式 |
 | `npChat`                   | `np`    | `NoPromptChat`            | `CHAT`      | 4.0 Beta       | 不加载提示词进行对话            | 自然语言输入                               | 使用常规模型 |
 | `reason`                   | `r`     | `Reason`                  | `CHAT`      | 4.0 Beta       | 使用Reasoner模型进行推理        | 自然语言输入                               | 调用模型由`reason_model_uid`字段控制，默认`reasoner` |
-| `recomplete`               | `rcm`   | `Recomplete`              | `CHAT`      | 4.0 Beta       | 重新进行对话补全                | 无                                        | 重新生成 |
-| `setFrequencyPenalty`      | `sfp`   | `SetFrequencyPenalty`     | `CONFIG`    | 4.0 Beta       | 设置频率惩罚                   | `-2`\~`2`的浮点数 或`-200%`\~`200%`的百分比 | 控制着模型输出重复相同内容的可能性 |
-| `setPresencePenalty`       | `spp`   | `SetPresencePenalty`      | `CONFIG`    | 4.0 Beta       | 设置存在惩罚                   | `-2`\~`2`的浮点数 或`-200%`\~`200%`的百分比 | 控制着模型谈论新主题的可能性 |
-| `setTemperature`           | `st`    | `SetTemperature`          | `CONFIG`    | 4.0 Beta       | 设置温度                       | `0`\~`2`的浮点数 或`0%`\~`200%`的百分比  | 控制着模型生成内容的不确定性 |
+| `setFrequencyPenalty`      | `sfp`   | `SetFrequencyPenalty`     | `CONFIG`    | 4.0 Beta       | 设置频率惩罚                   | `-2`\~`2`的浮点数<br/>或`-200%`\~`200%`的百分比 | 控制着模型输出重复相同内容的可能性 |
+| `setPresencePenalty`       | `spp`   | `SetPresencePenalty`      | `CONFIG`    | 4.0 Beta       | 设置存在惩罚                   | `-2`\~`2`的浮点数<br/>或`-200%`\~`200%`的百分比 | 控制着模型谈论新主题的可能性 |
+| `setTemperature`           | `st`    | `SetTemperature`          | `CONFIG`    | 4.0 Beta       | 设置温度                       | `0`\~`2`的浮点数<br/>或`0%`\~`200%`的百分比  | 控制着模型生成内容的不确定性 |
 | `setPrompt`                | `sp`    | `SetPrompt`               | `PROMPT`    | 4.0 Beta       | 设置提示词                     | 自然语言输入                               | 设置提示词 |
 | `changeDefaultPersonality` | `cdp`   | `ChangeDefaultPersonality`| `CONFIG`    | 4.0 Beta       | 修改默认人格                   | [人格预设](#人格预设)                       | 修改默认人格路由 |
 | `deletePrompt`             | `dp`    | `DeletePrompt`            | `PROMPT`    | 4.0 Beta       | 删除提示词                     | 无                                        | 删除提示词 |
 | `deleteContext`            | `dc`    | `DeleteContext`           | `CONTEXT`   | 4.0 Beta       | 删除上下文                     | 无                                        | 删除上下文 |
 | `varExpand`                | `ve`    | `VarExpand`               | `VAREXPAND` | 4.0 Beta       | 变量展开                       | 文本模板(使用大括号作为[变量](#变量表)标记)  | 变量展开 |
 | `setDefaultModel`          | `sdm`   | `SetDefaultModel`         | `CONFIG`    | 4.0 Beta       | 设置默认模型                   | [模型](#模型)                              | 设置默认使用的模型 |
-| `setTopP`                  | `stp`   | `SetTopP`                 | `CONFIG`    | 4.0.1 Beta     | 设置Top_P参数                  | 0\~1的浮点数 或`0%`\~`100%`的百分比         | 设置Top_P参数 |
+| `setTopP`                  | `stp`   | `SetTopP`                 | `CONFIG`    | 4.0.1 Beta     | 设置Top_P参数                  | 0\~1的浮点数<br/>或`0%`\~`100%`的百分比    | 设置Top_P参数 |
 | `setMaxTokens`             | `stm`   | `SetMaxTokens`            | `CONFIG`    | 4.0.1 Beta     | 设置最大生成tokens数           | 0\~4096的整数                              | 设置最大生成tokens数 |
 | `getContextTotalLength`    | `gctl`  | `GetContextTotalLength`   | `CONTEXT`   | 4.0.1 Beta     | 获取上下文总长度               | 无                                         | 获取上下文总长度 |
 | `publicSpaceChat`          | `psc`   | `PublicSpaceChat`         | `CHAT`      | 4.0.2.1 Beta   | 公共空间聊天                   | 自然语言输入                                | 公共空间聊天 |
@@ -302,7 +298,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `changeContextBranch`      | `ccb`   | `ChangeContextBranch`     | `CONTEXT`   | 4.1.2.0        | 切换上下文分支                 | 分支名称                                   | 切换上下文分支 |
 | `changePromptBranch`       | `cppb`  | `ChangePromptBranch`      | `PROMPT`    | 4.1.2.0        | 切换提示词分支                 | 分支名称                                   | 切换提示词分支 |
 | `changeConfigBranch`       | `ccfgb` | `ChangeConfigBranch`      | `CONFIG`    | 4.1.2.0        | 切换配置分支                   | 分支名称                                   | 切换配置分支 |
-| `reference`                | `ref`   | `Reference`               | `CHAT`      | 4.1.2.0        | 引用上下文                     | 用户ID                                    | 引用其他用户的上下文并追加到当前上下文 |
+| `reference`                | `ref`   | `Reference`               | `CHAT`      | 4.1.2.0        | 引用上下文                     | @群成员并输入自然语言                       | 引用其他用户的上下文进行生成，并将结果保存到自己的聊天记录中 |
 | `chooseGroupMember`        | `cgm`   | `ChooseGroupMember`       | `OTHER`     | 4.1.2.0        | 抽取群组成员                   | 抽取数量                                   | 抽取群组成员 |
 | `withdraw`                 | `w`     | `Withdraw`                | `CONTEXT`   | 4.2.3.0        | 撤回消息                       | 无                                        | 删除复读机上下文中保存的最新一回合对话 |
 | `recentSpeakingRanking`    | `rsr`   | `RecentSpeakingRanking`   | `OTHER`     | 4.2.3.0        | 最近发言排行                   | 无                                        | 获取群组内最近发言的成员列表 |
@@ -316,10 +312,26 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `varExpandImage`           | `vei`   | `Var_Expand_Image`        | `VAREXPAND` | 4.2.7.0        | 变量展开                       | 渲染模板(使用花括号作为[变量](#变量表)标记)  | 强制使用图片输出 |
 | `setAutoLoadPrompt`        | `salp`  | `SetAutoLoadPrompt`       | `CONFIG`    | 4.3.1.0        | 设置自动加载提示词              | `true`或`false`                           | 设置请求时是否自动加载Prompt |
 | `setAutoSaveContext`       | `sasc`  | `SetAutoSaveContext`      | `CONFIG`    | 4.3.1.0        | 设置自动保存上下文              | `true`或`false`                           | 设置生成完毕后是否自动保存Context |
-| `setRenderTitle`           | `srt`   | `SetRenderTitle`          | `CONFIG`    | 4.3.2.1        | 设置渲染标题                   | 任意文本                                   | 渲染时显示的标题内容 |
-| `setTimezone`              | `stz`   | `SetTimezone`             | `CONFIG`    | 4.3.3.3        | 设置时区                       | 时区名称(如`Asia/Shanghai`)                | 请使用确定的时区名称 |
-| `writeUserProfile`         | `wup`   | `WriteUserProfile`        | `CONFIG`    | 4.3.3.6        | 写入用户人设数据                | 任意文本                                   | 该部分会被嵌入到用户提示词中，告诉AI用户的基础设定 |
-| `setHtmlTemplate`          | `sht`   | `SetHtmlTemplate`         | `CONFIG`    | 4.3.3.6        | 设置HTML模板                   | 预设模板名称                               | 可以用于切换Markdown渲染时使用的HTML模板 |
+| `setRenderTitle`           | `srt`   | `SetRenderTitle`          | `CONFIG`    | 4.3.2.1        | 设置渲染标题                    | 任意文本                                   | 渲染时显示的标题内容 |
+| `setTimezone`              | `stz`   | `SetTimezone`             | `CONFIG`    | 4.3.3.3        | 设置时区                        | 时区名称(如`Asia/Shanghai`)                | 请使用确定的时区名称 |
+| `writeUserProfile`         | `wup`   | `WriteUserProfile`        | `CONFIG`    | 4.3.3.6        | 写入用户人设数据                 | 任意文本                                   | 该部分会被嵌入到用户提示词中，告诉AI用户的基础设定 |
+| `setHtmlTemplate`          | `sht`   | `SetHtmlTemplate`         | `CONFIG`    | 4.3.3.6        | 设置HTML模板                    | 预设模板名称                               | 可以用于切换Markdown渲染时使用的HTML模板 |
+| `setSaveTextOnly`          | `ssto`  | `SetSaveTextOnly`         | `CONFIG`    | 4.3.6.0        | 是否在保存时丢弃除了文本以外的内容 | `true`或`false`                           | 设为`true`可以更快速的完成保存与读取，但模型将无法再获取之前的附加数据 |
+| `textRender`               | `tr`    | `TextRender`              | `Render`    | 4.3.7.0        | Markdown 文本渲染                | Markdown 文本                             | 将 Markdown 文本渲染为图片 |
+| `getModelList`             | `gml`   | `GetModelList`            | `MODEL`     | 4.3.7.4        | 获取模型列表                     | 模型类型(目前只有`chat`)                   | 获取模型列表 |
+| `generatePrompt`           | `gp`    | `GeneratePrompt`          | `MODEL`     | 4.3.7.5        | 生成提示词                       | 角色描述                                  | 生成提示词，并自动保存到用户提示词数据中 |
+| `summarizeAndContract`     | `sac`   | `SummarizeAndContract`    | `CHAT`      | 4.3.7.6        | 摘要并压缩                       | 自定义提示词，可以为空                      | 摘要并压缩对话，并自动删除多余的历史记录 |
+
+PS：`CHAT`类型命令几乎全员支持视觉输入
+由于需要保存上下文，复读机默认会将其下载为Base64编码
+你可以在配置文件中关闭该选项，这会让复读机直接使用QQ传递的临时URL
+适合不保存图片的情况
+
+`MIXED`类型命令同时映射了
+Context、Prompt、Config
+三种数据类型的API
+使用这些命令的时候
+后端会同时收到三个API的请求
 
 ## 相关仓库
-- [Repeater Backend](https://github.com/qeggs-dev/repeater-ai-chatbot-backend)
+- [Repeater Backend](https://github.com/qeggs-dev/repeater-ai-chatbot)

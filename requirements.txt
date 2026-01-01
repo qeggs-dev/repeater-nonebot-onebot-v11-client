@@ -1,6 +1,0 @@
-httpx
-pydantic
-aiofiles
-pyyaml
-orjson
-numpy

@@ -10,7 +10,6 @@ storage/
 /*/.env.dev
 /*/.env.prod
 /*/.gitignore
-/*/pyproject.toml
 /*/README.md
 
 # Windows Folder Metadata Files

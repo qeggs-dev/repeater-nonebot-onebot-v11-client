@@ -32,6 +32,11 @@ DELETE_CONFIG_ROUTE = f"{BACKEND_HOST}:{BACKEND_PORT}/userdata/config/delete"
 DELETE_SUBSESSION_CONFIG_ROUTE = f"{BACKEND_HOST}:{BACKEND_PORT}/config/subsession/delete"
 SET_SUMT_ROUTE = f"{BACKEND_HOST}:{BACKEND_PORT}/sumt/set"
 
+# ==== MODEL API ==== #
+GET_MODEL_UID_LIST = f"{BACKEND_HOST}:{BACKEND_PORT}/model/list"
+GET_MODEL_INFO = f"{BACKEND_HOST}:{BACKEND_PORT}/model/info"
+GET_MODEL_TYPES = f"{BACKEND_HOST}:{BACKEND_PORT}/model/types"
+
 # ==== Download User Data File ==== #
 
 DOWNLOAD_USER_DATA_FILE_ROUTE = f"{BACKEND_HOST}:{BACKEND_PORT}/userdata/file"
@@ -51,7 +56,7 @@ HTML_README_FILE_ROUTE = f"{BACKEND_HOST}:{BACKEND_PORT}/readme.html"
 BALANCE_ROUTE = f"{BACKEND_HOST}:{BACKEND_PORT}/balance_query"
 
 # ==== VARIABLE EXPANSION API ==== #
-VARIABLE_EXPANSION = f"{BACKEND_HOST}:{BACKEND_PORT}/userdata/variable/expand"
+VARIABLE_EXPANSION = f"{BACKEND_HOST}:{BACKEND_PORT}/variable_expand"
 
 # ==== CONFIG ==== #
 HELLO_CONTENT = storage_configs.hello_content

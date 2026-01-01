@@ -5,7 +5,9 @@ from ._assist_func import (
     handle_at_with_name,
     image_to_text
 )
+from ..core_net_configs import storage_configs
 from ._namespace import MessageSource, Namespace
+from ._image_downloader import ImageDownloader
 
 class PersonaInfo:
     def __init__(self, bot: Bot, event: MessageEvent, args: Message | None = None):
@@ -26,6 +28,15 @@ class PersonaInfo:
                 raise ValueError("Is Group, But Group ID is Not Found")
         
         self._superusers: set[int] = set(int(user) for user in self._bot.config.superusers)
+    
+    def __bool__(self) -> bool:
+        for message in self.message:
+            if message.type not in  ["at", "text", "reply"]:
+                return True
+            if message.type == "text":
+                if message.data["text"]:
+                    return True
+        return False
     
     @property
     def is_superuser(self) -> bool:
@@ -63,7 +74,9 @@ class PersonaInfo:
         if self.card:
             return self.card
         else:
-            return self.nickname
+            if self.nickname is not None:
+                return self.nickname
+            return ""
     
     @property
     def age(self) -> int | None:
@@ -189,3 +202,24 @@ class PersonaInfo:
     @property
     def plaintext_message(self) -> str:
         return self.message.extract_plain_text()
+    
+    async def get_images_url(self, base64: bool | None = None) -> list[str]:
+        if base64 is None:
+            base64 = storage_configs.use_base64_visual_input
+        images: list[str] = []
+        if "image" in self.message:
+            async with ImageDownloader(
+                self.message,
+                timeout=storage_configs.download_visual_input_timeout
+            ) as downloader:
+                if base64:
+                    get_image_url = downloader.download_image_to_base64()
+                    async for image_url in get_image_url:
+                        if image_url.data is not None:
+                            images.append(
+                                image_url.data
+                            )
+                else:
+                    for image_url in downloader.get_images():
+                        images.append(image_url["url"])
+        return images

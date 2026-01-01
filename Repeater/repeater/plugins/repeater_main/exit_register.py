@@ -20,6 +20,7 @@ class ExitRegister:
     _async_lock: asyncio.Lock = asyncio.Lock()
     # 存储异常处理函数的字典，键为异常类型和处理函数，值为处理函数
     _exception_processors: dict[tuple[Type[Exception], Callable], Callable] = {}
+    
 
     def __new__(cls):
         # 如果没有实例，则创建实例
@@ -33,6 +34,31 @@ class ExitRegister:
             raise ValueError("Cannot use both lock and async lock")
         self._with_lock = with_lock
         self._with_async_lock = with_async_lock
+        
+        @atexit.register
+        def _exit_handler():
+            """
+            程序退出时调用所有注册的函数
+            
+            使用闭包方法代替成员方法进行函数调用
+            """
+            # 按优先级从高到低遍历处理函数列表
+            for priority in reversed(self._priorities):
+                # 遍历每个优先级的处理函数列表
+                for handler in self._exit_handlers[priority]:
+                    try:
+                        # 调用处理函数
+                        handler()
+                    except Exception as e:
+                        # 如果处理函数抛出异常，则查找对应的异常处理器
+                        index = (type(e), handler)
+                        if index in self._exception_processors:
+                            # 调用异常处理器
+                            self._exception_processors[index](e)
+                        else:
+                            # 如果没有找到对应的异常处理器，则打印异常信息
+                            print(f"[ExitRegister] Exception for unregistered processor: {e}", file=sys.stderr)
+
 
     def register(self, priority: int = 0):
         """装饰器工厂，用于注册函数并指定优先级"""
@@ -82,24 +108,4 @@ class ExitRegister:
             if self._with_async_lock:
                 self._async_lock.release()
         return decorator
-    
-    @atexit.register
-    def _exit_handler(self):
-        """程序退出时调用所有注册的函数"""
-        # 按优先级从高到低遍历处理函数列表
-        for priority in reversed(self._priorities):
-            # 遍历每个优先级的处理函数列表
-            for handler in self._exit_handlers[priority]:
-                try:
-                    # 调用处理函数
-                    handler()
-                except Exception as e:
-                    # 如果处理函数抛出异常，则查找对应的异常处理器
-                    index = (type(e), handler)
-                    if index in self._exception_processors:
-                        # 调用异常处理器
-                        self._exception_processors[index](e)
-                    else:
-                        # 如果没有找到对应的异常处理器，则打印异常信息
-                        print(f"[ExitRegister] Exception for unregistered processor: {e}", file=sys.stderr)
         
