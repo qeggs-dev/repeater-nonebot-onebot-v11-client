@@ -36,7 +36,7 @@ async def handle_reference(bot: Bot, event: MessageEvent, args: Message = Comman
     images: list[str] = await persona_info.get_images_url()
 
     if not persona_info.noself_at_list:
-        await reference.finish("==== Reference ==== \n Please at a member to get reference.")
+        await send_msg.send_error("Please at a member to get reference.")
         
     response = await chat_core.send_message(
         message = message.extract_plain_text().strip(),
