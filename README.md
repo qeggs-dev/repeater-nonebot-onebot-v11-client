@@ -3,7 +3,7 @@
 
 *注：本仓库仅为客户端实现，需要配合[后端项目](#相关仓库)使用*
 
-一个基于[`NoneBot`](https://nonebot.dev/)和[`Repeater Backend`](https://github.com/qeggs-dev/repeater-ai-chatbot-backend)开发的 AI QQ Bot
+一个基于[`NoneBot`](https://nonebot.dev/)和[`Repeater Server`](https://github.com/qeggs-dev/repeater-ai-chatbot)开发的 AI QQ Bot
 **此仓库仅为 Repeater 的 NoneBot OneBot v11 适配客户端**
 
 ---
@@ -334,4 +334,4 @@ Context、Prompt、Config
 后端会同时收到三个API的请求
 
 ## 相关仓库
-- [Repeater Backend](https://github.com/qeggs-dev/repeater-ai-chatbot)
+- [Repeater Server](https://github.com/qeggs-dev/repeater-ai-chatbot)
