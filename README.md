@@ -327,11 +327,10 @@ PS：`CHAT`类型命令几乎全员支持视觉输入
 你可以在配置文件中关闭该选项，这会让复读机直接使用QQ传递的临时URL
 适合不保存图片的情况
 
-`MIXED`类型命令同时映射了
-Context、Prompt、Config
-三种数据类型的API
-使用这些命令的时候
-后端会同时收到三个API的请求
+`MIXED`类型命令是混合型命令
+它的一条命令会执行多条后端请求
+通常，它会从基础功能拼接出高级功能
+或是同时操作多个数据内容
 
 ## 相关仓库
 - [Repeater Server](https://github.com/qeggs-dev/repeater-ai-chatbot)
