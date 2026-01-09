@@ -40,13 +40,16 @@ async def recent_speaking_ranking_handle(bot: Bot, event: MessageEvent, args: Me
         )
         member_speech_count: dict[str, int] = {}
         validation_failure_counter: int = 0
+        total_effective: int = 0
         for message in message_list["messages"]:
             try:
                 event = MessageEvent(**message)
                 member_name = event.sender.card or event.sender.nickname
+                total_effective += 1
             except ValidationError:
                 try:
                     member_name = message["sender"]["card"] or message["sender"]["nickname"]
+                    total_effective += 1
                 except KeyError:
                     validation_failure_counter += 1
                     continue
@@ -60,7 +63,7 @@ async def recent_speaking_ranking_handle(bot: Bot, event: MessageEvent, args: Me
 
         text_list: list[str] = []
         for index, (name, speech_count) in enumerate(sorted_member_speech_count_list, start = 1):
-            text_list.append(f"{index}. {name}: {speech_count}")
+            text_list.append(f"{index}. {name}: {speech_count}({speech_count / total_effective:.2%})")
         text = "\n".join(text_list)
 
         if validation_failure_counter > 0:
