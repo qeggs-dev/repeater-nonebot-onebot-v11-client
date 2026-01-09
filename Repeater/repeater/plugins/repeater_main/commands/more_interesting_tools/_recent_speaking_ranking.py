@@ -18,7 +18,7 @@ recent_speaking_ranking = on_command("recentSpeakingRanking", aliases={"rsr","re
 @recent_speaking_ranking.handle()
 async def recent_speaking_ranking_handle(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
-    send_msg = SendMsg("More.ChooseGroupMember", recent_speaking_ranking, persona_info)
+    send_msg = SendMsg("More.Recent_Speaking_Ranking", recent_speaking_ranking, persona_info)
 
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
