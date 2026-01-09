@@ -319,7 +319,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `setSaveTextOnly`          | `ssto`  | `SetSaveTextOnly`         | `CONFIG`    | 4.3.6.0        | 是否在保存时丢弃除了文本以外的内容 | `true`或`false`                           | 设为`true`可以更快速的完成保存与读取，但模型将无法再获取之前的附加数据 |
 | `textRender`               | `tr`    | `TextRender`              | `Render`    | 4.3.7.0        | Markdown 文本渲染                | Markdown 文本                             | 将 Markdown 文本渲染为图片 |
 | `getModelList`             | `gml`   | `GetModelList`            | `MODEL`     | 4.3.7.4        | 获取模型列表                     | 模型类型(目前只有`chat`)                   | 获取模型列表 |
-| `generatePrompt`           | `gp`    | `GeneratePrompt`          | `MODEL`     | 4.3.7.5        | 生成提示词                       | 角色描述                                  | 生成提示词，并自动保存到用户提示词数据中 |
+| `generatePrompt`           | `gp`    | `GeneratePrompt`          | `MIXED`     | 4.3.7.5        | 生成提示词                       | 角色描述                                  | 生成提示词，并自动保存到用户提示词数据中 |
 | `summarizeAndContract`     | `sac`   | `SummarizeAndContract`    | `CHAT`      | 4.3.7.6        | 摘要并压缩                       | 自定义提示词，可以为空                      | 摘要并压缩对话，并自动删除多余的历史记录 |
 
 PS：`CHAT`类型命令几乎全员支持视觉输入
