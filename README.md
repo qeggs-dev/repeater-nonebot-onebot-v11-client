@@ -332,5 +332,7 @@ PS：`CHAT`类型命令几乎全员支持视觉输入
 通常，它会从基础功能拼接出高级功能
 或是同时操作多个数据内容
 
+---
+
 ## 相关仓库
 - [Repeater Server](https://github.com/qeggs-dev/repeater-ai-chatbot)
