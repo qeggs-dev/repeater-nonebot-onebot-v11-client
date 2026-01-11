@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
 from nonebot.adapters import Bot
 
-from .._clients import ContextCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ContextCore
+from ....assist import PersonaInfo, SendMsg
 
 get_context_total_length = on_command("getContextTotalLength", aliases={"gctl", "get_context_total_length", "Get_Context_Total_Length", "GetContextTotalLength"}, rule=to_me(), block=True)
 

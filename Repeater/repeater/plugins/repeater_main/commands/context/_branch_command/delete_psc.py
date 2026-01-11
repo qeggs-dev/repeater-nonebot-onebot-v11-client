@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ContextCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ContextCore
+from ....assist import PersonaInfo, SendMsg
 
 delete_public_space_context = on_command("deletePublicSpaceContext", aliases={"dpsc", "delete_public_space_context", "Delete_Public_Space_Context", "DeletePublicSpaceContext"}, rule=to_me(), block=True)
 
@@ -22,5 +22,5 @@ async def handle_delete_public_space_context(bot: Bot, event: MessageEvent, args
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
     else:
-        response = await context_core.delete_context()
+        response = await context_core.delete()
         await send_msg.send_response(response, f"Delete Public Space Context from {persona_info.namespace_str}")

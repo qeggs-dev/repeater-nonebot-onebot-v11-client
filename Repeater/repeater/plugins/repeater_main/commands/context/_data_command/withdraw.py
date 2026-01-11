@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
 from nonebot.adapters import Bot
 
-from .._clients import ContextCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ContextCore
+from ....assist import PersonaInfo, SendMsg
 
 withdraw = on_command("withdraw", aliases={"w", "Withdraw"}, rule=to_me(), block=True)
 
