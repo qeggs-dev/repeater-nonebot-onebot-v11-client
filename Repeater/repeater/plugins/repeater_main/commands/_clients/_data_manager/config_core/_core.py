@@ -1,26 +1,28 @@
 import httpx
-from ....logger import logger as base_logger
+from .....logger import logger as base_logger
 from typing import (
     Optional,
     Union,
     Any,
 )
 
-from ....assist import Response, PersonaInfo
+from .....assist import Response, PersonaInfo
 # 服务端配置
-from ....core_net_configs import *
-from ....exit_register import ExitRegister
+from .....core_net_configs import *
+from .....exit_register import ExitRegister
+
+from .._base_user_data_core import UserDataCore
 
 exit_register = ExitRegister()
 logger = base_logger.bind(module = "Config.Core")
 
-class ConfigCore:
+class ConfigCore(UserDataCore):
     _httpx_client = httpx.AsyncClient(
         timeout = storage_configs.server_api_timeout.config
     )
 
     def __init__(self, info: PersonaInfo):
-        self._info = info
+        super().__init__(info, "config")
     
     # region set config
     async def set_config(self, config_key: str, value: Any, item_type: str = "auto") -> Response[Any | None]:
@@ -67,23 +69,6 @@ class ConfigCore:
         )
     # endregion
 
-    # region change config
-    async def change_config_branch(self, branch_id: str) -> Response[None]:
-        logger.info("Change config: {branch_id}", branch_id=branch_id)
-        response = await self._httpx_client.put(
-            url = f"{CHANGE_CONFIG_BRANCH_ROUTE}/{self._info.namespace_str}",
-            data = {
-                "new_branch_id": branch_id
-            }
-        )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
-    # endregion
-
-
     # region get config
     async def get_config(self) -> Response[Any | None]:
         logger.info("Get {user} configs", user=self._info.namespace_str)
@@ -113,22 +98,4 @@ class ConfigCore:
             text = response.text,
             data = None
         )
-    # endregion
-
-    # region delete
-    async def delete_config(self) -> Response[None]:
-        logger.info("Delete config")
-        response = await self._httpx_client.delete(
-            f"{DELETE_CONFIG_ROUTE}/{self._info.namespace_str}"
-        )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
-    # endregion
-
-    # region close
-    def close(self) -> None:
-        self._httpx_client.aclose()
     # endregion

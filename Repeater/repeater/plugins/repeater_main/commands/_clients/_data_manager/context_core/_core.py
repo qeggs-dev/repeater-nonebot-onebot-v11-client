@@ -5,23 +5,24 @@ from typing import (
     Union
 )
 
-from ....core_net_configs import *
-from ....assist import PersonaInfo, Response
-from ....logger import logger as base_logger
+from .....core_net_configs import *
+from .....assist import PersonaInfo, Response
+from .....logger import logger as base_logger
 from ._response import (
     WithdrawResponse,
     ContextTotalLengthResponse
 )
+from .._base_user_data_core import UserDataCore
 
 logger = base_logger.bind(module = "Context.Core")
 
-class ContextCore:
+class ContextCore(UserDataCore):
     _httpx_client = httpx.AsyncClient(
         timeout = storage_configs.server_api_timeout.context
     )
 
     def __init__(self, info: PersonaInfo):
-        self._info = info
+        super().__init__(info, "context")
     
     # region inject context
     async def inject_context(self, text: str, role: str) -> Response[None]:
@@ -57,35 +58,8 @@ class ContextCore:
             ) if response.status_code == 200 else None
         )
     # endregion
-    # region change subsession    
-    async def change_context_branch(self, new_branch_id: str) -> Response[None]:
-        logger.info("Changing context branch to {new_branch_id}", new_branch_id = new_branch_id)
-        response = await self._httpx_client.put(
-            f"{CHANGE_CONTEXT_BRANCH_ROUTE}/{self._info.namespace_str}",
-            data={
-                "new_branch_id": new_branch_id
-            }
-        )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
-    # endregion
-    
-    # region delete
-    async def delete_context(self) -> Response[None]:
-        logger.info("Deleting context")
-        response = await self._httpx_client.delete(
-            f"{DELETE_CONTEXT_ROUTE}/{self._info.namespace_str}"
-        )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
-    # endregion
-    
+
+    # region get context total length
     async def get_context_total_length(self) -> Response[ContextTotalLengthResponse | None]:
         logger.info("Getting context total length")
         response = await self._httpx_client.get(
@@ -98,3 +72,4 @@ class ContextCore:
                 **response.json()
             ) if response.status_code == 200 else None
         )
+    # endregion
