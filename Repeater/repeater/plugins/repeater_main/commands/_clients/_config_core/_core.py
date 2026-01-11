@@ -23,7 +23,7 @@ class ConfigCore:
         self._info = info
     
     # region set config
-    async def set_config(self, config_key: str, value: Any, item_type: str = "auto") -> Response[Any]:
+    async def set_config(self, config_key: str, value: Any, item_type: str = "auto") -> Response[Any | None]:
         TYPES = {
             int: "int",
             float: "float",
@@ -81,11 +81,12 @@ class ConfigCore:
             text = response.text,
             data = None
         )
+    # endregion
 
 
     # region get config
-    async def get_config(self, config_key: str) -> Response[Any]:
-        logger.info("Get config: {config_key}", config_key=config_key)
+    async def get_config(self) -> Response[Any | None]:
+        logger.info("Get {user} configs", user=self._info.namespace_str)
         response = await self._httpx_client.get(
             f"{GET_CONFIG_ROUTE}/{self._info.namespace_str}"
         )
@@ -112,6 +113,7 @@ class ConfigCore:
             text = response.text,
             data = None
         )
+    # endregion
 
     # region delete
     async def delete_config(self) -> Response[None]:

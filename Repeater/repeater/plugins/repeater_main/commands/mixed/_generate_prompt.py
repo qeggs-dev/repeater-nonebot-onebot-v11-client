@@ -9,14 +9,14 @@ from nonebot import logger
 from .._clients import PromptCore, ChatCore
 from ...assist import PersonaInfo, SendMsg
 from ...storage import async_text_storage
-from ._default_meta_prompt import META_PROMPT
+from ..prompt._default_meta_prompt import META_PROMPT
 
 generate_prompt = on_command("generatePrompt", aliases={"gp", "generate_prompt", "Generate_Prompt", "GeneratePrompt"}, rule=to_me(), block=True)
 
 @generate_prompt.handle()
 async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    send_msg = SendMsg("Prompt.Generater", generate_prompt, persona_info)
+    send_msg = SendMsg("Mixed.Prompt_Generater", generate_prompt, persona_info)
 
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
