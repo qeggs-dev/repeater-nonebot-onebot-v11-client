@@ -8,7 +8,7 @@ from nonebot.adapters import Bot
 from ..._clients import ContextCore
 from ....assist import PersonaInfo, SendMsg
 
-context_branch_binding = on_command("contextBranchBinding", aliases={"cbc", "context_branch_binding", "Context_Branch_Binding", "ContextBranchBinding"}, rule=to_me(), block=True)
+context_branch_binding = on_command("contextBranchBinding", aliases={"cbb", "context_branch_binding", "Context_Branch_Binding", "ContextBranchBinding"}, rule=to_me(), block=True)
 
 @context_branch_binding.handle()
 async def handle_context_branch_binding(bot: Bot, event: MessageEvent, args: Message = CommandArg()):

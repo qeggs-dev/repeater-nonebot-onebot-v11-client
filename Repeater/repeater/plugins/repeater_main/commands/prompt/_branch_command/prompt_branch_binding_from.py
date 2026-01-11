@@ -8,7 +8,7 @@ from nonebot.adapters import Bot
 from ..._clients import PromptCore
 from ....assist import PersonaInfo, SendMsg
 
-prompt_branch_binding_from = on_command("promptBranchBindingFrom", aliases={"pbcf", "prompt_branch_binding_from", "Prompt_Branch_Binding_From", "PromptBranchBindingFrom"}, rule=to_me(), block=True)
+prompt_branch_binding_from = on_command("promptBranchBindingFrom", aliases={"pbbf", "prompt_branch_binding_from", "Prompt_Branch_Binding_From", "PromptBranchBindingFrom"}, rule=to_me(), block=True)
 
 @prompt_branch_binding_from.handle()
 async def handle_prompt_branch_binding_from(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
