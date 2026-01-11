@@ -73,10 +73,10 @@ class UserDataCore(ABC):
         )
     # endregion
 
-    # region binding
-    async def binding(self, dst_branch_id: str) -> Response[None]:
+    # region bind
+    async def bind(self, dst_branch_id: str) -> Response[None]:
         response = await self._httpx_client.post(
-            f"/userdata/{self._branch_id}/binding/{self._info.namespace_str}",
+            f"/userdata/{self._branch_id}/bind/{self._info.namespace_str}",
             data={
                 "dst_branch_id": dst_branch_id
             }
@@ -88,10 +88,10 @@ class UserDataCore(ABC):
         )
     # endregion
 
-    # region binding from
-    async def binding_from(self, src_branch_id: str) -> Response[None]:
+    # region bind from
+    async def bind_from(self, src_branch_id: str) -> Response[None]:
         response = await self._httpx_client.post(
-            f"/userdata/{self._branch_id}/binding_from/{self._info.namespace_str}",
+            f"/userdata/{self._branch_id}/bind_from/{self._info.namespace_str}",
             data={
                 "src_branch_id": src_branch_id
             }
