@@ -9,7 +9,7 @@ from nonebot import logger
 from .._clients import PromptCore, ChatCore
 from ...assist import PersonaInfo, SendMsg
 from ...storage import async_text_storage
-from ..prompt._default_meta_prompt import META_PROMPT
+from ._default_meta_prompt import META_PROMPT
 
 generate_prompt = on_command("generatePrompt", aliases={"gp", "generate_prompt", "Generate_Prompt", "GeneratePrompt"}, rule=to_me(), block=True)
 
