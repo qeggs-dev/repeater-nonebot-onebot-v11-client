@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 del_config = on_command("delConfig", aliases={"dcfg", "delete_config", "Delete_Config", "DeleteConfig"}, rule=to_me(), block=True)
 
@@ -22,5 +22,5 @@ async def handle_del_config(bot: Bot, event: MessageEvent):
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
     else:
-        response = await config_core.delete_config()
+        response = await config_core.delete()
         await send_msg.send_response(response, f"Delete Config {persona_info.namespace_str}")

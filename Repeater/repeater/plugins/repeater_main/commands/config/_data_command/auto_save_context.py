@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg, str_to_bool
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg, str_to_bool
 
 set_auto_save_context = on_command("setAutoSaveContext", aliases={"sasc", "set_auto_save_context", "Set_Auto_Save_Context", "SetAutoSaveContext"}, rule=to_me(), block=True)
 

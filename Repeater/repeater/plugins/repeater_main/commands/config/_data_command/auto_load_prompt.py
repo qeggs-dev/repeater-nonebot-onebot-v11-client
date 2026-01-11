@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg, str_to_bool
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg, str_to_bool
 
 set_auto_load_prompt = on_command("setAutoLoadPrompt", aliases={"salp", "set_auto_load_prompt", "Set_Auto_Load_Prompt", "SetAutoLoadPrompt"}, rule=to_me(), block=True)
 

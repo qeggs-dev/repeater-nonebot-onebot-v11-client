@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 set_render_title = on_command("setRenderTitle", aliases={"srt", "set_render_title", "Set_Render_Title", "SetRenderTitle"}, rule=to_me(), block=True)
 

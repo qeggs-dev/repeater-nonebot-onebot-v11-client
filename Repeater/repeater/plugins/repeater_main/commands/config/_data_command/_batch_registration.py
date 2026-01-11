@@ -9,8 +9,8 @@ from nonebot.adapters import Bot
 from dataclasses import dataclass, field as dataclass_field
 from typing import Callable, Type, Any
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 @dataclass
 class CommandHandler:

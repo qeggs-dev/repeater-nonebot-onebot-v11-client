@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 set_presence_penalty = on_command("setPresencePenalty", aliases={"spp", "set_presence_penalty", "Set_Presence_Penalty", "SetPresencePpenalty"}, rule=to_me(), block=True)
 

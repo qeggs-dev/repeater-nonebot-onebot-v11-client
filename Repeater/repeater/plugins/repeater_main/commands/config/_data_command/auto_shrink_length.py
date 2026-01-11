@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 set_auto_shrink_length = on_command("setAutoShrinkLength", aliases={"sasl", "set_auto_shrink_length", "Set_Auto_Shrink_Length", "SetAutoShrinkLength"}, rule=to_me(), block=True)
 

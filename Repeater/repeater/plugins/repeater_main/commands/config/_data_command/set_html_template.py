@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 set_html_template = on_command("setHtmlTemplate", aliases={"sht", "set_html_template", "Set_Html_Template", "SetHtmlTemplate"}, rule=to_me(), block=True)
 

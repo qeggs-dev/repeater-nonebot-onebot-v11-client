@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg, str_to_bool
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg, str_to_bool
 
 write_user_profile = on_command("writeUserProfile", aliases={"wup", "write_user_profile", "Write_User_Profile", "WriteUserProfile"}, rule=to_me(), block=True)
 

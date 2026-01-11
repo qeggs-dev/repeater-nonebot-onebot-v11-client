@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 change_default_personality = on_command("changeDefaultPersonality", aliases={"cdp", "change_default_personality", "Change_Default_Personality", "ChangeDefaultPersonality"}, rule=to_me(), block=True)
 

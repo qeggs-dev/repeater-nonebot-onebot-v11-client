@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 set_default_model_type = on_command("setDefaultModel", aliases={"sdm", "set_default_model", "Set_Default_Model", "SetDefaultModel"}, rule=to_me(), block=True)
 

@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 set_render_style = on_command("setRenderStyle", aliases={"srs", "set_render_style", "Set_Render_Style", "SetRenderStyle"}, rule=to_me(), block=True)
 
