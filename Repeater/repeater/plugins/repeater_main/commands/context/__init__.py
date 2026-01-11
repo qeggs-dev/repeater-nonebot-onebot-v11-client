@@ -8,6 +8,7 @@ from ._branch_command.context_branch_clone import handle_context_branch_clone
 from ._branch_command.context_branch_clone_from import handle_context_branch_clone_from
 from ._branch_command.context_branch_binding import handle_context_branch_binding
 from ._branch_command.context_branch_binding_from import handle_context_branch_binding_from
+from ._branch_command.context_branch_info import handle_context_branch_info
 
 __all__ = [
     "handle_delete_context",
@@ -19,4 +20,5 @@ __all__ = [
     "handle_context_branch_clone_from",
     "handle_context_branch_binding",
     "handle_context_branch_binding_from",
+    "handle_context_branch_info",
 ]

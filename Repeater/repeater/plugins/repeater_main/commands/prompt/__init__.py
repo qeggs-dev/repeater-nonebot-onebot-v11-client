@@ -6,6 +6,7 @@ from ._branch_command.prompt_branch_clone import handle_prompt_branch_clone
 from ._branch_command.prompt_branch_clone_from import handle_prompt_branch_clone_from
 from ._branch_command.prompt_branch_binding import handle_prompt_branch_binding
 from ._branch_command.prompt_branch_binding_from import handle_prompt_branch_binding_from
+from ._branch_command.prompt_branch_info import handle_prompt_branch_info
 
 __all__ = [
     "handle_delete_prompt",
@@ -15,4 +16,5 @@ __all__ = [
     "handle_prompt_branch_clone_from",
     "handle_prompt_branch_binding",
     "handle_prompt_branch_binding_from",
+    "handle_prompt_branch_info",
 ]
