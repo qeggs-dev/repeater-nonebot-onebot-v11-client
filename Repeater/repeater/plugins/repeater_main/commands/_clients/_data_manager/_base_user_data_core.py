@@ -103,7 +103,7 @@ class UserDataCore(ABC):
         )
     # endregion
 
-    async def get_branch_info(self) -> Response[BranchInfo]:
+    async def branch_info(self) -> Response[BranchInfo]:
         response = await self._httpx_client.get(
             f"/userdata/{self._branch_id}"
         )
