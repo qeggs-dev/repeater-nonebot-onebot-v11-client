@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
 from nonebot.adapters import Bot
 
-from .._clients import PromptCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import PromptCore
+from ....assist import PersonaInfo, SendMsg
 
 setprompt = on_command("setPrompt", aliases={"sp", "set_prompt", "Set_Prompt", "SetPrompt"}, rule=to_me(), block=True)
 

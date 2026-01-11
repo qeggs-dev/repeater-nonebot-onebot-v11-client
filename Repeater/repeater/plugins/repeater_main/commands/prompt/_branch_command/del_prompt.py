@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
 from nonebot.adapters import Bot
 
-from .._clients import PromptCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import PromptCore
+from ....assist import PersonaInfo, SendMsg
 
 delprompt = on_command("deletePrompt", aliases={"dp", "delete_prompt", "Delete_Prompt", "DeletePrompt"}, rule=to_me(), block=True)
 
