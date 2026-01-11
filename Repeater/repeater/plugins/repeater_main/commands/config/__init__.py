@@ -19,8 +19,8 @@ from ._branch_command.del_config import handle_del_config
 from ._branch_command.change_config_branch import handle_change_config_branch
 from ._branch_command.config_branch_clone import handle_config_branch_clone
 from ._branch_command.config_branch_clone_from import handle_config_branch_clone_from
-from ._branch_command.config_branch_binding import handle_config_branch_binding
-from ._branch_command.config_branch_binding_from import handle_config_branch_binding_from
+from ._branch_command.config_branch_bind import handle_config_branch_bind
+from ._branch_command.config_branch_bind_from import handle_config_branch_bind_from
 from ._branch_command.config_branch_info import handle_config_branch_info
 
 __all__ = [
@@ -44,7 +44,7 @@ __all__ = [
     "handle_write_user_profile",
     "handle_config_branch_clone",
     "handle_config_branch_clone_from",
-    "handle_config_branch_binding",
-    "handle_config_branch_binding_from",
+    "handle_config_branch_bind",
+    "handle_config_branch_bind_from",
     "handle_config_branch_info",
 ]

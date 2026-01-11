@@ -8,12 +8,12 @@ from nonebot.adapters import Bot
 from ..._clients import ContextCore
 from ....assist import PersonaInfo, SendMsg
 
-context_branch_binding_from = on_command("contextBranchBindingFrom", aliases={"cbbf", "context_branch_binding_from", "Context_Branch_Binding_From", "ContextBranchBindingFrom"}, rule=to_me(), block=True)
+context_branch_bind = on_command("contextBranchBind", aliases={"cbb", "context_branch_bind", "Context_Branch_Bind", "ContextBranchBind"}, rule=to_me(), block=True)
 
-@context_branch_binding_from.handle()
-async def handle_context_branch_binding_from(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
+@context_branch_bind.handle()
+async def handle_context_branch_bind(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    send_msg = SendMsg("Context.Context_Branch_Binding_From", context_branch_binding_from, persona_info)
+    send_msg = SendMsg("Context.Context_Branch_Bind", context_branch_bind, persona_info)
 
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
@@ -24,5 +24,5 @@ async def handle_context_branch_binding_from(bot: Bot, event: MessageEvent, args
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
     else:
-        response = await context_core.binding_from(msg)
-        await send_msg.send_response(response, f"Binding Context Branch from {msg}")
+        response = await context_core.bind(msg)
+        await send_msg.send_response(response, f"Bind Context Branch to {msg}")

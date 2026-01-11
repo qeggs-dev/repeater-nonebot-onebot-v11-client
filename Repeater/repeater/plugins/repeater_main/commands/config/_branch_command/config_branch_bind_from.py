@@ -8,12 +8,12 @@ from nonebot.adapters import Bot
 from ..._clients import ConfigCore
 from ....assist import PersonaInfo, SendMsg
 
-config_branch_binding = on_command("configBranchBinding", aliases={"cfgbb", "config_branch_binding", "Config_Branch_Binding", "ConfigBranchBinding"}, rule=to_me(), block=True)
+config_branch_bind_from = on_command("configBranchBindFrom", aliases={"cfgbbf", "config_branch_bind_from", "Config_Branch_Bind_From", "ConfigBranchBindFrom"}, rule=to_me(), block=True)
 
-@config_branch_binding.handle()
-async def handle_config_branch_binding(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
+@config_branch_bind_from.handle()
+async def handle_config_branch_bind_from(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    send_msg = SendMsg("Config.Config_Branch_Binding", config_branch_binding, persona_info)
+    send_msg = SendMsg("Config.Config_Branch_Bind_From", config_branch_bind_from, persona_info)
 
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
@@ -24,5 +24,5 @@ async def handle_config_branch_binding(bot: Bot, event: MessageEvent, args: Mess
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
     else:
-        response = await config_core.binding(msg)
-        await send_msg.send_response(response, f"Binding Config Branch to {msg}")
+        response = await config_core.bind_from(msg)
+        await send_msg.send_response(response, f"Bind Config Branch from {msg}")

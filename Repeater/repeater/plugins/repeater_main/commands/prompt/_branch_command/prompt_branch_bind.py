@@ -8,12 +8,12 @@ from nonebot.adapters import Bot
 from ..._clients import PromptCore
 from ....assist import PersonaInfo, SendMsg
 
-prompt_branch_binding = on_command("promptBranchBinding", aliases={"pbb", "prompt_branch_binding", "Prompt_Branch_Binding", "PromptBranchBinding"}, rule=to_me(), block=True)
+prompt_branch_bind = on_command("promptBranchBind", aliases={"pbb", "prompt_branch_bind", "Prompt_Branch_Bind", "PromptBranchBind"}, rule=to_me(), block=True)
 
-@prompt_branch_binding.handle()
-async def handle_prompt_branch_binding(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
+@prompt_branch_bind.handle()
+async def handle_prompt_branch_bind(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot=bot, event=event, args=args)
-    send_msg = SendMsg("Prompt.Prompt_Branch_Binding", prompt_branch_binding, persona_info)
+    send_msg = SendMsg("Prompt.Prompt_Branch_Bind", prompt_branch_bind, persona_info)
 
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
@@ -24,5 +24,5 @@ async def handle_prompt_branch_binding(bot: Bot, event: MessageEvent, args: Mess
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
     else:
-        response = await prompt_core.binding(msg)
-        await send_msg.send_response(response, f"Binding Prompt Branch to {msg}")
+        response = await prompt_core.bind(msg)
+        await send_msg.send_response(response, f"Bind Prompt Branch to {msg}")
