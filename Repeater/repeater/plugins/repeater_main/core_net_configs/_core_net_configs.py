@@ -8,7 +8,7 @@ BACKEND_PORT = net_config.backend_port
 BASE_URL = f"{BACKEND_HOST}:{BACKEND_PORT}"
 
 # ==== CHAT API ==== #
-CHAT_ROUTE = "/chat/completion"
+CHAT_ROUTE = f"{BASE_URL}/chat/completion"
 NPCHAT_ROUTE = f"{BASE_URL}/chat/completion/noprompt"
 
 # ==== CONTEXT API ==== #
