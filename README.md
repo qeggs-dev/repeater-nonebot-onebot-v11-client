@@ -327,12 +327,12 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `promptBranchCloneFrom`    | `pbcf`   | `PromptBranchCloneFrom`   | `PROMPT`    | 4.3.9.1        | 从分支复制提示词                 | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
 | `configBranchClone`        | `cfgbc`  | `ConfigBranchClone`       | `CONFIG`    | 4.3.9.1        | 复制配置分支                     | 目标分支名称                               | 将当前活动分支复制到一个新的分支下 |
 | `configBranchCloneFrom`    | `cfgbcf` | `ConfigBranchCloneFrom`   | `CONFIG`    | 4.3.9.1        | 从分支复制配置                   | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
-| `contextBranchBind`     | `cbb`    | `ContextBranchBind`    | `CONTEXT`   | 4.3.9.1        | 绑定上下文分支                   | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
-| `contextBranchBindFrom` | `cbbf`   | `ContextBranchBindFrom`| `CONTEXT`   | 4.3.9.1        | 从分支绑定上下文                 | 源分支名称                                 | 删除当前活动分支的内容，并作为指定分支的硬链接 |
-| `promptBranchBind`      | `pbb`    | `PromptBranchBind`     | `PROMPT`    | 4.3.9.1        | 绑定提示词分支                   | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
-| `promptBranchBindFrom`  | `pbbf`   | `PromptBranchBindFrom` | `PROMPT`    | 4.3.9.1        | 从分支绑定提示词                 | 源分支名称                                 | 删除当前活动分支的内容，并作为指定分支的硬链接 |
-| `configBranchBind`      | `cfgbb`  | `ConfigBranchBind`     | `CONFIG`    | 4.3.9.1        | 绑定配置分支                     | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
-| `configBranchBindFrom`  | `cfgbbf` | `ConfigBranchBindFrom` | `CONFIG`    | 4.3.9.1        | 从分支绑定配置                   | 源分支名称                                 | 删除当前活动分支的内容，并作为指定分支的硬链接 |
+| `contextBranchBind`        | `cbb`    | `ContextBranchBind`       | `CONTEXT`   | 4.3.9.1        | 绑定上下文分支                   | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
+| `contextBranchBindFrom`    | `cbbf`   | `ContextBranchBindFrom`   | `CONTEXT`   | 4.3.9.1        | 从分支绑定上下文                 | 源分支名称                                 | 删除当前活动分支的内容，并作为指定分支的硬链接 |
+| `promptBranchBind`         | `pbb`    | `PromptBranchBind`        | `PROMPT`    | 4.3.9.1        | 绑定提示词分支                   | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
+| `promptBranchBindFrom`     | `pbbf`   | `PromptBranchBindFrom`    | `PROMPT`    | 4.3.9.1        | 从分支绑定提示词                 | 源分支名称                                 | 删除当前活动分支的内容，并作为指定分支的硬链接 |
+| `configBranchBind`         | `cfgbb`  | `ConfigBranchBind`        | `CONFIG`    | 4.3.9.1        | 绑定配置分支                     | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
+| `configBranchBindFrom`     | `cfgbbf` | `ConfigBranchBindFrom`    | `CONFIG`    | 4.3.9.1        | 从分支绑定配置                   | 源分支名称                                 | 删除当前活动分支的内容，并作为指定分支的硬链接 |
 | `contextBranchInfo`        | `cbi`    | `ContextBranchInfo`       | `CONTEXT`   | 4.3.9.1        | 获取分支元数据信息               | 无                                         | 获取当前活动分支的元数据信息 |
 | `promptBranchInfo`         | `pbi`    | `PromptBranchInfo`        | `PROMPT`    | 4.3.9.1        | 获取分支元数据信息               | 无                                         | 获取当前活动分支的元数据信息 |
 | `configBranchInfo`         | `cfgbi`  | `ConfigBranchInfo`        | `CONFIG`    | 4.3.9.1        | 获取分支元数据信息               | 无                                         | 获取当前活动分支的元数据信息 |
