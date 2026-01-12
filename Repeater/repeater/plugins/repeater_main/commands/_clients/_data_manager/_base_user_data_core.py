@@ -19,7 +19,7 @@ class UserDataCore(ABC):
     # region change subsession
     async def change_branch(self, new_branch_id: str) -> Response[None]:
         response = await self._httpx_client.put(
-            f"/userdata/{self._branch_id}/change/{self._info.namespace_str}",
+            f"{BASE_URL}/userdata/{self._branch_id}/change/{self._info.namespace_str}",
             data={
                 "new_branch_id": new_branch_id
             }
@@ -34,7 +34,7 @@ class UserDataCore(ABC):
     # region Delete
     async def delete(self) -> Response[None]:
         response = await self._httpx_client.delete(
-            f"/userdata/{self._branch_id}/delete/{self._info.namespace_str}"
+            f"{BASE_URL}/userdata/{self._branch_id}/delete/{self._info.namespace_str}"
         )
         return Response(
             code = response.status_code,
@@ -46,7 +46,7 @@ class UserDataCore(ABC):
     # region clone
     async def clone(self, dst_branch_id: str) -> Response[None]:
         response = await self._httpx_client.post(
-            f"/userdata/{self._branch_id}/clone/{self._info.namespace_str}",
+            f"{BASE_URL}/userdata/{self._branch_id}/clone/{self._info.namespace_str}",
             data={
                 "dst_branch_id": dst_branch_id
             }
@@ -61,7 +61,7 @@ class UserDataCore(ABC):
     # region clone from
     async def clone_from(self, src_branch_id: str) -> Response[None]:
         response = await self._httpx_client.post(
-            f"/userdata/{self._branch_id}/clone_from/{self._info.namespace_str}",
+            f"{BASE_URL}/userdata/{self._branch_id}/clone_from/{self._info.namespace_str}",
             data={
                 "src_branch_id": src_branch_id
             }
@@ -76,7 +76,7 @@ class UserDataCore(ABC):
     # region bind
     async def bind(self, dst_branch_id: str) -> Response[None]:
         response = await self._httpx_client.post(
-            f"/userdata/{self._branch_id}/bind/{self._info.namespace_str}",
+            f"{BASE_URL}/userdata/{self._branch_id}/bind/{self._info.namespace_str}",
             data={
                 "dst_branch_id": dst_branch_id
             }
@@ -91,7 +91,7 @@ class UserDataCore(ABC):
     # region bind from
     async def bind_from(self, src_branch_id: str) -> Response[None]:
         response = await self._httpx_client.post(
-            f"/userdata/{self._branch_id}/bind_from/{self._info.namespace_str}",
+            f"{BASE_URL}/userdata/{self._branch_id}/bind_from/{self._info.namespace_str}",
             data={
                 "src_branch_id": src_branch_id
             }
@@ -105,7 +105,7 @@ class UserDataCore(ABC):
 
     async def branch_info(self) -> Response[BranchInfo]:
         response = await self._httpx_client.get(
-            f"/userdata/{self._branch_id}"
+            f"{BASE_URL}/userdata/{self._branch_id}"
         )
         try:
             data = response.json()
