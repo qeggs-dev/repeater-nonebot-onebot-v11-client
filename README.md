@@ -271,7 +271,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 ## 命令表
 
 | Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
-| :---                       | :---     | :---                      | :---:       | :---:          | :---:                         | :---:                                     | :---:   |
+| :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
 | ` `                        | ` `      | ` `                       | `CHAT`      | 4.0 Beta       | 默认命令，自然语言对话          | 自然语言输入                               | 当@复读机的时候，如果没有命中其他命令就会执行这个，并把所有内容作为输入 |
 | `chat`                     | `c`      | `Chat`                    | `CHAT`      | 4.0 Beta       | 与机器人对话                   | 自然语言输入                               | 强制模型用文字输出，绕过Markdown渲染检查 |
 | `keepAnswering`            | `ka`     | `KeepAnswering`           | `CHAT`      | 4.0 Beta       | 持续对话(常规)                 | 无                                        | 无须输入，AI再次回复 |
