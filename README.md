@@ -321,12 +321,12 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `getModelList`             | `gml`    | `GetModelList`            | `MODEL`     | 4.3.7.4        | 获取模型列表                     | 模型类型(目前只有`chat`)                   | 获取模型列表 |
 | `generatePrompt`           | `gp`     | `GeneratePrompt`          | `MIXED`     | 4.3.7.5        | 生成提示词                       | 角色描述                                  | 生成提示词，并自动保存到用户提示词数据中 |
 | `summarizeAndContract`     | `sac`    | `SummarizeAndContract`    | `CHAT`      | 4.3.7.6        | 摘要并压缩                       | 自定义提示词，可以为空                      | 摘要并压缩对话，并自动删除多余的历史记录 |
-| `contextBranchClone`       | `cbc`    | `ContextBranchClone`      | `CONTEXT`   | 4.3.9.1        | 复制上下文分支                   | 目标分支名称                               | 将当前活动分支复制到一个新的分支下 |
-| `contextBranchCloneFrom`   | `cbcf`   | `ContextBranchCloneFrom`  | `CONTEXT`   | 4.3.9.1        | 从分支复制上下文                 | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
-| `promptBranchClone`        | `pbc`    | `PromptBranchClone`       | `PROMPT`    | 4.3.9.1        | 复制提示词分支                   | 目标分支名称                               | 将当前活动分支复制到一个新的分支下 |
-| `promptBranchCloneFrom`    | `pbcf`   | `PromptBranchCloneFrom`   | `PROMPT`    | 4.3.9.1        | 从分支复制提示词                 | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
-| `configBranchClone`        | `cfgbc`  | `ConfigBranchClone`       | `CONFIG`    | 4.3.9.1        | 复制配置分支                     | 目标分支名称                               | 将当前活动分支复制到一个新的分支下 |
-| `configBranchCloneFrom`    | `cfgbcf` | `ConfigBranchCloneFrom`   | `CONFIG`    | 4.3.9.1        | 从分支复制配置                   | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
+| `contextBranchClone`       | `cbc`    | `ContextBranchClone`      | `CONTEXT`   | 4.3.9.1        | 克隆上下文分支                   | 目标分支名称                               | 将当前活动分支复制到一个新的分支下 |
+| `contextBranchCloneFrom`   | `cbcf`   | `ContextBranchCloneFrom`  | `CONTEXT`   | 4.3.9.1        | 从分支克隆上下文                 | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
+| `promptBranchClone`        | `pbc`    | `PromptBranchClone`       | `PROMPT`    | 4.3.9.1        | 克隆提示词分支                   | 目标分支名称                               | 将当前活动分支复制到一个新的分支下 |
+| `promptBranchCloneFrom`    | `pbcf`   | `PromptBranchCloneFrom`   | `PROMPT`    | 4.3.9.1        | 从分支克隆提示词                 | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
+| `configBranchClone`        | `cfgbc`  | `ConfigBranchClone`       | `CONFIG`    | 4.3.9.1        | 克隆配置分支                     | 目标分支名称                               | 将当前活动分支复制到一个新的分支下 |
+| `configBranchCloneFrom`    | `cfgbcf` | `ConfigBranchCloneFrom`   | `CONFIG`    | 4.3.9.1        | 从分支克隆配置                   | 源分支名称                                 | 将指定分支复制到当前活动分支下 |
 | `contextBranchBind`        | `cbb`    | `ContextBranchBind`       | `CONTEXT`   | 4.3.9.1        | 绑定上下文分支                   | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
 | `contextBranchBindFrom`    | `cbbf`   | `ContextBranchBindFrom`   | `CONTEXT`   | 4.3.9.1        | 从分支绑定上下文                 | 源分支名称                                 | 删除当前活动分支的内容，并作为指定分支的硬链接 |
 | `promptBranchBind`         | `pbb`    | `PromptBranchBind`        | `PROMPT`    | 4.3.9.1        | 绑定提示词分支                   | 目标分支名称                               | 创建一个新的分支，使其硬链接到当前活动分支 |
@@ -336,6 +336,10 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `contextBranchInfo`        | `cbi`    | `ContextBranchInfo`       | `CONTEXT`   | 4.3.9.1        | 获取分支元数据信息               | 无                                         | 获取当前活动分支的元数据信息 |
 | `promptBranchInfo`         | `pbi`    | `PromptBranchInfo`        | `PROMPT`    | 4.3.9.1        | 获取分支元数据信息               | 无                                         | 获取当前活动分支的元数据信息 |
 | `configBranchInfo`         | `cfgbi`  | `ConfigBranchInfo`        | `CONFIG`    | 4.3.9.1        | 获取分支元数据信息               | 无                                         | 获取当前活动分支的元数据信息 |
+| `sessionBranchClone`       | `sbc`    | `SessionBranchClone`      | `MIXED`     | 4.3.9.3        | 克隆所有类型分支                 | 目标分支名称                                | 将所有类型的当前活动分支复制到一个新的分支下 |
+| `sessionBranchCloneFrom`   | `sbcf`   | `SessionBranchCloneFrom`  | `MIXED`     | 4.3.9.3        | 所有类型从指定分支克隆           | 源分支名称                                  | 所有类型的当前活动分支从指定分支复制 |
+| `sessionBranchBind`        | `sbb`    | `SessionBranchBind`       | `MIXED`     | 4.3.9.3        | 所有类型绑定指定分支             | 目标分支名称                                | 所有类型同时创建一个新分支，硬链接到当前活动分支 |
+| `sessionBranchBindFrom`    | `sbbf`   | `SessionBranchBindFrom`   | `MIXED`     | 4.3.9.3        | 所有类型绑定指定分支             | 源分支名称                                  | 所有类型同时删除活动分支数据，并从指定分支硬链接一份活动分支文件 |
 
 PS：`CHAT`类型命令几乎全员支持视觉输入
 由于需要保存上下文，复读机默认会将其下载为Base64编码
