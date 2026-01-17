@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ContextCore, PromptCore, ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ContextCore, PromptCore, ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 delsession = on_command("delSession", aliases={"ds", "delete_session", "Delete_Session", "DeleteSession"}, rule=to_me(), block=True)
 
@@ -21,9 +21,9 @@ async def handle_delete_session(bot: Bot, event: MessageEvent, args: Message = C
     context_core = ContextCore(persona_info)
     prompt_core = PromptCore(persona_info)
     config_core = ConfigCore(persona_info)
-    response_context = await context_core.delete_context()
-    response_prompt = await prompt_core.delete_prompt()
-    response_config = await config_core.delete_config()
+    response_context = await context_core.delete()
+    response_prompt = await prompt_core.delete()
+    response_config = await config_core.delete()
     await send_msg.send_multiple_responses(
         (response_context, "Context"),
         (response_prompt, "Prompt"),

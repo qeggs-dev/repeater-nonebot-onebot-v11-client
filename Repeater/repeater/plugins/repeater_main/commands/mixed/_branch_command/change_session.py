@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Bot
 
-from .._clients import ContextCore, PromptCore, ConfigCore
-from ...assist import PersonaInfo, SendMsg
+from ..._clients import ContextCore, PromptCore, ConfigCore
+from ....assist import PersonaInfo, SendMsg
 
 change_session = on_command("changeSession", aliases={"cs", "change_session", "Change_Session", "ChangeSession"}, rule=to_me(), block=True)
 
@@ -21,13 +21,13 @@ async def handle_change_session(bot: Bot, event: MessageEvent, args: Message = C
     context_core = ContextCore(persona_info)
     prompt_core = PromptCore(persona_info)
     config_core = ConfigCore(persona_info)
-    response_context = await context_core.change_context_branch(
+    response_context = await context_core.change_branch(
         persona_info.message_str
     )
-    response_prompt = await prompt_core.change_prompt_branch(
+    response_prompt = await prompt_core.change_branch(
         persona_info.message_str
     )
-    response_config = await config_core.change_config_branch(
+    response_config = await config_core.change_branch(
         persona_info.message_str
     )
     await send_msg.send_multiple_responses(
