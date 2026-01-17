@@ -5,7 +5,7 @@ from ._chat_core import (
     BufferStringStream as ChatBufferStringStream,
     StreamChatChunkResponse as ChatStreamChatChunkResponse,
 )
-from ._context_core import (
+from ._data_manager.context_core import (
     ContextCore,
 )
 from ._model_info import (
@@ -14,10 +14,10 @@ from ._model_info import (
     ModelType,
     MODEL_TYPES
 )
-from ._prompt_core import (
+from ._data_manager.prompt_core import (
     PromptCore,
 )
-from ._config_core import (
+from ._data_manager.config_core import (
     ConfigCore,
 )
 from ._user_file_core import (
