@@ -7,6 +7,8 @@
 
 </center>
 
+---
+
 *注：本仓库仅为客户端实现，需要配合[后端项目](#相关仓库)使用*
 
 一个基于[`NoneBot`](https://nonebot.dev/)和[`Repeater Server`](https://github.com/qeggs-dev/repeater-ai-chatbot)开发的 AI QQ Bot
