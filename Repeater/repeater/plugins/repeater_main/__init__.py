@@ -35,3 +35,6 @@ from .commands.send_readme_file import handle_send_readme_file
 
 # === TextRender === #
 from .commands.text_render import handle_text_render
+
+# === Comment === #
+from .commands.annotation import handle_annotation
