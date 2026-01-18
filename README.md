@@ -1,5 +1,11 @@
+<center>
+
 # @复读机Repeater
 **- Only Chat, Focus Chat. -**
+
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg?logo=python)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/License-MIT-63b9ff.svg)](https://opensource.org/licenses/MIT) [![Protocol](https://img.shields.io/badge/Protocol-Repeater%20API-brightgreen.svg)](https://github.com/qeggs-dev/repeater-ai-chatbot)
+
+</center>
 
 *注：本仓库仅为客户端实现，需要配合[后端项目](#相关仓库)使用*
 
