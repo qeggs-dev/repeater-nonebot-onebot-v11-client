@@ -340,6 +340,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `sessionBranchCloneFrom`   | `sbcf`   | `SessionBranchCloneFrom`  | `MIXED`     | 4.3.9.3        | 所有类型从指定分支克隆           | 源分支名称                                  | 所有类型的当前活动分支从指定分支复制 |
 | `sessionBranchBind`        | `sbb`    | `SessionBranchBind`       | `MIXED`     | 4.3.9.3        | 所有类型绑定指定分支             | 目标分支名称                                | 所有类型同时创建一个新分支，硬链接到当前活动分支 |
 | `sessionBranchBindFrom`    | `sbbf`   | `SessionBranchBindFrom`   | `MIXED`     | 4.3.9.3        | 所有类型绑定指定分支             | 源分支名称                                  | 所有类型同时删除活动分支数据，并从指定分支硬链接一份活动分支文件 |
+| `#`                        | `anot`   | `Annotation`              | `RESERVED`  | 4.3.9.3        | 注释，不会执行任何操作           | 无                                         | 保留的注释命令，不执行任何操作，直接忽略内容 |
 
 PS：`CHAT`类型命令几乎全员支持视觉输入
 由于需要保存上下文，复读机默认会将其下载为Base64编码
