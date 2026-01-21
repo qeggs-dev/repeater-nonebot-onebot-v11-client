@@ -1,4 +1,5 @@
 import random
+import asyncio
 from typing import Any
 from nonebot import on_command
 from nonebot.rule import to_me
@@ -11,6 +12,16 @@ from nonebot.params import (
 from ...assist import PersonaInfo, MessageSource, SendMsg
 
 choose_group_member = on_command("chooseGroupMember", aliases={"cgm","choose_group_member", "Choose_Group_Member", "ChooseGroupMember"}, rule=to_me(), block=True)
+
+def generate_text(choiced: list[dict[str, Any]]):
+    text_buffer: list[str] = []
+    for index, member in enumerate(choiced, start = 1):
+        nickname = member.get("card")
+        if not nickname:
+            nickname = member.get("nickname")
+        text_buffer.append(f"{index}. {nickname}")
+    text = "\n".join(text_buffer)
+    return text
 
 @choose_group_member.handle()
 async def choose_group_member_handle(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -38,13 +49,7 @@ async def choose_group_member_handle(bot: Bot, event: MessageEvent, args: Messag
         if n > len(member_list):
             await send_msg.send_error(f"The current number is too large, please enter a number less than {len(member_list)}.")
         choiced: list[dict[str, Any]] = random.sample(member_list, n)
-        text_list: list[str] = []
-        for index, member in enumerate(choiced, start = 1):
-            nickname = member.get("card")
-            if not nickname:
-                nickname = member.get("nickname")
-            text_list.append(f"{index}. {nickname}")
-        text = "\n".join(text_list)
+        text = await asyncio.to_thread(generate_text, choiced)
         if n > 10:
             await send_msg.send_mixed_render(
                 text,
