@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent
@@ -18,16 +19,19 @@ def generate_text(messages: list[dict]):
             event = MessageEvent(**message)
             nick_name = event.sender.card or event.sender.nickname
             text = f"{nick_name}: {event.message}"
+            time = datetime.fromtimestamp(event.time)
         except ValidationError:
             try:
                 nick_name = message["sender"]["card"] or message["sender"]["nickname"]
                 text = f"{nick_name}: {message['message']}"
+                time = datetime.fromtimestamp(message["time"])
             except KeyError:
                 validation_failure_counter += 1
                 continue
         
+        time_str = time.strftime("%Y-%m-%d %H:%M:%S")
         text_buffer.append(
-            f"{nick_name}: {text}"
+            f"[{time_str}]{nick_name}: {text}"
         )
 
     if validation_failure_counter > 0:
