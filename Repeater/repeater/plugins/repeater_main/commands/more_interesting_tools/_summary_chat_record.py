@@ -17,11 +17,11 @@ def generate_text(messages: list[dict]):
         try:
             event = MessageEvent(**message)
             nick_name = event.sender.card or event.sender.nickname
-            text = f"{nick_name}: {event.message}\n"
+            text = f"{nick_name}: {event.message}"
         except ValidationError:
             try:
                 nick_name = message["sender"]["card"] or message["sender"]["nickname"]
-                text = f"{nick_name}: {message['message']}\n"
+                text = f"{nick_name}: {message['message']}"
             except KeyError:
                 validation_failure_counter += 1
                 continue
@@ -62,7 +62,7 @@ async def handle_summary_chat_record(bot: Bot, event: MessageEvent, args: Messag
 
         text = await asyncio.to_thread(generate_text, message_list)
 
-        chat_core = ChatCore(persona_info, namespace = "Summary_Chat_Record")
+        chat_core = ChatCore(persona_info)
         response = await chat_core.send_message(
             add_metadata = False,
             message = text,
