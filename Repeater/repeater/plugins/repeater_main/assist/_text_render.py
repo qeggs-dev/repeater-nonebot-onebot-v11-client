@@ -1,6 +1,6 @@
 from ..core_net_configs import *
 from pydantic import BaseModel
-from ._response_body import Response
+from ._response import Response
 from ._namespace import Namespace
 import httpx
 
