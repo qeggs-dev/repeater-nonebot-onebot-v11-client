@@ -9,6 +9,7 @@ from ._persona_info import PersonaInfo
 from ._namespace import MessageSource
 from ._text_render import TextRender
 from ._response_body import Response
+from ._error_response import ErrorResponse
 from ..chattts import ChatTTSAPI
 from typing import (
     Callable,
@@ -114,6 +115,53 @@ class SendMsg:
             reply = reply,
             continue_handler = continue_handler,
         )
+    
+    @overload
+    async def send_error_response(
+            self,
+            response: Response[ErrorResponse],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[False] = False,
+        ) -> NoReturn: ...
+
+    @overload
+    async def send_error_response(
+            self,
+            response: Response[ErrorResponse],
+            message: Callable[[Response[ErrorResponse]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[True] = True,
+        ) -> None: ...
+    
+    async def send_error_response(
+            self,
+            response: Response[ErrorResponse],
+            message: Callable[[Response[ErrorResponse]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: bool = False,
+        ):
+        if response.data is None:
+            await self.send_response(
+                response,
+                message = message,
+                reply = reply,
+                continue_handler = continue_handler,
+            )
+        else:
+            if message is None:
+                message = response.data.error_message
+            elif callable(message):
+                message = message(response)
+            else:
+                message = message
+            
+            await self.send_response(
+                response,
+                message,
+                reply = reply,
+                continue_handler = continue_handler,
+            )
     
     @overload
     async def send_response(
