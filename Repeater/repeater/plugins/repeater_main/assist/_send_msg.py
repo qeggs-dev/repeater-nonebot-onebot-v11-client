@@ -119,7 +119,7 @@ class SendMsg:
     @overload
     async def send_error_response(
             self,
-            response: Response[ErrorResponse],
+            response: Response[T_RESPONSE],
             message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
             reply: bool = True,
             continue_handler: Literal[False] = False,
@@ -128,29 +128,21 @@ class SendMsg:
     @overload
     async def send_error_response(
             self,
-            response: Response[ErrorResponse],
-            message: Callable[[Response[ErrorResponse]], str] | str | None = None,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
             reply: bool = True,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
     async def send_error_response(
             self,
-            response: Response[ErrorResponse],
-            message: Callable[[Response[ErrorResponse]], str] | str | None = None,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
             reply: bool = True,
             continue_handler: bool = False,
         ):
-        if response.data is None:
-            await self.send_response(
-                response,
-                message = message,
-                reply = reply,
-                continue_handler = continue_handler,
-            )
-        else:
             if message is None:
-                message = response.get_data().error_message
+                message = response.get_error().error_message
             else:
                 message = message
             
