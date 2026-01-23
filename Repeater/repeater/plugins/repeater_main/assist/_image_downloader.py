@@ -4,7 +4,6 @@ from nonebot.adapters.onebot.v11 import Message
 import base64
 import asyncio
 from typing import AsyncGenerator, Generator, Any
-from ._response_body import Response
 import imghdr
 
 class ImageDownloader:
@@ -28,12 +27,15 @@ class ImageDownloader:
         }
         return type_map.get(image_type, 'application/octet-stream')
     
-    def get_images(self) -> Generator[dict[str, Any], None, None]:
+    def get_images(self, skip_size: int = 10 * 1024 * 1024) -> Generator[str, None, None]:
         for segment in self._message:
             if segment.type == 'image':
-                yield segment.data
+                size = int(segment.data["file_size"])
+                if size > skip_size:
+                    continue
+                yield segment.data["url"]
 
-    async def download_image(self, skip_size: int = 10 * 1024 * 1024) -> AsyncGenerator[Response[bytes | None], None]:
+    async def download_image(self, skip_size: int = 10 * 1024 * 1024) -> AsyncGenerator[bytes | None, None]:
         """
         下载图片
 
@@ -41,29 +43,15 @@ class ImageDownloader:
         :return Response[bytes | None]: 图片内容，如果图片大小超过skip_size，则返回None
         """
 
-        for image in self.get_images():
+        for image in self.get_images(skip_size = skip_size):
             url = str(image["url"])
-            size = int(image["file_size"])
-            if size > skip_size:
-                yield Response(
-                    data = None,
-                )
-                continue
             response = await self._client.get(url)
             if response.status_code == 200:
-                yield Response(
-                    code = response.status_code,
-                    text = response.text,
-                    data = response.content
-                )
+                yield response.content
             else:
-                yield Response(
-                    code = response.status_code,
-                    text = response.text,
-                    data = None,
-                )
+                yield None
     
-    async def download_image_to_base64(self, skip_size: int = 1024 * 1024 * 10) -> AsyncGenerator[Response[str | None], None]:
+    async def download_image_to_base64(self, skip_size: int = 1024 * 1024 * 10) -> AsyncGenerator[str | None, None]:
         """
         获取图片的base64编码
 
@@ -71,20 +59,16 @@ class ImageDownloader:
         """
         async for image in self.download_image(skip_size):
             if image is not None:
-                base64_result = (await asyncio.to_thread(base64.b64encode, image.data)).decode("utf-8")
-                type_str = self.detect_image_type(image.data)
+                base64_result = (await asyncio.to_thread(base64.b64encode, image)).decode("utf-8")
+                type_str = self.detect_image_type(image)
                 output_buffer: list[str] = []
                 output_buffer.append("data:")
                 output_buffer.append(type_str)
                 output_buffer.append(";base64,")
                 output_buffer.append(base64_result)
-                yield Response(
-                    data = "".join(output_buffer),
-                )
+                yield "".join(output_buffer),
             else:
-                yield Response(
-                    data = None,
-                )
+                yield None
     
     async def close(self) -> None:
         await self._client.aclose()
