@@ -45,7 +45,7 @@ class ChatCore:
         enable_md_prompt: bool = True,
         reference_context_id: str | None = None,
         continue_completion: bool | None = None,
-    ) -> Response[ChatResponse | None]:
+    ) -> Response[ChatResponse]:
         """
         发送消息到AI后端
         
@@ -73,26 +73,10 @@ class ChatCore:
             url = url,
             json = data
         )
-        if response.status_code == 200:
-            try:
-                result:dict = response.json()
-            except json.JSONDecodeError:
-                return Response(
-                    code = response.status_code,
-                    text = response.text,
-                    data = None
-                )
-        try:
-            response_body = ChatResponse(
-                **result
-            )
-        except Exception as e:
-            response_body = None
             
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = response_body
+            response,
+            ChatResponse
         )
     
     async def send_stream_message(
