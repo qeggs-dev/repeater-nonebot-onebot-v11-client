@@ -1,5 +1,4 @@
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment, Message
-from nonebot import get_driver
 from typing import Literal, Container
 from ._assist_func import (
     handle_at_with_name,
@@ -215,11 +214,11 @@ class PersonaInfo:
                 if base64:
                     get_image_url = downloader.download_image_to_base64()
                     async for image_url in get_image_url:
-                        if image_url.data is not None:
+                        if image_url is not None:
                             images.append(
-                                image_url.data
+                                image_url
                             )
                 else:
                     for image_url in downloader.get_images():
-                        images.append(image_url["url"])
+                        images.append(image_url)
         return images
