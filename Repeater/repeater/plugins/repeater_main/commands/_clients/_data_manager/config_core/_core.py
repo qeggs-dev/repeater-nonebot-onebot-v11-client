@@ -57,16 +57,7 @@ class ConfigCore(UserDataCore):
                 "value": value
             }
         )
-        try:
-            data = response.json()
-        except Exception as e:
-            logger.error(f"Error: {e}")
-            data = None
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = data
-        )
+        return Response(response)
     # endregion
 
     # region get config
@@ -75,16 +66,7 @@ class ConfigCore(UserDataCore):
         response = await self._httpx_client.get(
             f"{GET_CONFIG_ROUTE}/{self._info.namespace_str}"
         )
-        try:
-            data = response.json()
-        except Exception as e:
-            logger.error(f"Error: {e}")
-            data = None
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = data
-        )
+        return Response(response)
     # endregion
 
     # region remove config key
@@ -93,9 +75,5 @@ class ConfigCore(UserDataCore):
         response = await self._httpx_client.delete(
             f"{REMOVE_CONFIG_KEY_ROUTE}/{self._info.namespace_str}/{config_key}"
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
