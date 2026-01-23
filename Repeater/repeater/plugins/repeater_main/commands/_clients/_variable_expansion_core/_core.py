@@ -33,8 +33,6 @@ class VariableExpansionCore:
             }
         )
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
+            response
         )
     # endregion
