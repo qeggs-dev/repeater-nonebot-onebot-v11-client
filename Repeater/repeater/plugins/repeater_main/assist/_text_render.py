@@ -38,8 +38,7 @@ class TextRender:
             response_json = {}
         
         return Response(
-            code=response.status_code,
-            text=response.text,
-            data=RendedImage(**response_json),
+            response,
+            model = RendedImage
         )
         
