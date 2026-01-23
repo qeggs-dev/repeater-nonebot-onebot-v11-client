@@ -219,7 +219,13 @@ def main():
             run_process(*cmd)
         except KeyboardInterrupt:
             print("User interrupted")
-        input_str = input("Run Again? [Y/n] ")
+        
+        try:
+            input_str = input("Run Again? [Y/n] ")
+        except KeyboardInterrupt:
+            print("User interrupted")
+            continue
+
         if input_str.lower() not in ["n", "no", "false", "0"]:
             continue
         else:
