@@ -3,7 +3,7 @@ import httpx
 from abc import ABC
 
 from ....core_net_configs import *
-from ....assist import Response, PersonaInfo
+from ....assist import Response, PersonaInfo, ErrorResponse
 from ....logger import logger as base_logger
 from ._branch_info import BranchInfo
 
@@ -24,11 +24,7 @@ class UserDataCore(ABC):
                 "new_branch_id": new_branch_id
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
 
     # region Delete
@@ -36,11 +32,7 @@ class UserDataCore(ABC):
         response = await self._httpx_client.delete(
             f"{BASE_URL}/userdata/{self._branch_id}/delete/{self._info.namespace_str}"
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
 
     # region clone
@@ -51,11 +43,7 @@ class UserDataCore(ABC):
                 "dst_branch_id": dst_branch_id
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
 
     # region clone from
@@ -66,11 +54,7 @@ class UserDataCore(ABC):
                 "src_branch_id": src_branch_id
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
 
     # region bind
@@ -81,11 +65,7 @@ class UserDataCore(ABC):
                 "dst_branch_id": dst_branch_id
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
 
     # region bind from
@@ -96,28 +76,16 @@ class UserDataCore(ABC):
                 "src_branch_id": src_branch_id
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
 
     async def branch_info(self) -> Response[BranchInfo]:
         response = await self._httpx_client.get(
             f"{BASE_URL}/userdata/{self._branch_id}"
         )
-        try:
-            data = response.json()
-            data = BranchInfo(**data)
-        except Exception as e:
-            logger.exception(e)
-            data = None
-        
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = data
+            response,
+            model = BranchInfo
         )
 
     # region close
