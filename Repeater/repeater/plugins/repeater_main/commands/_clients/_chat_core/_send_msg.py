@@ -1,6 +1,6 @@
 from nonebot.adapters.onebot.v11 import MessageSegment, Message
 from nonebot.internal.matcher.matcher import Matcher
-from ....assist import PersonaInfo, MessageSource, Response, SendMsg as BaseSendMsg
+from ....assist import PersonaInfo, MessageSource, Response, SendMsg
 from ._response_body import ChatResponse
 from ....chattts import ChatTTSAPI
 from typing import NoReturn, Type
@@ -9,7 +9,7 @@ import numpy as np
 
 logger = base_logger.bind(module = "Chat.SendMsg")
 
-class ChatSendMsg(BaseSendMsg):
+class ChatSendMsg(SendMsg):
     def __init__(
             self,
             component: str,
