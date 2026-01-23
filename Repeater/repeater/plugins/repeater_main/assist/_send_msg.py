@@ -141,7 +141,7 @@ class SendMsg:
             reply: bool = True,
             continue_handler: bool = False,
         ):
-        if response.code() != 200:
+        if response.code != 200:
             await self.send_error_response(
                 response = response,
                 message = message,
@@ -629,12 +629,14 @@ class SendMsg:
         :param continue_handler: 是否继续处理流程
         """
         response = await self._chat_tts_api.text_to_speech(text)
-        if response.code == 200 and response.data is not None:
-            await self._send(
-                message = MessageSegment.record(response.data.audio_files[0].url),
-                reply = reply,
-                continue_handler = continue_handler
-            )
+        if response.code == 200:
+            data = response.get_data()
+            if data is not None:
+                await self._send(
+                    message = MessageSegment.record(data.audio_files[0].url),
+                    reply = reply,
+                    continue_handler = continue_handler
+                )
         elif send_error_message:
             await self.send_response(response, message = "TTS Error.")
         else:
