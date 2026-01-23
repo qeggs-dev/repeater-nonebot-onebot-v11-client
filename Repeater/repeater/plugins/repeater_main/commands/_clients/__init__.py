@@ -1,7 +1,7 @@
 from ._chat_core import (
     ChatCore,
     ChatResponse,
-    SendMsg as ChatSendMsg,
+    ChatSendMsg as ChatSendMsg,
     BufferStringStream as ChatBufferStringStream,
     StreamChatChunkResponse as ChatStreamChatChunkResponse,
 )
