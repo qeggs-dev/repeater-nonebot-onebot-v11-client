@@ -37,7 +37,6 @@ async def handle_smart_at(bot: Bot, event: MessageEvent):
 
     images: list[str] = await persona_info.get_images_url()
 
-    
     response = await core.send_message(
         message = message.extract_plain_text().strip(),
         image_url = images
