@@ -182,7 +182,11 @@ class SendMsg:
             continue_handler: bool = False,
         ):
             if message is None:
-                message = response.get_error().error_message
+                error = response.get_error()
+                if error is not None:
+                    message = f"{error.error_message}\n{error.source_exception}: {error.exception_message}"
+                else:
+                    message = f"[Error Info Is Invalid]"
             else:
                 message = message
             
