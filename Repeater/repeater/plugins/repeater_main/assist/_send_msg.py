@@ -8,7 +8,7 @@ from ._http_code import HTTP_Code
 from ._persona_info import PersonaInfo
 from ._namespace import MessageSource
 from ._text_render import TextRender
-from ._response_body import Response
+from ._response import Response
 from ._error_response import ErrorResponse
 from ..chattts import ChatTTSAPI
 from typing import (
@@ -150,9 +150,7 @@ class SendMsg:
             )
         else:
             if message is None:
-                message = response.data.error_message
-            elif callable(message):
-                message = message(response)
+                message = response.get_data().error_message
             else:
                 message = message
             
@@ -704,8 +702,12 @@ class SendMsg:
         """
         if text:
             render_response: Response[RendedImage] = await self._text_render.render(text)
-            if render_response.code == 200 and render_response.data is not None:
-                message = MessageSegment.image(render_response.data.image_url)
+            if render_response.code == 200:
+                data = render_response.get_data()
+                if data is not None:
+                    message = MessageSegment.image(data.image_url)
+                else:
+                    logger.error(f"Render Data Is Invalid")
             else:
                 await self.send_response(render_response, lambda response: f"Render Error: {response.text}")
             return message
