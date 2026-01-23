@@ -34,15 +34,11 @@ class ContextCore(UserDataCore):
                 "role": role
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
     
     # region withdraw
-    async def withdraw(self, context_pair_num: int = 1) -> Response[WithdrawResponse | None]:
+    async def withdraw(self, context_pair_num: int = 1) -> Response[WithdrawResponse]:
         logger.info("Withdrawing context")
         response = await self._httpx_client.post(
             f"{WIHTDRAW_CONTEXT_ROUTE}/{self._info.namespace_str}",
@@ -51,25 +47,19 @@ class ContextCore(UserDataCore):
             }
         )
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = WithdrawResponse(
-                **response.json()
-            ) if response.status_code == 200 else None
+            response,
+            model = WithdrawResponse
         )
     # endregion
 
     # region get context total length
-    async def get_context_total_length(self) -> Response[ContextTotalLengthResponse | None]:
+    async def get_context_total_length(self) -> Response[ContextTotalLengthResponse]:
         logger.info("Getting context total length")
         response = await self._httpx_client.get(
             f"{GET_CONTEXT_LENGTH_ROUTE}/{self._info.namespace_str}"
         )
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = ContextTotalLengthResponse(
-                **response.json()
-            ) if response.status_code == 200 else None
+            response,
+            model = ContextTotalLengthResponse
         )
     # endregion
