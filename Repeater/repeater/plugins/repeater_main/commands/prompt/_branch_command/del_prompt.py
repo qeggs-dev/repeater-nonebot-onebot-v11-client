@@ -22,5 +22,5 @@ async def handle_delete_prompt(bot: Bot, event: MessageEvent, args: Message = Co
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
     else:
-        response = await prompt_core.delete_prompt()
+        response = await prompt_core.delete()
         await send_msg.send_response_check_code(response, f"Delete Prompt from {persona_info.namespace_str}")
