@@ -66,7 +66,7 @@ class ImageDownloader:
                 output_buffer.append(type_str)
                 output_buffer.append(";base64,")
                 output_buffer.append(base64_result)
-                yield "".join(output_buffer),
+                yield "".join(output_buffer)
             else:
                 yield None
     
