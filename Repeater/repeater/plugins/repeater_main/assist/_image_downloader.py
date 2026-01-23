@@ -33,7 +33,7 @@ class ImageDownloader:
                 size = int(segment.data["file_size"])
                 if size > skip_size:
                     continue
-                yield segment.data["url"]
+                yield str(segment.data["url"])
 
     async def download_image(self, skip_size: int = 10 * 1024 * 1024) -> AsyncGenerator[bytes | None, None]:
         """
@@ -44,7 +44,7 @@ class ImageDownloader:
         """
 
         for image in self.get_images(skip_size = skip_size):
-            url = str(image["url"])
+            url = image
             response = await self._client.get(url)
             if response.status_code == 200:
                 yield response.content
