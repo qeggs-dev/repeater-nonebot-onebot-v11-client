@@ -37,4 +37,4 @@ async def handle_set_top_p(bot: Bot, event: MessageEvent, args: Message = Comman
     else:
         response = await config_core.set_config("top_p", top_p)
 
-        await send_msg.send_response(response, f"Set Top_P to {top_p}")
+        await send_msg.send_response_check_code(response, f"Set Top_P to {top_p}")

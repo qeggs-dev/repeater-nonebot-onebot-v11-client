@@ -25,4 +25,4 @@ async def handle_set_render_title(bot: Bot, event: MessageEvent, args: Message =
         await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("render_title", msg)
-        await send_msg.send_response(response, f"Set Render_Title to {msg}")
+        await send_msg.send_response_check_code(response, f"Set Render_Title to {msg}")

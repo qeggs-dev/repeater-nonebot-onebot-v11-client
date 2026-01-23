@@ -32,5 +32,5 @@ async def handle_get_model_list(bot: Bot, event: MessageEvent, args: Message = C
             else:
                 await send_msg.send_error("Error: No Model Data")
         else:
-            await send_msg.send_response(response)
+            await send_msg.send_response_check_code(response)
 

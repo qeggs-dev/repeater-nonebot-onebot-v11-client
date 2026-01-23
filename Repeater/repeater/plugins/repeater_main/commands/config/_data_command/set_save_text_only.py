@@ -28,4 +28,4 @@ async def handle_set_save_text_only(bot: Bot, event: MessageEvent, args: Message
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("save_text_only", auto_save_context)
-        await send_msg.send_response(response, f"Save Text Only set to {auto_save_context}")
+        await send_msg.send_response_check_code(response, f"Save Text Only set to {auto_save_context}")

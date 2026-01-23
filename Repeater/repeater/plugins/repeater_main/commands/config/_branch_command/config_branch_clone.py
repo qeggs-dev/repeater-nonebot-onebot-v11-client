@@ -25,4 +25,4 @@ async def handle_config_branch_clone(bot: Bot, event: MessageEvent, args: Messag
         await send_msg.send_debug_mode()
     else:
         response = await config_core.clone(msg)
-        await send_msg.send_response(response, f"Clone Config Branch to {msg}")
+        await send_msg.send_response_check_code(response, f"Clone Config Branch to {msg}")

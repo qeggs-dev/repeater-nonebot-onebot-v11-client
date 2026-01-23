@@ -28,4 +28,4 @@ async def handle_set_auto_shrink_length(bot: Bot, event: MessageEvent, args: Mes
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("context_shrink_limit", auto_shrink_length)
-        await send_msg.send_response(response, f"Auto shrink length set to {auto_shrink_length}")
+        await send_msg.send_response_check_code(response, f"Auto shrink length set to {auto_shrink_length}")

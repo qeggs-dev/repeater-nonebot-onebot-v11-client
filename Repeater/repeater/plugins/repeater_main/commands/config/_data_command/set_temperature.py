@@ -36,4 +36,4 @@ async def handle_set_temperature(bot: Bot, event: MessageEvent, args: Message = 
         await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("temperature", temperature)
-        await send_msg.send_response(response, f"Set Temperature to {temperature}")
+        await send_msg.send_response_check_code(response, f"Set Temperature to {temperature}")

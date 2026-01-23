@@ -32,4 +32,4 @@ async def handle_prompt_branch_info(bot: Bot, event: MessageEvent, args: Message
                 f"Branch Create Time: {response.data.created_time().strftime('%Y-%m-%d %H:%M:%S')}\n"
             )
         else:
-            await send_msg.send_response(response, "Get Prompt branch info failed")
+            await send_msg.send_response_check_code(response, "Get Prompt branch info failed")

@@ -23,4 +23,4 @@ async def handle_change_config_branch(bot: Bot, event: MessageEvent, args: Messa
         await send_msg.send_debug_mode()
     else:
         response = await config_core.change_branch(persona_info.message_str)
-        await send_msg.send_response(response, f"Config branch changed to {persona_info.message_str}")
+        await send_msg.send_response_check_code(response, f"Config branch changed to {persona_info.message_str}")

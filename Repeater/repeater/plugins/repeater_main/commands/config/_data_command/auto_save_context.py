@@ -28,4 +28,4 @@ async def handle_set_auto_save_context(bot: Bot, event: MessageEvent, args: Mess
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("save_context", auto_save_context)
-        await send_msg.send_response(response, f"Auto Save Context set to {auto_save_context}")
+        await send_msg.send_response_check_code(response, f"Auto Save Context set to {auto_save_context}")

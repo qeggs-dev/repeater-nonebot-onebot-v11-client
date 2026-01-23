@@ -71,4 +71,4 @@ class BatchRegistration:
                 prompt = command.prompt(persona_info)
             else:
                 prompt = command.prompt
-            await send_msg.send_response(response, prompt)
+            await send_msg.send_response_check_code(response, prompt)

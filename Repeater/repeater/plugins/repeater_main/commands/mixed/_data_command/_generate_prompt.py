@@ -47,7 +47,7 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
     )
     
     if chat_response.code != 200:
-        await send_msg.send_response(
+        await send_msg.send_response_check_code(
             chat_response, "Generate Prompt failed."
         )
     if chat_response.data is None:
@@ -64,7 +64,7 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
         chat_response.data.content
     )
     if prompt_response.code != 200:
-        await send_msg.send_response(
+        await send_msg.send_response_check_code(
             prompt_response,
             "Set Prompt failed"
         )

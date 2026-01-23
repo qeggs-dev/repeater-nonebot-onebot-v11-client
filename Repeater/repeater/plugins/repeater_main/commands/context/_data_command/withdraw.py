@@ -42,4 +42,4 @@ async def handle_withdraw(bot: Bot, event: MessageEvent, args: Message = Command
             )
             
         else:
-            await send_msg.send_response(response, "Withdraw Failed")
+            await send_msg.send_response_check_code(response, "Withdraw Failed")
