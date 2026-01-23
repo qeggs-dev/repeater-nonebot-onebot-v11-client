@@ -24,12 +24,15 @@ async def handle_context_branch_info(bot: Bot, event: MessageEvent, args: Messag
     else:
         response = await context_core.branch_info()
         if response.code == 200:
+            data = response.get_data()
+            if data is None:
+                await send_msg.send_error("Unable to process data.")
             await send_msg.send_prompt(
                 f"Branch Type: Context\n"
-                f"Branch ID: {response.data.branch_id}\n"
-                f"Branch Size: {response.data.size}\n"
-                f"Branch Readable Size: {response.data.readable_size}\n"
-                f"Branch Create Time: {response.data.created_time().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                f"Branch ID: {data.branch_id}\n"
+                f"Branch Size: {data.size}\n"
+                f"Branch Readable Size: {data.readable_size}\n"
+                f"Branch Create Time: {data.created_time().strftime('%Y-%m-%d %H:%M:%S')}\n"
             )
         else:
             await send_msg.send_response_check_code(response, "Get Context branch info failed")
