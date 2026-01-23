@@ -50,18 +50,23 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
         await send_msg.send_response_check_code(
             chat_response, "Generate Prompt failed."
         )
-    if chat_response.data is None:
+    data = chat_response.get_data()
+    if data is None:
+        await send_msg.send_error(
+            "Unable to process data."
+        )
+    if data is None:
         await send_msg.send_error(
             "No prompt generated."
         )
-    if not chat_response.data.content:
+    if not data.content:
         await send_msg.send_error(
             "No prompt content generated."
         )
     
     prompt_core = PromptCore(persona_info)
     prompt_response = await prompt_core.set_prompt(
-        chat_response.data.content
+        data.content
     )
     if prompt_response.code != 200:
         await send_msg.send_response_check_code(
@@ -71,6 +76,6 @@ async def handle_generate_prompt(bot: Bot, event: MessageEvent, args: Message = 
     else:
         await send_msg.send_mixed_render(
             text = "Prompt generated:",
-            text_to_render = chat_response.data.content,
+            text_to_render = data.content,
             prompt_mode = True
         )
