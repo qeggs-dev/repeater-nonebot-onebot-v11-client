@@ -27,42 +27,19 @@ class ModelInfoCore:
         response = await self._client.get(
             f"{GET_MODEL_UID_LIST}/{type.value}",
         )
-        try:
-            data = response.json()
-        except Exception as e:
-            logger.error(f"Error: {e}")
-            data = None
-        
-        if not isinstance(data, list):
-            logger.error(f"Error: data is not a list")
-            data = None
-        
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = data
+            response
         )
     # endregion
 
     # region get model info
-    async def get_model_info(self, type: ModelType, uid: str) -> Response[ModelInfo | None]:
+    async def get_model_info(self, type: ModelType, uid: str) -> Response[ModelInfo]:
         response = await self._client.get(
             f"{GET_MODEL_INFO}/{type.value}/{uid}",
         )
-        try:
-            data = response.json()
-        except Exception as e:
-            logger.error(f"Error: {e}")
-            data = None
-        try:
-            data = ModelInfo(**data)
-        except Exception as e:
-            logger.error(f"Error: {e}")
-            data = None
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = data
+            response,
+            model = ModelInfo
         )
 
     # region close
