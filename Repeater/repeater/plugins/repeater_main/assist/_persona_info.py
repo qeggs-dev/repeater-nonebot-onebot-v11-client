@@ -215,9 +215,7 @@ class PersonaInfo:
                     get_image_url = downloader.download_image_to_base64()
                     async for image_url in get_image_url:
                         if image_url is not None:
-                            images.append(
-                                image_url
-                            )
+                            images.append(image_url)
                 else:
                     for image_url in downloader.get_images():
                         images.append(image_url)
