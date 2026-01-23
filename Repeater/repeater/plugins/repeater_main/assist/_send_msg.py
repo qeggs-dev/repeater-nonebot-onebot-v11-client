@@ -117,6 +117,46 @@ class SendMsg:
         )
     
     @overload
+    async def send_response_check_code(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[False] = False,
+        ) -> NoReturn: ...
+
+    @overload
+    async def send_response_check_code(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[True] = True,
+        ) -> None: ...
+    
+    async def send_response_check_code(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: bool = False,
+        ):
+        if response.code() != 200:
+            await self.send_error_response(
+                response = response,
+                message = message,
+                reply = reply,
+                continue_handler = continue_handler,
+            )
+        else:
+            await self.send_response(
+                response = response,
+                message = message,
+                reply = reply,
+                continue_handler = continue_handler,
+            )
+    
+    @overload
     async def send_error_response(
             self,
             response: Response[T_RESPONSE],
