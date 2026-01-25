@@ -29,7 +29,10 @@ class ModelInfoCore:
         )
         json_data = response.json()
         if not isinstance(json_data, list):
-            raise ValueError("json_data is not a list")
+            return Response(
+                response,
+                parsed_data = None,
+            )
         model_list: list[ModelInfo] = []
         for model_info in json_data:
             model_list.append(
