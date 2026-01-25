@@ -207,8 +207,9 @@ class ChatCore:
         if cross_user_data_routing is not None:
             data["cross_user_data_routing"] = cross_user_data_routing.model_dump(exclude_none=True)
         elif self.merge_group_id:
-            data["cross_user_data_routing"] = CrossUserDataRouting()
-            data["cross_user_data_routing"].fill_missing(self.merge_group_id)
+            cross_user_data_routing = CrossUserDataRouting()
+            cross_user_data_routing.context.fill_missing(self.merge_group_id)
+            data["cross_user_data_routing"] = cross_user_data_routing.model_dump(exclude_none=True)
 
         if message:
             message_buffer:list[str] = []
