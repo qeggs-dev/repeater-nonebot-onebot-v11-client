@@ -31,9 +31,9 @@ async def handle_get_model_list(bot: Bot, event: MessageEvent, args: Message = C
             if not isinstance(data, list):
                 await send_msg.send_error("Response data is not a list")
             elif data is None:
-                await send_msg.send_check_length("\n".join(data))
-            else:
                 await send_msg.send_error("Error: No Model Data")
+            else:
+                await send_msg.send_check_length("\n".join(data))
         else:
             await send_msg.send_response_check_code(response)
 
