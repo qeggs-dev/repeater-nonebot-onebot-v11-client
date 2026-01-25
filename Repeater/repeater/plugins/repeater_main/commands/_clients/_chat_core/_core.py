@@ -6,9 +6,9 @@ from typing import (
 )
 import httpx
 from ._response_body import ChatResponse, StreamChatChunkResponse
+from ._cross_user_data_routing import CrossUserDataRouting, DataRoutingField
 from ....exit_register import ExitRegister
 from ....assist import PersonaInfo, Response
-
 from ....core_net_configs import *
 
 exit_register = ExitRegister()
@@ -17,19 +17,22 @@ class ChatCore:
     _chat_client = httpx.AsyncClient(timeout=storage_configs.server_api_timeout.chat)
     _client = httpx.AsyncClient()
     
-    def __init__(self, persona_info: PersonaInfo, public_space_chat: bool = False, namespace: str | None = None):
+    def __init__(self, persona_info: PersonaInfo, namespace: str | None = None):
         self._persona_info = persona_info
         self._namespace = namespace
-        self._public_space_chat: bool = public_space_chat
     
     @property
     def namespace(self) -> str:
         if self._namespace:
             return self._namespace
-        elif self._public_space_chat:
-            return self._persona_info.namespace.public_space_id
         else:
             return self._persona_info.namespace_str
+    
+    @property
+    def merge_group_id(self) -> str | None:
+        if storage_configs.merge_group_id:
+            return self._persona_info.namespace.merge_group_id
+        return None
     
     async def send_message(
         self,
@@ -43,15 +46,24 @@ class ChatCore:
         save_context: bool | None = None,
         save_new_only: bool | None = None,
         enable_md_prompt: bool = True,
-        reference_context_id: str | None = None,
+        cross_user_data_routing: str | None = None,
         continue_completion: bool | None = None,
     ) -> Response[ChatResponse]:
         """
         发送消息到AI后端
         
         :param message: 消息内容
-        :param username: 用户名
-        :
+        :param add_metadata: 是否添加元数据
+        :param role_name: 角色名称
+        :param temporary_prompt: 临时提示
+        :param model_uid: 模型UID
+        :param image_url: 图片URL
+        :param load_prompt: 是否加载提示
+        :param save_context: 是否保存上下文
+        :param save_new_only: 是否只保存新内容
+        :param enable_md_prompt: 是否启用Markdown提示
+        :param cross_user_data_routing: 跨用户数据路由
+        :param continue_completion: 是否继续生成
         :return: AI返回的消息
         """
         url = f"{CHAT_ROUTE}/{self.namespace}"
@@ -66,7 +78,7 @@ class ChatCore:
             enable_md_prompt = enable_md_prompt,
             save_context = save_context,
             save_new_only = save_new_only,
-            reference_context_id = reference_context_id,
+            cross_user_data_routing = cross_user_data_routing,
             continue_completion = continue_completion,
         )
         response = await self._chat_client.post(
@@ -91,15 +103,24 @@ class ChatCore:
         save_context: bool | None = None,
         save_new_only: bool | None = None,
         enable_md_prompt: bool = True,
-        reference_context_id: str | None = None,
+        cross_user_data_routing: str | None = None,
         continue_completion: bool | None = None,
     ) -> AsyncIterator[Any]:
         """
         发送消息到AI后端，并获取流式响应
         
         :param message: 消息内容
-        :param username: 用户名
-        :
+        :param add_metadata: 是否添加元数据
+        :param role_name: 角色名称
+        :param temporary_prompt: 临时提示
+        :param model_uid: 模型UID
+        :param image_url: 图片URL
+        :param load_prompt: 是否加载提示
+        :param save_context: 是否保存上下文
+        :param save_new_only: 是否只保存新内容
+        :param enable_md_prompt: 是否启用Markdown提示
+        :param cross_user_data_routing: 跨用户数据路由
+        :param continue_completion: 是否继续生成
         :return: AI返回的消息
         """
         import json
@@ -115,7 +136,7 @@ class ChatCore:
             enable_md_prompt = enable_md_prompt,
             save_context = save_context,
             save_new_only = save_new_only,
-            reference_context_id = reference_context_id,
+            cross_user_data_routing = cross_user_data_routing,
             continue_completion = continue_completion,
             stream = True,
         )
@@ -152,7 +173,7 @@ class ChatCore:
         save_context: bool | None = None,
         save_new_only: bool | None = None,
         enable_md_prompt: bool = True,
-        reference_context_id: str | None = None,
+        cross_user_data_routing: CrossUserDataRouting | None = None,
         continue_completion: bool | None = None,
         stream: bool | None = None,
     ):
@@ -183,9 +204,12 @@ class ChatCore:
         elif storage_configs.merge_group_id:
             data["role_name"] = self._persona_info.nickname
         
-        if reference_context_id:
-            data["reference_context_id"] = reference_context_id
-        
+        if cross_user_data_routing is not None:
+            data["cross_user_data_routing"] = cross_user_data_routing.model_dump(exclude_none=True)
+        elif self.merge_group_id:
+            data["cross_user_data_routing"] = CrossUserDataRouting()
+            data["cross_user_data_routing"].fill_missing(self.merge_group_id)
+
         if message:
             message_buffer:list[str] = []
             if add_metadata:
@@ -196,7 +220,7 @@ class ChatCore:
                     message_buffer.append(">     Markdown Rendering is turned on!!")
                 if storage_configs.merge_group_id:
                     message_buffer.append(">     Now User: {username}({nickname})")
-                if reference_context_id:
+                if cross_user_data_routing:
                     message_buffer.append(">     Guest Mode(User: {username}), Citation context is turned on!!")
                 message_buffer.append("\n---\n")
             message_buffer.append(message)
