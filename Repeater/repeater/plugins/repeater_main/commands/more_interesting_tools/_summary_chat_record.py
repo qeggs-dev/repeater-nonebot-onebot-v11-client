@@ -1,3 +1,5 @@
+import asyncio
+from datetime import datetime
 from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent
@@ -8,6 +10,36 @@ from ...assist import PersonaInfo, SendMsg, MessageSource
 from .._clients import ChatCore, ChatSendMsg
 
 summary_chat_record = on_command("summaryChatRecord", aliases={"scr", "summary_chat_record", "Summary_Chat_Record", "SummaryChatRecord"}, rule=to_me(), block=True)
+
+def generate_text(messages: list[dict]):
+    text_buffer: list[str] = []
+    validation_failure_counter: int = 0
+    for message in messages["messages"]:
+        try:
+            event = MessageEvent(**message)
+            nick_name = event.sender.card or event.sender.nickname
+            text = f"{nick_name}: {event.message}"
+            time = datetime.fromtimestamp(event.time)
+        except ValidationError:
+            try:
+                nick_name = message["sender"]["card"] or message["sender"]["nickname"]
+                text = f"{nick_name}: {message['message']}"
+                time = datetime.fromtimestamp(message["time"])
+            except KeyError:
+                validation_failure_counter += 1
+                continue
+        
+        time_str = time.strftime("%Y-%m-%d %H:%M:%S")
+        text_buffer.append(
+            f"[{time_str}]{nick_name}: {text}"
+        )
+
+    if validation_failure_counter > 0:
+        text_buffer.append(f"Validation Failure: {validation_failure_counter}")
+    text_buffer.append("---")
+    text_buffer.append("Please summarize the above chat record.")
+    return "\n".join(text_buffer)
+
 
 @summary_chat_record.handle()
 async def handle_summary_chat_record(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -27,37 +59,17 @@ async def handle_summary_chat_record(bot: Bot, event: MessageEvent, args: Messag
     except (ValueError, TypeError):
         await send_msg.send_error("Please enter a valid number.")
     if n > 0:
-        texts: list[str] = []
         message_list = await bot.get_group_msg_history(
             group_id = group_id,
             count = n
         )
-        validation_failure_counter: int = 0
-        for message in message_list["messages"]:
-            try:
-                event = MessageEvent(**message)
-                nick_name = event.sender.card or event.sender.nickname
-                text = f"{nick_name}: {event.message}\n"
-            except ValidationError:
-                try:
-                    nick_name = message["sender"]["card"] or message["sender"]["nickname"]
-                    text = f"{nick_name}: {message['message']}\n"
-                except KeyError:
-                    validation_failure_counter += 1
-                    continue
-            
-            texts.append(
-                f"{nick_name}: {text}"
-            )
-        if validation_failure_counter > 0:
-            texts.append(f"Validation Failure: {validation_failure_counter}")
-        texts.append("---")
-        texts.append("Please summarize the above chat record.")
-        chat_core = ChatCore(persona_info, namespace = "Summary_Chat_Record")
+
+        text = await asyncio.to_thread(generate_text, message_list)
+
+        chat_core = ChatCore(persona_info)
         response = await chat_core.send_message(
             add_metadata = False,
-            message = "\n".join(texts),
-            save_context = False
+            message = text
         )
         chat_sendmsg = ChatSendMsg(
             send_msg.component,
