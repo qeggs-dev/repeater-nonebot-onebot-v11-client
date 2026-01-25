@@ -9,10 +9,12 @@ class Response(Generic[T_Response]):
     def __init__(
             self,
             httpx_response: HTTPXResponse,
-            model: Type[T_Response] | None = None
+            model: Type[T_Response] | None = None,
+            parsed_data: T_Response | None = None,
         ):
         self._httpx_response = httpx_response
         self._model = model
+        self._parsed_data = parsed_data
     
     @property
     def code(self) -> int:
@@ -30,6 +32,9 @@ class Response(Generic[T_Response]):
         return self._httpx_response.json()
     
     def get_data(self) -> T_Response | None:
+        if self._parsed_data is not None:
+            return self._parsed_data
+        
         if issubclass(self._model, BaseModel):
             data: Any = self.json()
             return self._model(**data)
