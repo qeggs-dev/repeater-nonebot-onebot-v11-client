@@ -33,7 +33,11 @@ async def handle_get_model_list(bot: Bot, event: MessageEvent, args: Message = C
             elif data is None:
                 await send_msg.send_error("Error: No Model Data")
             else:
-                await send_msg.send_check_length("\n".join(data))
+                model_list = response.get_data()
+                text_buffer: list[str] = []
+                for model in model_list:
+                    text_buffer.append(f"{model.parent}/{model.name} - {model.id}")
+                await send_msg.send_check_length(text_buffer)
         else:
             await send_msg.send_response_check_code(response)
 
