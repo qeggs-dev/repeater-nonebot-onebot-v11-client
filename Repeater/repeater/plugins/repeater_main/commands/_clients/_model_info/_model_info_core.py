@@ -23,12 +23,21 @@ class ModelInfoCore:
 
     
     # region get model list
-    async def get_model_list(self, type: ModelType) -> Response[list[str] | None]:
+    async def get_model_list(self, type: ModelType) -> Response[list[ModelInfo]]:
         response = await self._client.get(
             f"{GET_MODEL_UID_LIST}/{type.value}",
         )
+        json_data = response.json()
+        if not isinstance(json_data, list):
+            raise ValueError("json_data is not a list")
+        model_list: list[ModelInfo] = []
+        for model_info in json_data:
+            model_list.append(
+                ModelInfo(**model_info)
+            )
         return Response(
-            response
+            httpx_response = response,
+            parsed_data = model_list,
         )
     # endregion
 
