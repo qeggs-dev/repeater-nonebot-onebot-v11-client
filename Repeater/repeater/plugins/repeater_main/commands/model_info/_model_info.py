@@ -36,7 +36,7 @@ async def handle_get_model_list(bot: Bot, event: MessageEvent, args: Message = C
                 text_buffer: list[str] = []
                 for model in model_list:
                     text_buffer.append(f"{model.parent}/{model.name} - {model.id}")
-                await send_msg.send_check_length(text_buffer)
+                await send_msg.send_check_length("\n".join(text_buffer))
         else:
             await send_msg.send_response_check_code(response)
 
