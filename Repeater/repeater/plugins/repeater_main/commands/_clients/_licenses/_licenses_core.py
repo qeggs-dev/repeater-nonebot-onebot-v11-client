@@ -5,7 +5,7 @@ from ....assist import Response
 
 class LicenseCore:
     _httpx_client = httpx.AsyncClient(
-        BASE_URL,
+        base_url = BASE_URL,
         timeout = storage_configs.server_api_timeout.variable_expansion
     )
 
