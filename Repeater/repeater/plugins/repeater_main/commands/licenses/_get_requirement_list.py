@@ -17,14 +17,14 @@ async def handle_get_requirement_list(bot: Bot, event: MessageEvent, args: Messa
     version_core = LicenseCore()
 
     if send_msg.is_debug_mode:
-        send_msg.send_debug_mode()
+        await send_msg.send_debug_mode()
     else:
         server_requirements = await version_core.get_requirement_list()
         version_data = server_requirements.get_data()
         if not version_data:
-            send_msg.send_error("Server requirements data is invalid.")
+            await send_msg.send_error("Server requirements data is invalid.")
         else:
             text_buffer: list[str] = []
             for index, requirement in enumerate(version_data, start = 1):
                 text_buffer.append(f"{index}. {requirement}")
-            send_msg.send_check_length("\n".join(text_buffer))
+            await send_msg.send_check_length("\n".join(text_buffer))
