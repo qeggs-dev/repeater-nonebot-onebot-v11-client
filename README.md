@@ -350,6 +350,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `sessionBranchBindFrom`    | `sbbf`   | `SessionBranchBindFrom`   | `MIXED`     | 4.3.9.3        | 所有类型绑定指定分支             | 源分支名称                                  | 所有类型同时删除活动分支数据，并从指定分支硬链接一份活动分支文件 |
 | `#` or `/`                 | `anot`   | `Annotation`              | `RESERVED`  | 4.3.9.3        | 注释，不会执行任何操作           | 无                                         | 保留的注释命令，不执行任何操作，直接忽略内容 |
 | `crossUserDataAccess`      | `cuda`   | `CrossUserDataAccess`     | `CONFIG`    | 4.3.10.3       | 允许跨用户数据访问               | `true`或`false`                            | 允许跨用户数据访问，如果设置为`false`则只能访问自己的数据 |
+| `newRequestsTextOnly`      | `nrto`   | `NewRequestsTextOnly`     | `CONFIG`    | 4.3.10.7       | 忽略请求里的非文本数据           | `true`或`false`                            | 如果设置为`true`，复读机将把所有消息当成普通文本消息处理 |
 
 PS：`CHAT`类型命令几乎全员支持视觉输入
 由于需要保存上下文，复读机默认会将其下载为Base64编码
