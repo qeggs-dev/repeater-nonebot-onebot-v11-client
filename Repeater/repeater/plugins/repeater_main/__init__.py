@@ -16,6 +16,9 @@ from .commands.mixed import *
 # === Model Info === #
 from .commands.model_info import *
 
+# === Licenses === #
+from .commands.licenses import *
+
 # === More Interesting Tools === #
 from .commands.more_interesting_tools import *
 
@@ -38,3 +41,6 @@ from .commands.text_render import handle_text_render
 
 # === Comment === #
 from .commands.annotation import handle_annotation
+
+# === Adaptation === #
+from .commands.adaptation import handle_adaptation
