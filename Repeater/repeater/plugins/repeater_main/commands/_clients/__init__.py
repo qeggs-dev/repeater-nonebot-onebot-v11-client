@@ -26,3 +26,10 @@ from ._user_file_core import (
 from ._variable_expansion_core import (
     VariableExpansionCore,
 )
+from ._version import (
+    VersionAPICore,
+    VersionModel,
+)
+from ._licenses import (
+    LicenseCore,
+)
