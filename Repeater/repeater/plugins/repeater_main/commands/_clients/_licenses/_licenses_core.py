@@ -15,7 +15,7 @@ class LicenseCore:
         )
         return Response(
             httpx_response = response,
-            data = response.json()
+            parsed_data = response.json()
         )
 
     async def get_requirement_list(self) -> Response[list[str]]:
@@ -24,7 +24,7 @@ class LicenseCore:
         )
         return Response(
             httpx_response = response,
-            data = response.json()
+            parsed_data = response.json()
         )
     
     async def get_server_licenses(self) -> Response[dict[str, str]]:
@@ -33,5 +33,5 @@ class LicenseCore:
         )
         return Response(
             httpx_response = response,
-            data = response.json()
+            parsed_data = response.json()
         )
