@@ -295,8 +295,8 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `changeDefaultPersonality` | `cdp`    | `ChangeDefaultPersonality`| `CONFIG`    | 4.0 Beta       | 修改默认人格                   | [人格预设](#人格预设)                       | 修改默认人格路由 |
 | `deletePrompt`             | `dp`     | `DeletePrompt`            | `PROMPT`    | 4.0 Beta       | 删除提示词                     | 无                                        | 删除提示词 |
 | `deleteContext`            | `dc`     | `DeleteContext`           | `CONTEXT`   | 4.0 Beta       | 删除上下文                     | 无                                        | 删除上下文 |
-| `varExpand`                | `ve`     | `VarExpand`               | `VAREXPAND` | 4.0 Beta       | 变量展开                       | 文本模板(使用大括号作为[变量](#变量表)标记)  | 变量展开 |
-| `setDefaultModel`          | `sdm`    | `SetDefaultModel`         | `CONFIG`    | 4.0 Beta       | 设置默认模型                   | [模型](#模型)                              | 设置默认使用的模型 |
+| `varExpand`                | `ve`     | `VarExpand`               | `VAREXPAND` | 4.0 Beta       | 变量展开                       | 文本模板(使用大括号作为变量标记)            | 变量展开 |
+| `setDefaultModel`          | `sdm`    | `SetDefaultModel`         | `CONFIG`    | 4.0 Beta       | 设置默认模型                   | 模型UID                                   | 设置默认使用的模型 |
 | `setTopP`                  | `stp`    | `SetTopP`                 | `CONFIG`    | 4.0.1 Beta     | 设置Top_P参数                  | 0\~1的浮点数<br/>或`0%`\~`100%`的百分比    | 设置Top_P参数 |
 | `setMaxTokens`             | `stm`    | `SetMaxTokens`            | `CONFIG`    | 4.0.1 Beta     | 设置最大生成tokens数           | 整数，通常最大可达模型上下文窗口长度的一半    | 设置最大生成tokens数 |
 | `getContextTotalLength`    | `gctl`   | `GetContextTotalLength`   | `CONTEXT`   | 4.0.1 Beta     | 获取上下文总长度               | 无                                         | 获取上下文总长度 |
@@ -316,8 +316,8 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `changeSession`            | `cs`     | `ChangeSession`           | `MIXED`     | 4.2.5.1        | 让所有的数据同时切换到一个分支   | 分支名称                                  | 让`Context`、`Prompt`、`Config`同时切换到一个分支 |
 | `noSaveChat`               | `nsc`    | `NoSaveChat`              | `CHAT`      | 4.2.6.6        | 不保存的聊天对话                | 无                                        | 聊天后不保存最新聊天记录 |
 | `summaryChatRecord`        | `scr`    | `SummaryChatRecord`       | `OTHER`     | 4.2.6.6        | 聊天记录总结                    | 整数，传入的消息数量                       | 获取当前群聊内指定数量的聊天记录摘要 |
-| `varExpandText`            | `vet`    | `Var_Expand_Text`         | `VAREXPAND` | 4.2.7.0        | 变量展开                       | 文本模板(使用大括号作为[变量](#变量表)标记)  | 强制使用文本输出 |
-| `varExpandImage`           | `vei`    | `Var_Expand_Image`        | `VAREXPAND` | 4.2.7.0        | 变量展开                       | 渲染模板(使用花括号作为[变量](#变量表)标记)  | 强制使用图片输出 |
+| `varExpandText`            | `vet`    | `Var_Expand_Text`         | `VAREXPAND` | 4.2.7.0        | 变量展开(文本)                 | 文本模板(使用大括号作为[变量](#变量表)标记)  | 强制使用文本输出 |
+| `varExpandImage`           | `vei`    | `Var_Expand_Image`        | `VAREXPAND` | 4.2.7.0        | 变量展开(图片)                 | 文本模板(使用大括号作为[变量](#变量表)标记)  | 强制使用图片输出 |
 | `setAutoLoadPrompt`        | `salp`   | `SetAutoLoadPrompt`       | `CONFIG`    | 4.3.1.0        | 设置自动加载提示词              | `true`或`false`                           | 设置请求时是否自动加载Prompt |
 | `setAutoSaveContext`       | `sasc`   | `SetAutoSaveContext`      | `CONFIG`    | 4.3.1.0        | 设置自动保存上下文              | `true`或`false`                           | 设置生成完毕后是否自动保存Context |
 | `setRenderTitle`           | `srt`    | `SetRenderTitle`          | `CONFIG`    | 4.3.2.1        | 设置渲染标题                    | 任意文本                                   | 渲染时显示的标题内容 |
