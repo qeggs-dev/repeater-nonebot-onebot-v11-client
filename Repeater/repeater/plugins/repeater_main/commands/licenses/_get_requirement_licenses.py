@@ -19,7 +19,7 @@ async def handle_get_requirement_license(bot: Bot, event: MessageEvent, args: Me
     if send_msg.is_debug_mode:
         await send_msg.send_debug_mode()
     else:
-        server_version = await version_core.get_requirement_license(persona_info.namespace_str)
+        server_version = await version_core.get_requirement_license(persona_info.message_str)
         version_data = server_version.get_data()
         if version_data is None:
             await send_msg.send_error("Server license data is invalid.")
