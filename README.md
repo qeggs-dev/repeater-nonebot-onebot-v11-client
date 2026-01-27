@@ -351,6 +351,10 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `#` or `/`                 | `anot`   | `Annotation`              | `RESERVED`  | 4.3.9.3        | 注释，不会执行任何操作           | 无                                         | 保留的注释命令，不执行任何操作，直接忽略内容 |
 | `crossUserDataAccess`      | `cuda`   | `CrossUserDataAccess`     | `CONFIG`    | 4.3.10.3       | 允许跨用户数据访问               | `true`或`false`                            | 允许跨用户数据访问，如果设置为`false`则只能访问自己的数据 |
 | `newRequestsTextOnly`      | `nrto`   | `NewRequestsTextOnly`     | `CONFIG`    | 4.3.10.7       | 忽略请求里的非文本数据           | `true`或`false`                            | 如果设置为`true`，复读机将把所有消息当成普通文本消息处理 |
+| `adaptationInfo`           | `adai`   | `AdaptationInfo`          | `VERSION`   | 4.3.10.7       | 版本适配信息                    | 无                                         | 展示服务端和客户端的版本信息 |
+| `getRequirementLicenses`   | `grl`    | `GetRequirementLicenses`  | `LICENSES`  | 4.3.10.8       | 获取依赖许可证                  | 依赖项名称                                  | 获取指定依赖的许可证信息 |
+| `getRequirementList`       | `grls`   | `GetRequirementList`      | `LICENSES`  | 4.3.10.8       | 获取依赖列表                    | 无                                         | 获取所有记录了License的依赖项名称 |
+| `getServerLicense`         | `gsl`    | `GetServerLicense`        | `LICENSES`  | 4.3.10.8       | 获取服务端许可证                | 无                                         | 获取服务端许可证信息 |
 
 PS：`CHAT`类型命令几乎全员支持视觉输入
 由于需要保存上下文，复读机默认会将其下载为Base64编码
