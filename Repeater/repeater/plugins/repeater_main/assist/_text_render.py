@@ -26,10 +26,13 @@ class TextRender:
             raise TypeError(f"namespace must be str or Namespace, not {type(namespace)}")
         self._timeout = timeout
 
-    async def render(self, text: str) -> Response[RendedImage]:
+    async def render(self, text: str, direct_output: bool | None = None) -> Response[RendedImage]:
         response = await self._client.post(
             f"{TEXT_RENDER_ROUTE}/{self.namespce}",
-            json={"text": text},
+            json={
+                "text": text,
+                "direct_output": direct_output
+            },
             timeout = self._timeout
         )
         try:

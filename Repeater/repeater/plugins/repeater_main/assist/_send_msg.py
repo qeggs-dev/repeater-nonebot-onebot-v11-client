@@ -732,14 +732,14 @@ class SendMsg:
         """
         raise FinishedException
 
-    async def text_render(self, text: str) -> MessageSegment:
+    async def text_render(self, text: str, direct_output: bool = False) -> MessageSegment:
         """
         渲染文本
 
         :param text: 渲染文本内容
         """
         if text:
-            render_response: Response[RendedImage] = await self._text_render.render(text)
+            render_response: Response[RendedImage] = await self._text_render.render(text, direct_output = direct_output)
             if render_response.code == 200:
                 data = render_response.get_data()
                 if data is not None:
