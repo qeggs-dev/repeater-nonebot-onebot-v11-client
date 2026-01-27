@@ -18,13 +18,13 @@ async def handle_adaptation(bot: Bot, event: MessageEvent, args: Message = Comma
     version_core = VersionAPICore()
 
     if send_msg.is_debug_mode:
-        send_msg.send_debug_mode()
+        await send_msg.send_debug_mode()
     else:
         server_version = await version_core.get_version()
         version_data = server_version.get_data()
         if version_data is None:
-            send_msg.send_error("Server Version Data is Invalid")
-        send_msg.send_prompt(
+            await send_msg.send_error("Server Version Data is Invalid")
+        await send_msg.send_prompt(
             (
                 f"Client Adaptation Version: {__adaptation__}\n"
                 f"Server Core Version: {version_data.core}\n"
