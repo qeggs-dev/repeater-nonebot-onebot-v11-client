@@ -26,5 +26,5 @@ async def handle_get_requirement_license(bot: Bot, event: MessageEvent, args: Me
         message = Message()
         for name, license in version_data.items():
             message.append(MessageSegment.text(f"{name}:\n"))
-            message.append(await send_msg.text_render(license))
+            message.append(await send_msg.text_render(license, direct_output = True))
         await send_msg.send_prompt(message)
