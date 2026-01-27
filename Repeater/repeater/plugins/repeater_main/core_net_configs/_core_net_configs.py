@@ -58,6 +58,9 @@ BALANCE_ROUTE = f"{BASE_URL}/balance_query"
 # ==== VARIABLE EXPANSION API ==== #
 VARIABLE_EXPANSION = f"{BASE_URL}/variable_expand"
 
+# ==== VERSION API ==== #
+VERSION_ROUTE = f"{BASE_URL}/version"
+
 # ==== CONFIG ==== #
 HELLO_CONTENT = storage_configs.hello_content
 RepeaterDebugMode = net_config.repeater_debug_mode # 是否开启调试模式，调试模式下，将直接返回消息内容，而不进行后端访问操作
