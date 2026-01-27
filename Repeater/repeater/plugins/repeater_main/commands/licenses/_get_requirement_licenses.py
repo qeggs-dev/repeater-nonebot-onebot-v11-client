@@ -8,7 +8,7 @@ from nonebot.adapters import Bot
 from ...assist import PersonaInfo, SendMsg
 from .._clients import LicenseCore
 
-get_requirement_licenses = on_command("getLicenses", aliases={"grl", "get_requirement_license", "Get_Requirement_License", "GetRequirementLicense"}, rule=to_me(), block=True)
+get_requirement_licenses = on_command("getRequirementLicenses", aliases={"grl", "get_requirement_license", "Get_Requirement_License", "GetRequirementLicense"}, rule=to_me(), block=True)
 
 @get_requirement_licenses.handle()
 async def handle_get_requirement_license(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
