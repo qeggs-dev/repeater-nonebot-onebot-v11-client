@@ -7,7 +7,7 @@ from nonebot.adapters import Bot
 from typing import Optional
 import asyncio
 
-get_namespace = on_command("getNamespace", aliases={"gnp", "get_namespace", "Get_Namespace", "GetNamespace"}, rule=to_me(), block=True)
+get_namespace = on_command("getNamespace", aliases={"gns", "get_namespace", "Get_Namespace", "GetNamespace"}, rule=to_me(), block=True)
 
 from ..assist import (
     get_first_mentioned_user,
