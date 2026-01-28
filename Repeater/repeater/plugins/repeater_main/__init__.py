@@ -33,9 +33,6 @@ from .commands.user_file import (
 # === SessionID === #
 from .commands.get_namespace import handle_get_namespace
 
-# === Readme === #
-from .commands.send_readme_file import handle_send_readme_file
-
 # === TextRender === #
 from .commands.text_render import handle_text_render
 
