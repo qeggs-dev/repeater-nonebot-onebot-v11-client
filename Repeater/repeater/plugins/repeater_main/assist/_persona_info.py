@@ -93,14 +93,14 @@ class PersonaInfo:
     def namespace(self):
         if self._source == MessageSource.GROUP:
             return Namespace(
-                mode=MessageSource.GROUP,
-                group_id=self._group_id,
-                user_id=self.user_id
+                mode = MessageSource.GROUP,
+                group_id = self._group_id,
+                user_id = self.user_id
             )
         else:
             return Namespace(
-                mode=MessageSource.PRIVATE,
-                user_id=self.user_id
+                mode = MessageSource.PRIVATE,
+                user_id = self.user_id
             )
     
     @property
