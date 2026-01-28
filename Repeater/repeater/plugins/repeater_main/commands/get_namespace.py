@@ -29,7 +29,15 @@ async def handle_get_namespace(bot: Bot, event: MessageEvent, args: Message = Co
         await send_msg.send_debug_mode()
     else:
         mentioned_id = get_first_mentioned_user(event)
+        group_id = persona_info.group_id
+        namespace = persona_info.namespace
         if mentioned_id is None:
-            await send_msg.send_prompt(persona_info.namespace_str)
+            await send_msg.send_prompt(namespace.namespace)
         else:
-            await send_msg.send_prompt(Namespace(mentioned_id).namespace)
+            await send_msg.send_prompt(
+                Namespace(
+                    mode = namespace.mode,
+                    group_id = group_id,
+                    user_id = mentioned_id
+                ).namespace
+            )
