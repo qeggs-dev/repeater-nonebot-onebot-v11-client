@@ -7,7 +7,7 @@ from nonebot.adapters import Bot
 from typing import Optional
 import asyncio
 
-get_namespace = on_command("getNamespace", aliases={"gs", "get_namespace", "Get_Namespace", "GetNamespace"}, rule=to_me(), block=True)
+get_namespace = on_command("getNamespace", aliases={"gnp", "get_namespace", "Get_Namespace", "GetNamespace"}, rule=to_me(), block=True)
 
 from ..assist import (
     get_first_mentioned_user,
@@ -20,7 +20,7 @@ from ..assist import (
 async def handle_get_namespace(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     persona_info = PersonaInfo(bot, event, args)
     send_msg = SendMsg(
-        "Chat.Get_Namespace",
+        "Namespace.Get_Namespace",
         get_namespace,
         persona_info
     )
