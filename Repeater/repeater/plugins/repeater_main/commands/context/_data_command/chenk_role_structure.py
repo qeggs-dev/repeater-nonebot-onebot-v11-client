@@ -26,6 +26,9 @@ async def handle_check_role_structure(bot: Bot, event: MessageEvent, args: Messa
 
         if response.code == 200:
             data = response.get_data()
-            send_msg.send_prompt(data.message)
+            if data is not None:
+                await send_msg.send_prompt(data.message)
+            else:
+                await send_msg.send_prompt("Check Role Structure Data is Invalid")
         else:
             await send_msg.send_response_check_code(response, "Check Role Structure Failed")
