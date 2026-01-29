@@ -14,6 +14,7 @@ NPCHAT_ROUTE = f"{BASE_URL}/chat/completion/noprompt"
 # ==== CONTEXT API ==== #
 DELETE_CONTEXT_ROUTE = f"{BASE_URL}/userdata/context/delete"
 GET_CONTEXT_LENGTH_ROUTE = f"{BASE_URL}/userdata/context/length"
+ROLE_STRUCTRUE_ROUTE = f"{BASE_URL}/userdata/context/structure_check/role"
 INJECT_CONTEXT_ROUTE = f"{BASE_URL}/session/inject"
 WIHTDRAW_CONTEXT_ROUTE = f"{BASE_URL}/userdata/context/withdraw"
 CHANGE_CONTEXT_BRANCH_ROUTE = f"{BASE_URL}/userdata/context/change"
