@@ -10,7 +10,8 @@ from .....assist import PersonaInfo, Response
 from .....logger import logger as base_logger
 from ._response import (
     WithdrawResponse,
-    ContextTotalLengthResponse
+    ContextTotalLengthResponse,
+    RoleStructureCheckerResponse
 )
 from .._base_user_data_core import UserDataCore
 
@@ -61,5 +62,17 @@ class ContextCore(UserDataCore):
         return Response(
             response,
             model = ContextTotalLengthResponse
+        )
+    # endregion
+
+    # region check role structure
+    async def check_role_structure(self) -> Response[RoleStructureCheckerResponse]:
+        logger.info("Checking role structure")
+        response = await self._httpx_client.get(
+            f"{ROLE_STRUCTRUE_ROUTE}/{self._info.namespace_str}"
+        )
+        return Response(
+            response,
+            model = RoleStructureCheckerResponse
         )
     # endregion
