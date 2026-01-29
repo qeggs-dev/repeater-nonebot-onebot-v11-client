@@ -29,9 +29,5 @@ class PromptCore(UserDataCore):
                 "prompt": prompt
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion

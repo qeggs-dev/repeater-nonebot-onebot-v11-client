@@ -25,4 +25,4 @@ async def handle_var_expand(bot: Bot, event: MessageEvent, args: Message = Comma
     if response.code == 200:
         await send_msg.send_check_length(response.text)
     else:
-        await send_msg.send_response(response, "Error: VariableExpansion")
+        await send_msg.send_response_check_code(response, "Error: VariableExpansion")

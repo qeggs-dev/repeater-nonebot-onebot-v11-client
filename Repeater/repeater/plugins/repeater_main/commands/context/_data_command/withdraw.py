@@ -36,10 +36,13 @@ async def handle_withdraw(bot: Bot, event: MessageEvent, args: Message = Command
         response = await context_core.withdraw(num)
 
         if response.code == 200:
+            data = response.get_data()
+            if data is None:
+                await send_msg.send_error("Unable to process data.")
             await send_msg.send_prompt(
-                f"Deleted: {response.data.deleted}\n"
-                f"Remaining: {len(response.data.context)}\n"
+                f"Deleted: {data.deleted}\n"
+                f"Remaining: {len(data.context)}\n"
             )
             
         else:
-            await send_msg.send_response(response, "Withdraw Failed")
+            await send_msg.send_response_check_code(response, "Withdraw Failed")

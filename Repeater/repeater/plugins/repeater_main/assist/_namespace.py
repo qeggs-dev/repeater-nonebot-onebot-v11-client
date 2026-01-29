@@ -1,6 +1,5 @@
-from dataclasses import dataclass
+from pydantic import BaseModel, ConfigDict
 from enum import Enum
-from ..core_net_configs import storage_configs
 
 class MessageSource(Enum):
     """
@@ -9,11 +8,14 @@ class MessageSource(Enum):
     GROUP = "group"
     PRIVATE = "private"
 
-@dataclass
-class Namespace:
+class Namespace(BaseModel):
     """
     用户命名空间
     """
+    model_config = ConfigDict(
+        validate_assignment=True
+    )
+
     mode: MessageSource = MessageSource.GROUP
     group_id: int | None = None
     user_id: int = 0
@@ -21,14 +23,22 @@ class Namespace:
     @property
     def namespace(self) -> str:
         if self.mode == MessageSource.GROUP:
+            return f"Group_{self.group_id}_{self.user_id}"
+        elif self.mode == MessageSource.PRIVATE:
+            return f"Private_{self.user_id}"
+        else:
+            return f"UnknownSource_{self.user_id}"
+    
+    @property
+    def merge_group_id(self):
+        if self.mode == MessageSource.GROUP:
             if self.group_id is None:
                 raise ValueError("group_id cannot be None when mode is GROUP")
-            if storage_configs.merge_group_id:
-                return f"Group_{self.group_id}"
-            else:
-                return f"Group_{self.group_id}_{self.user_id}"
-        else:
+            return f"Group_{self.group_id}"
+        elif self.mode == MessageSource.PRIVATE:
             return f"Private_{self.user_id}"
+        else:
+            return f"UnknownSource_{self.user_id}"
     
     @property
     def public_space_id(self):
@@ -36,8 +46,10 @@ class Namespace:
             if self.group_id is None:
                 raise ValueError("group_id cannot be None when mode is GROUP")
             return f"Group_{self.group_id}_Public_Space"
-        else:
+        elif self.mode == MessageSource.PRIVATE:
             return f"Private_{self.user_id}_Public_Space"
+        else:
+            return f"UnknownSource_{self.user_id}_Public_Space"
     
     def __str__(self) -> str:
         return self.namespace

@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from enum import StrEnum
 
 class WithdrawResponse(BaseModel):
     status: str = "success"
@@ -11,3 +12,15 @@ class ContextTotalLengthResponse(BaseModel):
     total_context_length: int = 0
     context_length: int = 0
     average_content_length: float = 0.0
+
+class ContentRole(StrEnum):
+    SYSTEM = "system"
+    USER = "user"
+    ASSISTANT = "assistant"
+    FUNCTION = "tool"
+
+class RoleStructureCheckerResponse(BaseModel):
+    message: str = "No role structure error found"
+    index: int = -1
+    role: ContentRole | None = None
+    expected_role: list[ContentRole] | None = None

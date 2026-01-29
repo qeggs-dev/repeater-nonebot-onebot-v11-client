@@ -1,7 +1,7 @@
 from ._chat_core import (
     ChatCore,
     ChatResponse,
-    SendMsg as ChatSendMsg,
+    ChatSendMsg,
     BufferStringStream as ChatBufferStringStream,
     StreamChatChunkResponse as ChatStreamChatChunkResponse,
 )
@@ -25,4 +25,11 @@ from ._user_file_core import (
 )
 from ._variable_expansion_core import (
     VariableExpansionCore,
+)
+from ._version import (
+    VersionAPICore,
+    VersionModel,
+)
+from ._licenses import (
+    LicenseCore,
 )

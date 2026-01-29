@@ -20,18 +20,8 @@ class ChatTTSAPI:
             },
         )
 
-        try:
-            return Response(
-                code = response.status_code,
-                text = response.text,
-                data = TTSResponse(
-                    **response.json()
-                )
-            )
-        except Exception as e:
-            return Response(
-                code = response.status_code,
-                text = response.text,
-                data = TTSResponse()
-            )
+        return Response(
+            response,
+            model = TTSResponse
+        )
         

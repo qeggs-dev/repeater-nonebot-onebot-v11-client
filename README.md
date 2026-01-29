@@ -295,10 +295,10 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `changeDefaultPersonality` | `cdp`    | `ChangeDefaultPersonality`| `CONFIG`    | 4.0 Beta       | 修改默认人格                   | [人格预设](#人格预设)                       | 修改默认人格路由 |
 | `deletePrompt`             | `dp`     | `DeletePrompt`            | `PROMPT`    | 4.0 Beta       | 删除提示词                     | 无                                        | 删除提示词 |
 | `deleteContext`            | `dc`     | `DeleteContext`           | `CONTEXT`   | 4.0 Beta       | 删除上下文                     | 无                                        | 删除上下文 |
-| `varExpand`                | `ve`     | `VarExpand`               | `VAREXPAND` | 4.0 Beta       | 变量展开                       | 文本模板(使用大括号作为[变量](#变量表)标记)  | 变量展开 |
-| `setDefaultModel`          | `sdm`    | `SetDefaultModel`         | `CONFIG`    | 4.0 Beta       | 设置默认模型                   | [模型](#模型)                              | 设置默认使用的模型 |
+| `varExpand`                | `ve`     | `VarExpand`               | `VAREXPAND` | 4.0 Beta       | 变量展开                       | 文本模板(使用大括号作为变量标记)            | 变量展开 |
+| `setDefaultModel`          | `sdm`    | `SetDefaultModel`         | `CONFIG`    | 4.0 Beta       | 设置默认模型                   | 模型UID                                   | 设置默认使用的模型 |
 | `setTopP`                  | `stp`    | `SetTopP`                 | `CONFIG`    | 4.0.1 Beta     | 设置Top_P参数                  | 0\~1的浮点数<br/>或`0%`\~`100%`的百分比    | 设置Top_P参数 |
-| `setMaxTokens`             | `stm`    | `SetMaxTokens`            | `CONFIG`    | 4.0.1 Beta     | 设置最大生成tokens数           | 0\~4096的整数                              | 设置最大生成tokens数 |
+| `setMaxTokens`             | `stm`    | `SetMaxTokens`            | `CONFIG`    | 4.0.1 Beta     | 设置最大生成tokens数           | 整数，通常最大可达模型上下文窗口长度的一半    | 设置最大生成tokens数 |
 | `getContextTotalLength`    | `gctl`   | `GetContextTotalLength`   | `CONTEXT`   | 4.0.1 Beta     | 获取上下文总长度               | 无                                         | 获取上下文总长度 |
 | `publicSpaceChat`          | `psc`    | `PublicSpaceChat`         | `CHAT`      | 4.0.2.1 Beta   | 公共空间聊天                   | 自然语言输入                                | 公共空间聊天 |
 | `deletePublicSpaceContext` | `dpsc`   | `DeletePublicSpaceContext`| `CONTEXT`   | 4.0.2.1 Beta   | 删除公共空间上下文             | 无                                         | 删除公共空间上下文 | 
@@ -311,13 +311,14 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `withdraw`                 | `w`      | `Withdraw`                | `CONTEXT`   | 4.2.3.0        | 撤回消息                       | 无                                        | 删除复读机上下文中保存的最新一回合对话 |
 | `recentSpeakingRanking`    | `rsr`    | `RecentSpeakingRanking`   | `OTHER`     | 4.2.3.0        | 最近发言排行                   | 无                                        | 获取群组内最近发言的成员列表 |
 | `setAutoShrinkLength`      | `sasl`   | `SetAutoShrinkLength`     | `CONFIG`    | 4.2.4.0        | 设置自动缩减长度上限            | 整数                                      | 如果你的聊天条数超过该值，系统会尝试自动删除最旧的部分 |
+| `getNamespace`             | `gns`    | `GetNamespace`            | `NAMESPACE` | 4.2.4.4        | 获取命名空间                   | @目标用户 (不填就是自己)                    | 获取当前或指定用户的命名空间 |
 | `deleteSession`            | `ds`     | `DeleteSession`           | `MIXED`     | 4.2.5.0        | 删除所有用户数据               | 无                                        | 删除所有用户数据 |
 | `raw`                      | `raw`    | `Raw`                     | `CHAT`      | 4.2.5.1        | 发送消息且不包含任何元数据      | 自然语言输入                               | 发送消息且不包含任何元数据 |
 | `changeSession`            | `cs`     | `ChangeSession`           | `MIXED`     | 4.2.5.1        | 让所有的数据同时切换到一个分支   | 分支名称                                  | 让`Context`、`Prompt`、`Config`同时切换到一个分支 |
 | `noSaveChat`               | `nsc`    | `NoSaveChat`              | `CHAT`      | 4.2.6.6        | 不保存的聊天对话                | 无                                        | 聊天后不保存最新聊天记录 |
 | `summaryChatRecord`        | `scr`    | `SummaryChatRecord`       | `OTHER`     | 4.2.6.6        | 聊天记录总结                    | 整数，传入的消息数量                       | 获取当前群聊内指定数量的聊天记录摘要 |
-| `varExpandText`            | `vet`    | `Var_Expand_Text`         | `VAREXPAND` | 4.2.7.0        | 变量展开                       | 文本模板(使用大括号作为[变量](#变量表)标记)  | 强制使用文本输出 |
-| `varExpandImage`           | `vei`    | `Var_Expand_Image`        | `VAREXPAND` | 4.2.7.0        | 变量展开                       | 渲染模板(使用花括号作为[变量](#变量表)标记)  | 强制使用图片输出 |
+| `varExpandText`            | `vet`    | `Var_Expand_Text`         | `VAREXPAND` | 4.2.7.0        | 变量展开(文本)                 | 文本模板(使用大括号作为[变量](#变量表)标记)  | 强制使用文本输出 |
+| `varExpandImage`           | `vei`    | `Var_Expand_Image`        | `VAREXPAND` | 4.2.7.0        | 变量展开(图片)                 | 文本模板(使用大括号作为[变量](#变量表)标记)  | 强制使用图片输出 |
 | `setAutoLoadPrompt`        | `salp`   | `SetAutoLoadPrompt`       | `CONFIG`    | 4.3.1.0        | 设置自动加载提示词              | `true`或`false`                           | 设置请求时是否自动加载Prompt |
 | `setAutoSaveContext`       | `sasc`   | `SetAutoSaveContext`      | `CONFIG`    | 4.3.1.0        | 设置自动保存上下文              | `true`或`false`                           | 设置生成完毕后是否自动保存Context |
 | `setRenderTitle`           | `srt`    | `SetRenderTitle`          | `CONFIG`    | 4.3.2.1        | 设置渲染标题                    | 任意文本                                   | 渲染时显示的标题内容 |
@@ -349,6 +350,13 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `sessionBranchBind`        | `sbb`    | `SessionBranchBind`       | `MIXED`     | 4.3.9.3        | 所有类型绑定指定分支             | 目标分支名称                                | 所有类型同时创建一个新分支，硬链接到当前活动分支 |
 | `sessionBranchBindFrom`    | `sbbf`   | `SessionBranchBindFrom`   | `MIXED`     | 4.3.9.3        | 所有类型绑定指定分支             | 源分支名称                                  | 所有类型同时删除活动分支数据，并从指定分支硬链接一份活动分支文件 |
 | `#` or `/`                 | `anot`   | `Annotation`              | `RESERVED`  | 4.3.9.3        | 注释，不会执行任何操作           | 无                                         | 保留的注释命令，不执行任何操作，直接忽略内容 |
+| `crossUserDataAccess`      | `cuda`   | `CrossUserDataAccess`     | `CONFIG`    | 4.3.10.3       | 允许跨用户数据访问               | `true`或`false`                            | 允许跨用户数据访问，如果设置为`false`则只能访问自己的数据 |
+| `newRequestsTextOnly`      | `nrto`   | `NewRequestsTextOnly`     | `CONFIG`    | 4.3.10.7       | 忽略请求里的非文本数据           | `true`或`false`                            | 如果设置为`true`，复读机将把所有消息当成普通文本消息处理 |
+| `adaptationInfo`           | `adai`   | `AdaptationInfo`          | `VERSION`   | 4.3.10.7       | 版本适配信息                    | 无                                         | 展示服务端和客户端的版本信息 |
+| `getRequirementLicenses`   | `grl`    | `GetRequirementLicenses`  | `LICENSES`  | 4.3.10.8       | 获取依赖许可证                  | 依赖项名称                                  | 获取指定依赖的许可证信息 |
+| `getRequirementList`       | `grls`   | `GetRequirementList`      | `LICENSES`  | 4.3.10.8       | 获取依赖列表                    | 无                                         | 获取所有记录了License的依赖项名称 |
+| `getServerLicense`         | `gsl`    | `GetServerLicense`        | `LICENSES`  | 4.3.10.8       | 获取服务端许可证                | 无                                         | 获取服务端许可证信息 |
+| `checkRoleStructure`       | `crs`    | `CheckRoleStructure`      | `CONTEXT`   | 4.3.10.10      | 检查角色结构                    | 无                                         | 检查上下文中的角色结构是否符合 user-assistant 的规则 |
 
 PS：`CHAT`类型命令几乎全员支持视觉输入
 由于需要保存上下文，复读机默认会将其下载为Base64编码

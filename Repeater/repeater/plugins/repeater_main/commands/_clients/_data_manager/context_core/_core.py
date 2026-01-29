@@ -10,7 +10,8 @@ from .....assist import PersonaInfo, Response
 from .....logger import logger as base_logger
 from ._response import (
     WithdrawResponse,
-    ContextTotalLengthResponse
+    ContextTotalLengthResponse,
+    RoleStructureCheckerResponse
 )
 from .._base_user_data_core import UserDataCore
 
@@ -34,15 +35,11 @@ class ContextCore(UserDataCore):
                 "role": role
             }
         )
-        return Response(
-            code = response.status_code,
-            text = response.text,
-            data = None
-        )
+        return Response(response)
     # endregion
     
     # region withdraw
-    async def withdraw(self, context_pair_num: int = 1) -> Response[WithdrawResponse | None]:
+    async def withdraw(self, context_pair_num: int = 1) -> Response[WithdrawResponse]:
         logger.info("Withdrawing context")
         response = await self._httpx_client.post(
             f"{WIHTDRAW_CONTEXT_ROUTE}/{self._info.namespace_str}",
@@ -51,25 +48,31 @@ class ContextCore(UserDataCore):
             }
         )
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = WithdrawResponse(
-                **response.json()
-            ) if response.status_code == 200 else None
+            response,
+            model = WithdrawResponse
         )
     # endregion
 
     # region get context total length
-    async def get_context_total_length(self) -> Response[ContextTotalLengthResponse | None]:
+    async def get_context_total_length(self) -> Response[ContextTotalLengthResponse]:
         logger.info("Getting context total length")
         response = await self._httpx_client.get(
             f"{GET_CONTEXT_LENGTH_ROUTE}/{self._info.namespace_str}"
         )
         return Response(
-            code = response.status_code,
-            text = response.text,
-            data = ContextTotalLengthResponse(
-                **response.json()
-            ) if response.status_code == 200 else None
+            response,
+            model = ContextTotalLengthResponse
+        )
+    # endregion
+
+    # region check role structure
+    async def check_role_structure(self) -> Response[RoleStructureCheckerResponse]:
+        logger.info("Checking role structure")
+        response = await self._httpx_client.get(
+            f"{ROLE_STRUCTRUE_ROUTE}/{self._info.namespace_str}"
+        )
+        return Response(
+            response,
+            model = RoleStructureCheckerResponse
         )
     # endregion

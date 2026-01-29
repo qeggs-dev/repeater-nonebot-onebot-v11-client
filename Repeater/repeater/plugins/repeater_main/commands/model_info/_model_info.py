@@ -27,10 +27,16 @@ async def handle_get_model_list(bot: Bot, event: MessageEvent, args: Message = C
 
         response = await model_info_core.get_model_list(model_type)
         if response.code == 200:
-            if response.data is not None:
-                await send_msg.send_check_length("\n".join(response.data))
-            else:
+            model_list = response.get_data()
+            if model_list is None:
                 await send_msg.send_error("Error: No Model Data")
+            elif not isinstance(model_list, list):
+                await send_msg.send_error("Response data is not a list")
+            else:
+                text_buffer: list[str] = []
+                for model in model_list:
+                    text_buffer.append(f"{model.uid} ({model.parent}/{model.name})")
+                await send_msg.send_check_length("\n".join(text_buffer))
         else:
-            await send_msg.send_response(response)
+            await send_msg.send_response_check_code(response)
 

@@ -23,4 +23,4 @@ async def handle_delete_public_space_context(bot: Bot, event: MessageEvent, args
         await send_msg.send_debug_mode()
     else:
         response = await context_core.delete()
-        await send_msg.send_response(response, f"Delete Public Space Context from {persona_info.namespace_str}")
+        await send_msg.send_response_check_code(response, f"Delete Public Space Context from {persona_info.namespace_str}")

@@ -24,8 +24,6 @@ async def handle_smart_at(bot: Bot, event: MessageEvent):
         namespace = persona_info.namespace_str,
         module = send_msg.component
     )
-
-    message = persona_info.message
     
     if not persona_info:
         if persona_info.source == MessageSource.GROUP:
@@ -35,11 +33,21 @@ async def handle_smart_at(bot: Bot, event: MessageEvent):
     
     core = ChatCore(persona_info)
 
+    message = persona_info.message
+    if not message:
+        logger.warning("Message is empty")
+        return
+    
+    message_str = persona_info.message_str
+
     images: list[str] = await persona_info.get_images_url()
 
-    
+    if not images:
+        if not message_str:
+            message = str(message)
+
     response = await core.send_message(
-        message = message.extract_plain_text().strip(),
+        message = message_str,
         image_url = images
     )
     

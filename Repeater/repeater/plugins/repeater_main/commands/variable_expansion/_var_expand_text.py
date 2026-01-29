@@ -25,4 +25,4 @@ async def handle_var_expand_text(bot: Bot, event: MessageEvent, args: Message = 
     if response.code == 200:
         await send_msg.send_text(response.text)
     else:
-        await send_msg.send_response(response, "Error: VariableExpansion")
+        await send_msg.send_response_check_code(response, "Error: VariableExpansion")

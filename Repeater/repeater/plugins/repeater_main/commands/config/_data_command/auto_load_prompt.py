@@ -28,4 +28,4 @@ async def handle_set_auto_load_prompt(bot: Bot, event: MessageEvent, args: Messa
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("load_prompt", auto_load_prompt)
-        await send_msg.send_response(response, f"Auto Load Prompt set to {auto_load_prompt}")
+        await send_msg.send_response_check_code(response, f"Auto Load Prompt set to {auto_load_prompt}")

@@ -26,4 +26,4 @@ async def handle_setprompt(bot: Bot, event: MessageEvent, args: Message = Comman
         await send_msg.send_debug_mode()
     else:
         response = await prompt_core.set_prompt(msg)
-        await send_msg.send_response(response, f"Set Prompt {'successfully' if response.code == 200 else 'failed'}")
+        await send_msg.send_response_check_code(response, f"Set Prompt {'successfully' if response.code == 200 else 'failed'}")

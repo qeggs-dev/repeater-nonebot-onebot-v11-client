@@ -1,0 +1,1 @@
+from ._licenses_core import LicenseCore

@@ -8,7 +8,8 @@ from ._http_code import HTTP_Code
 from ._persona_info import PersonaInfo
 from ._namespace import MessageSource
 from ._text_render import TextRender
-from ._response_body import Response
+from ._response import Response
+from ._error_response import ErrorResponse
 from ..chattts import ChatTTSAPI
 from typing import (
     Callable,
@@ -114,6 +115,87 @@ class SendMsg:
             reply = reply,
             continue_handler = continue_handler,
         )
+    
+    @overload
+    async def send_response_check_code(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[False] = False,
+        ) -> NoReturn: ...
+
+    @overload
+    async def send_response_check_code(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[True] = True,
+        ) -> None: ...
+    
+    async def send_response_check_code(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: bool = False,
+        ):
+        if response.code != 200:
+            await self.send_error_response(
+                response = response,
+                message = message,
+                reply = reply,
+                continue_handler = continue_handler,
+            )
+        else:
+            await self.send_response(
+                response = response,
+                message = message,
+                reply = reply,
+                continue_handler = continue_handler,
+            )
+    
+    @overload
+    async def send_error_response(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[False] = False,
+        ) -> NoReturn: ...
+
+    @overload
+    async def send_error_response(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: Literal[True] = True,
+        ) -> None: ...
+    
+    async def send_error_response(
+            self,
+            response: Response[T_RESPONSE],
+            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            reply: bool = True,
+            continue_handler: bool = False,
+        ):
+            if message is None:
+                error = response.get_error()
+                if error is not None:
+                    message = f"{error.error_message}\n{error.source_exception}: {error.exception_message}"
+                else:
+                    message = f"[Error Info Is Invalid]"
+            else:
+                message = message
+            
+            await self.send_response(
+                response,
+                message,
+                reply = reply,
+                continue_handler = continue_handler,
+            )
     
     @overload
     async def send_response(
@@ -551,12 +633,14 @@ class SendMsg:
         :param continue_handler: 是否继续处理流程
         """
         response = await self._chat_tts_api.text_to_speech(text)
-        if response.code == 200 and response.data is not None:
-            await self._send(
-                message = MessageSegment.record(response.data.audio_files[0].url),
-                reply = reply,
-                continue_handler = continue_handler
-            )
+        if response.code == 200:
+            data = response.get_data()
+            if data is not None:
+                await self._send(
+                    message = MessageSegment.record(data.audio_files[0].url),
+                    reply = reply,
+                    continue_handler = continue_handler
+                )
         elif send_error_message:
             await self.send_response(response, message = "TTS Error.")
         else:
@@ -648,16 +732,20 @@ class SendMsg:
         """
         raise FinishedException
 
-    async def text_render(self, text: str) -> MessageSegment:
+    async def text_render(self, text: str, direct_output: bool = False) -> MessageSegment:
         """
         渲染文本
 
         :param text: 渲染文本内容
         """
         if text:
-            render_response: Response[RendedImage] = await self._text_render.render(text)
-            if render_response.code == 200 and render_response.data is not None:
-                message = MessageSegment.image(render_response.data.image_url)
+            render_response: Response[RendedImage] = await self._text_render.render(text, direct_output = direct_output)
+            if render_response.code == 200:
+                data = render_response.get_data()
+                if data is not None:
+                    message = MessageSegment.image(data.image_url)
+                else:
+                    logger.error(f"Render Data Is Invalid")
             else:
                 await self.send_response(render_response, lambda response: f"Render Error: {response.text}")
             return message

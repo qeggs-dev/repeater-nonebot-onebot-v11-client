@@ -37,4 +37,4 @@ async def handle_set_presence_penalty(bot: Bot, event: MessageEvent, args: Messa
         await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("presence_penalty", presence_penalty)
-        await send_msg.send_response(response, f"Set Presence_Penalty to {presence_penalty}")
+        await send_msg.send_response_check_code(response, f"Set Presence_Penalty to {presence_penalty}")

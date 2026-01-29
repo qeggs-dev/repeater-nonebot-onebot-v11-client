@@ -25,4 +25,4 @@ async def handle_context_branch_clone_from(bot: Bot, event: MessageEvent, args: 
         await send_msg.send_debug_mode()
     else:
         response = await context_core.clone_from(msg)
-        await send_msg.send_response(response, f"Clone Context Branch from {msg}")
+        await send_msg.send_response_check_code(response, f"Clone Context Branch from {msg}")

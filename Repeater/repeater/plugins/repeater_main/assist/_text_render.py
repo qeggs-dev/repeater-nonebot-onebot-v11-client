@@ -1,6 +1,6 @@
 from ..core_net_configs import *
 from pydantic import BaseModel
-from ._response_body import Response
+from ._response import Response
 from ._namespace import Namespace
 import httpx
 
@@ -26,10 +26,13 @@ class TextRender:
             raise TypeError(f"namespace must be str or Namespace, not {type(namespace)}")
         self._timeout = timeout
 
-    async def render(self, text: str) -> Response[RendedImage]:
+    async def render(self, text: str, direct_output: bool | None = None) -> Response[RendedImage]:
         response = await self._client.post(
             f"{TEXT_RENDER_ROUTE}/{self.namespce}",
-            json={"text": text},
+            json={
+                "text": text,
+                "direct_output": direct_output
+            },
             timeout = self._timeout
         )
         try:
@@ -38,8 +41,7 @@ class TextRender:
             response_json = {}
         
         return Response(
-            code=response.status_code,
-            text=response.text,
-            data=RendedImage(**response_json),
+            response,
+            model = RendedImage
         )
         

@@ -23,5 +23,5 @@ async def handle_change_default_personality(bot: Bot, event: MessageEvent, args:
         await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("parset_prompt_name", persona_info.message_str)
-        await send_msg.send_response(response, f"Change Default Personality to {persona_info.message_str}")
+        await send_msg.send_response_check_code(response, f"Change Default Personality to {persona_info.message_str}")
         

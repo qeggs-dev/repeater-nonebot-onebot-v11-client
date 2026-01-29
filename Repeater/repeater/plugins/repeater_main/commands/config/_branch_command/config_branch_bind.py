@@ -25,4 +25,4 @@ async def handle_config_branch_bind(bot: Bot, event: MessageEvent, args: Message
         await send_msg.send_debug_mode()
     else:
         response = await config_core.bind(msg)
-        await send_msg.send_response(response, f"Bind Config Branch to {msg}")
+        await send_msg.send_response_check_code(response, f"Bind Config Branch to {msg}")

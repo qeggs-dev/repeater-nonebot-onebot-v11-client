@@ -26,12 +26,12 @@ async def handle_public_space_chat(bot: Bot, event: MessageEvent, args: Message 
         "Received a message {message} from {namespace}",
         message = persona_info.message_str,
         namespace = persona_info.namespace_str,
-        module = send_msg.component_name
+        module = send_msg.component
     )
 
     message = persona_info.message
 
-    chat_core = ChatCore(persona_info)
+    chat_core = ChatCore(persona_info, persona_info.namespace.public_space_id)
     
     images: list[str] = await persona_info.get_images_url()
 

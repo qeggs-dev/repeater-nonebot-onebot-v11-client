@@ -23,4 +23,4 @@ async def handle_delete_context(bot: Bot, event: MessageEvent, args: Message = C
         await send_msg.send_debug_mode()
     else:
         response = await context_core.delete()
-        await send_msg.send_response(response, f"Delete Context from {persona_info.namespace_str}")
+        await send_msg.send_response_check_code(response, f"Delete Context from {persona_info.namespace_str}")

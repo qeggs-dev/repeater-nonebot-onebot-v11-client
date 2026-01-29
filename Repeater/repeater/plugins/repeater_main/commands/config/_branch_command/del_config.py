@@ -23,4 +23,4 @@ async def handle_del_config(bot: Bot, event: MessageEvent):
         await send_msg.send_debug_mode()
     else:
         response = await config_core.delete()
-        await send_msg.send_response(response, f"Delete Config {persona_info.namespace_str}")
+        await send_msg.send_response_check_code(response, f"Delete Config {persona_info.namespace_str}")

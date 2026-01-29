@@ -28,4 +28,4 @@ async def handle_var_expand_image(bot: Bot, event: MessageEvent, args: Message =
         if response.code == 200:
             await send_msg.send_render(response.text)
         else:
-            await send_msg.send_response(response, "Error: VariableExpansion")
+            await send_msg.send_response_check_code(response, "Error: VariableExpansion")

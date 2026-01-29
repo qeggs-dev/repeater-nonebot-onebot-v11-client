@@ -6,6 +6,8 @@ from ._data_command.set_temperature import handle_set_temperature
 from ._data_command.set_frequency_penalty import handle_set_frequency_penalty
 from ._data_command.set_presence_penalty import handle_set_presence_penalty
 from ._data_command.change_default_personality import handle_change_default_personality
+from ._data_command.cross_user_data_access import handle_cross_user_data_access
+from ._data_command.new_requests_text_only import handle_new_requests_text_only
 from ._data_command.set_html_template import handle_set_html_template
 from ._data_command.set_render_style import handle_set_render_style
 from ._data_command.set_render_title import handle_set_render_title
@@ -32,6 +34,8 @@ __all__ = [
     "handle_set_frequency_penalty",
     "handle_set_presence_penalty",
     "handle_change_default_personality",
+    "handle_cross_user_data_access",
+    "handle_new_requests_text_only",
     "handle_set_html_template",
     "handle_del_config",
     "handle_set_render_style",

@@ -25,10 +25,13 @@ async def handle_total_context_length(bot: Bot, event: MessageEvent, args: Messa
         response = await context_core.get_context_total_length()
 
         if response.code == 200:
+            data = response.get_data()
+            if data is None:
+                await send_msg.send_error("Unable to process data.")
             await send_msg.send_prompt(
-                f"length: {response.data.context_length}\n"
-                f"total_text_length: {response.data.total_context_length}\n"
-                f"average_content_length: {response.data.average_content_length}\n"
+                f"length: {data.context_length}\n"
+                f"total_text_length: {data.total_context_length}\n"
+                f"average_content_length: {data.average_content_length}\n"
             )
         else:
-            await send_msg.send_response(response, "Get Context Total Length Failed")
+            await send_msg.send_response_check_code(response, "Get Context Total Length Failed")

@@ -33,4 +33,4 @@ async def handle_set_timezone(bot: Bot, event: MessageEvent, args: Message = Com
         await send_msg.send_debug_mode()
     else:
         response = await config_core.set_config("timezone", timezone)
-        await send_msg.send_response(response, f"Set Timezone to {timezone}")
+        await send_msg.send_response_check_code(response, f"Set Timezone to {timezone}")

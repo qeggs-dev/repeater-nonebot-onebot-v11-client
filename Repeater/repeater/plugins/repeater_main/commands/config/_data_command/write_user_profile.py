@@ -23,4 +23,4 @@ async def handle_write_user_profile(bot: Bot, event: MessageEvent, args: Message
     else:
         config_core = ConfigCore(persona_info)
         response = await config_core.set_config("user_profile", persona_info.message_str)
-        await send_msg.send_response(response, f"Write_User_Profile seted")
+        await send_msg.send_response_check_code(response, f"Write_User_Profile seted")
