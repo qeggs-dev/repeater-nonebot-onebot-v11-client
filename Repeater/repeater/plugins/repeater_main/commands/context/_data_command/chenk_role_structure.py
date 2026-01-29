@@ -4,7 +4,6 @@ from nonebot.params import CommandArg
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment
 from nonebot.adapters import Bot
-from pydantic import ValidationError
 
 from ..._clients import ContextCore
 from ....assist import PersonaInfo, SendMsg
@@ -25,8 +24,8 @@ async def handle_check_role_structure(bot: Bot, event: MessageEvent, args: Messa
     else:
         response = await context_core.check_role_structure()
 
-        try:
+        if response.code == 200:
             data = response.get_data()
-            await send_msg.send_prompt(data.message)
-        except ValidationError:
-            await send_msg.send_error_response(response)
+            send_msg.send_prompt(data.message)
+        else:
+            await send_msg.send_response_check_code(response, "Check Role Structure Failed")
