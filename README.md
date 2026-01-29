@@ -356,6 +356,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `getRequirementLicenses`   | `grl`    | `GetRequirementLicenses`  | `LICENSES`  | 4.3.10.8       | 获取依赖许可证                  | 依赖项名称                                  | 获取指定依赖的许可证信息 |
 | `getRequirementList`       | `grls`   | `GetRequirementList`      | `LICENSES`  | 4.3.10.8       | 获取依赖列表                    | 无                                         | 获取所有记录了License的依赖项名称 |
 | `getServerLicense`         | `gsl`    | `GetServerLicense`        | `LICENSES`  | 4.3.10.8       | 获取服务端许可证                | 无                                         | 获取服务端许可证信息 |
+| `checkRoleStructure`       | `crs`    | `CheckRoleStructure`      | `CONTEXT`   | 4.3.10.10      | 检查角色结构                    | 无                                         | 检查上下文中的角色结构是否符合 user-assistant 的规则 |
 
 PS：`CHAT`类型命令几乎全员支持视觉输入
 由于需要保存上下文，复读机默认会将其下载为Base64编码
