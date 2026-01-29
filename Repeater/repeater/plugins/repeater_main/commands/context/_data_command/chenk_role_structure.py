@@ -27,6 +27,6 @@ async def handle_check_role_structure(bot: Bot, event: MessageEvent, args: Messa
 
         try:
             data = response.get_data()
-            send_msg.send_prompt(data.message)
+            await send_msg.send_prompt(data.message)
         except ValidationError:
-            send_msg.send_error_response(response)
+            await send_msg.send_error_response(response)
