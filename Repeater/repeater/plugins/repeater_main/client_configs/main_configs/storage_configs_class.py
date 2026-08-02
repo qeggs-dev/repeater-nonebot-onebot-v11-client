@@ -8,6 +8,7 @@ from .behavioral_act import BehavioralACT
 from .hello_content import HelloContent
 from .platform_interface import PlatformInterface
 from .loading import LoadingConfigs
+from .generate_image_file_type import GenerateImageFileType
 
 class StorageConfigs(BaseModel):
     text_length_score_configs: TextLengthScoreConfigs = Field(default_factory = TextLengthScoreConfigs)
@@ -24,6 +25,7 @@ class StorageConfigs(BaseModel):
     use_base64_image_url: bool = False
     camouflage: Camouflage = Field(default_factory = Camouflage)
     download_image_timeout: float = 600.0
+    generate_image_file_type: GenerateImageFileType = GenerateImageFileType.URL
     summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
     ciallo_content: str = "Ciallo~ (∠・ω< )⌒★"
     branch_file_size_use_abbreviation: bool = True

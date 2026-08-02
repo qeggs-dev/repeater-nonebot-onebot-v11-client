@@ -12,6 +12,7 @@ from .storage_configs_instance import storage_configs
 from .text_length_score_configs import TextLengthScoreConfigs
 from .text_length_score_threshold import TextLengthScoreThreshold
 from .throw_on_duplicate import ThrowOnDuplicate
+from .generate_image_file_type import GenerateImageFileType
 
 __all__ = [
     "BehavioralACT",
@@ -26,5 +27,6 @@ __all__ = [
     "storage_configs_class",
     "TextLengthScoreConfigs",
     "TextLengthScoreThreshold",
-    "ThrowOnDuplicate"
+    "ThrowOnDuplicate",
+    "GenerateImageFileType"
 ]

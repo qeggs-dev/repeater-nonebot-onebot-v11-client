@@ -4,6 +4,7 @@ from ._partial_image_event import PartialImageEvent
 from ._request import ImagesRequest
 from ._response import ImagesResponse
 from .auxiliary import *
+from .file import *
 
 __all__ = [
     "ImageClient",
@@ -23,4 +24,9 @@ __all__ = [
     "StreamUsage",
     "ImageStyle",
     "ImageTokenUsage",
+
+    "PathFile",
+    "UrlFile",
+    "Base64File",
+    "FILE_TYPES",
 ]

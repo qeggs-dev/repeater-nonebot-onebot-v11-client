@@ -8,6 +8,9 @@ from .auxiliary import (
     ImageSize,
     ImageStyle
 )
+from .file import (
+    FILE_TYPES
+)
 
 class ImagesRequest(BaseModel):
     model_config = ConfigDict(
@@ -15,6 +18,7 @@ class ImagesRequest(BaseModel):
     )
     
     model_id: str | list[str] | None = None
+    images: list[FILE_TYPES] | None = None
     prompt: str = ""
     
     background: Background | None = None
