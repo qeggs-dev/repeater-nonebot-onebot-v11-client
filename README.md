@@ -342,6 +342,10 @@ main_api.json
         "cache_timeout": 60,
     },
 
+    // 生成图片所参考的文件的解析类型
+    // 支持 url / path / base64
+    // 具体请参考你的 OneBot 实现选择的方式
+    "generate_image_file_type": "url",
 
     // Ciallo~ (∠・ω< )⌒★
     // 在执行 ciallo 命令时，发送的内容
