@@ -17,6 +17,9 @@ from .base_nexus import (
     UploadToNexus,
     DownloadFromNexus,
 )
+from .base_image import (
+    GenerateImageBase,
+)
 from .userdata_cmds_type import UserdataCmdsType
 
 __all__ = [
