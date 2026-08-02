@@ -17,7 +17,7 @@ from .auxiliary import (
     ImageSize,
     ImageStyle
 )
-from file import FILE_TYPES
+from .file import FILE_TYPES
 from ._partial_image_event import PartialImageEvent
 from ._completed_image_event import CompletedImageEvent
 from pydantic import ValidationError

@@ -8,7 +8,7 @@ from .auxiliary import (
     ImageSize,
     ImageStyle
 )
-from file import (
+from .file import (
     FILE_TYPES
 )
 
