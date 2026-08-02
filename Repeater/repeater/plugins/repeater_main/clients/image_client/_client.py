@@ -17,6 +17,7 @@ from .auxiliary import (
     ImageSize,
     ImageStyle
 )
+from file import FILE_TYPES
 from ._partial_image_event import PartialImageEvent
 from ._completed_image_event import CompletedImageEvent
 from pydantic import ValidationError
@@ -27,6 +28,7 @@ class ImageClient(BaseClient):
     async def generate(
             self,
             model_id: str | list[str] | None = None,
+            images: list[FILE_TYPES] | None = None,
             prompt: str = "",
             
             background: Background | None = None,
@@ -45,6 +47,7 @@ class ImageClient(BaseClient):
 
         request = ImagesRequest(
             model_id = model_id,
+            images = images,
             prompt = prompt,
 
             background = background,
@@ -72,6 +75,7 @@ class ImageClient(BaseClient):
     async def generate_stream(
             self,
             model_id: str | list[str] | None = None,
+            images: list[FILE_TYPES] | None = None,
             prompt: str = "",
             
             background: Background | None = None,
@@ -90,6 +94,7 @@ class ImageClient(BaseClient):
 
         request = ImagesRequest(
             model_id = model_id,
+            images = images,
             prompt = prompt,
 
             background = background,
