@@ -37,37 +37,36 @@ class GenerateImageBase(CommandPackage):
             await send_msg.send_error("Error: No prompt provided")
 
         images: list[FILE_TYPES] = []
-        images.extend(await self.get_images(persona_info))
         async for reply in persona_info.from_reference_chain():
             images.extend(await self.get_images(reply))
+        images.extend(await self.get_images(persona_info))
 
         return images or None, prompt
 
     async def get_images(self, persona_info: PersonaInfo) -> list[FILE_TYPES]:
         images = []
-        if "image" in persona_info.message:
-            match storage_configs.generate_image_file_type:
-                case GenerateImageFileType.URL:
-                    images.extend(
-                        UrlFile(
-                            url = image_url
-                        )
-                        for image_url in await persona_info.get_images_url()
+        match storage_configs.generate_image_file_type:
+            case GenerateImageFileType.URL:
+                images.extend(
+                    UrlFile(
+                        url = image_url
                     )
-                case GenerateImageFileType.PATH:
-                    images.extend(
-                        PathFile(
-                            path = image_url,
-                        )
-                        for image_url in await persona_info.get_images_url()
+                    for image_url in await persona_info.get_images_url()
+                )
+            case GenerateImageFileType.PATH:
+                images.extend(
+                    PathFile(
+                        path = image_url,
                     )
-                case GenerateImageFileType.BASE64:
-                    images.extend(
-                        Base64File(
-                            data = image_url,
-                        )
-                        for image_url in await persona_info.get_images_url()
+                    for image_url in await persona_info.get_images_url()
+                )
+            case GenerateImageFileType.BASE64:
+                images.extend(
+                    Base64File(
+                        data = image_url,
                     )
+                    for image_url in await persona_info.get_images_url()
+                )
         return images
     
     async def generate_image(
