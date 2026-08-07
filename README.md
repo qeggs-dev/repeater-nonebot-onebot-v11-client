@@ -455,8 +455,9 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `loop`                     | `l`      | `Loop`                    | `CONTROL`   | 4.8.0.0        | 循环执行命令                   | 格式为: 循环次数 命令 参数                  | 循环次数必须为一个有效数字且大于 0，默认为 1 |
 | `messageWithdrawn`         | `mw`     | `MessageWithdrawn`        | `CONTROL`   | 4.8.0.0        | 撤回机器人消息                 | 引用一个该机器人的消息                      | 撤回机器人发送的消息 |
 | `poke`                     | `poke`   | `Poke`                    | `CONTROL`   | 4.8.3.2        | 戳一戳                        | @戳一戳的对象                              | 不填写参数时目标为自己 |
-| `cancel`                   | `cl`     | `Cancel`                  | `CONTROL`   | 4.8.0.0        | 取消一个命令                   | 任务 ID                                   | 取消一个命令 |
-| `taskList`                 | `tl`     | `TaskList`                | `CONTROL`   | 4.8.0.0        | 查看当前任务列表                | 无                                       | 查看当前用户所有正在运行的 Task 实例 |
+| `cancel`                   | `cl`     | `Cancel`                  | `CONTROL`   | 4.8.3.2        | 取消一个命令                   | 任务 ID                                   | 取消一个命令 |
+| `taskList`                 | `tl`     | `TaskList`                | `CONTROL`   | 4.8.3.2        | 查看当前任务列表                | 无                                       | 查看当前用户所有正在运行的 Task 实例 |
+| `cascade`                  | `cas`    | `Cascade`                 | `CONTROL`   | 4.8.5.0        | 级联执行命令                   | 格式为: 命令 参数                         | 每行一个命令，下一个命令执行时，会使用上一个命令的输出作为输入，最后一个直接输出 |
 
 ### Chat Command
 
@@ -493,7 +494,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
 | :---                       | :---     | :---                      | :---        | :---           | :---                          | :---                                      | :---    |
 | `generateImage`            | `gi`     | `GenerateImage`           | `GENIMG`    | 4.8.0.0        | 使用模型生成图片               | 提示词                                     | 使用模型生成图片内容 |
-| `generateImageWithSize`    | `giz`    | `GenerateImageWithSize`   | `GENIMG`    | 4.8.0.0        | 使用模型生成图片               | 宽x高 提示词                               | 使用模型生成图片内容，并指定画幅 |
+| `generateImageWithSize`    | `giz`    | `GenerateImageWithSize`   | `GENIMG`    | 4.8.4.0        | 使用模型生成图片               | 宽x高 提示词                               | 使用模型生成图片内容，并指定画幅 |
 
 ### Context Command
 
