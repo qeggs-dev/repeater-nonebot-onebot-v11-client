@@ -22,10 +22,8 @@ class TokenCalculator(CommandPackage):
         "TOKENIZER"
     }
     cmd_type = CmdTypes.STATISTIC
-
-    def __post_init__(self):
-        self.file_ids_cache: LRUCache[str, str] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
-        self.cache: LRUCache[str, Tokenizer] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
+    file_ids_cache: LRUCache[str, str] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
+    cache: LRUCache[str, Tokenizer] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
     
     def init_tokenizer(self, json: str):
         if json in self.cache:
@@ -82,9 +80,23 @@ class TokenCalculator(CommandPackage):
         most_frequent: list[str] = ["Most frequent:"]
         for id, count in counter.most_common(storage_configs.tokenizer_most_frequent_tokens):
             token = tokenizer.id_to_token(id) or "[UNK]"
-            token_text = f"[{id}]: {token.encode('utf-8').hex()}"
+            token_text = f"[{id}]: 0x{token.encode('utf-8').hex()}"
             most_frequent.append(token_text)
 
+        await self.output(
+            send_msg = send_msg,
+            tokens_count = tokens_count,
+            text_count = text_count,
+            most_frequent = most_frequent
+        )
+
+    async def output(
+            self,
+            send_msg: SendMsg,
+            tokens_count: int,
+            text_count: int,
+            most_frequent: list[str]
+        ):
         await send_msg.send_mixed_render(
             prefix_text = "\n".join(
                 [
