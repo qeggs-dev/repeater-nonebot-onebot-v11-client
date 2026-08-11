@@ -698,6 +698,8 @@ PS：该配置文件是专门用于对接ChatTTS的
 | Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
 | :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
 | `tokenCount`               | `tc`     | `TokenCount`              | `STATISTIC` | 4.6.3.0        | 获取当前用户所消耗的 Token 数   | 无                                        | 获取当前用户所消耗的 Token 数量 |
+| `tokenizer`                | `tiz`    | `Tokenizer`               | `STATISTIC` | 4.8.5.0        | 计算一个字符串的 Token 数       | 待计算的字符串                             | 计算一个字符串的 Token 数，需要引用一个 `tokenizer.json` 文件 |
+| `tokenizerText`            | `tizt`   | `TokenizerText`           | `STATISTIC` | 4.8.5.0        | 计算一个字符串的 Token 数       | 待计算的字符串                             | 同上，但 `Most frequent` 部分将使用文本而不是图片输出 |
 
 ### See Cmd Command
 
@@ -737,6 +739,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `ciallo`                   | `ciallo` | `Ciallo`                  | `GAMES`     | 4.6.4.0        | Ciallo~(∠・ω< )⌒★           | 无                                        | 输出 `ciallo_content` 里的内容 |
 | `randomFortune`            | `rf`     | `RandomFortune`           | `GAMES`     | 4.6.4.0        | 随机运势                       | @指定用户（可选）                          | 根据用户与时间生成每日固定的随机数 |
 | `uselessButton`            | `ub`     | `UselessButton`           | `GAMES`     | 4.6.4.0        | 随机按钮                       | 次数（可选）                               | 多按几次或许会有意外收获 |
+| `word`                     | `word`   | `Word`                    | `GAMES`     | 4.8.5.0        | 获取一句话，或是修改它          | 填充内容                                   | 如果有传入参数，则使用传入的内容覆盖之前的内容，否则返回上一次填充的内容 |
 
 ### Other Command
 | Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
