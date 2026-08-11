@@ -190,6 +190,18 @@ class PersonaInfo:
         )
         instance._enter_type = self._enter_type
         return instance
+
+    async def from_reference_reversed_chain(self) -> list[PersonaInfo]:
+        """
+        从引用链构建 PersonaInfo 实例，且反向
+
+        注：解析时，它会默认消息段中只有一个 reply 消息段，
+        如果有存在多个，则使用第一个
+        """
+        reference_chain: list[PersonaInfo] = []
+        async for persona_info in self.from_reference_chain():
+            reference_chain.append(persona_info)
+        return reference_chain[::-1]
     
     async def from_reference_chain(self) -> AsyncGenerator[PersonaInfo, None]:
         """
