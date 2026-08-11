@@ -1,14 +1,12 @@
 from nonebot import logger
-from ....assist import PersonaInfo, SendMsg
+from ....assist import PersonaInfo, SendMsg, Response
 from ....cmd_info import CmdTypes
 from ....command_register import(
     CommandCaller
 )
-from ....storage import async_text_storage
-from ....clients import ContextClient, ChatClient
-from ..._bases import BaseChat
-from ._default_meta_prompt import META_PROMPT
-
+from ....clients import ChatResponse, ChatClient
+from ..._bases import BaseChat, SendMessage
+from ...context.data_command.withdraw import Withdraw
 
 @CommandCaller.register
 class Rewrite(BaseChat):
@@ -20,44 +18,27 @@ class Rewrite(BaseChat):
         "REWRITE",
     }
     cmd_type = CmdTypes.MIXED
- 
+    documents = """
+        Withdraw and send with new content.
+    """
+
     async def send_message(
         self,
         client: ChatClient,
-        images: list[str],
-        audios: list[str],
-        videos: list[str],
-        message: str,
+        send_messages: SendMessage,
         persona_info: PersonaInfo,
         send_msg: SendMsg
-    ) -> str:
-        user_configs = await persona_info.get_user_configs()
-        context_client = ContextClient(persona_info, user_configs)
-        response = await context_client.withdraw()
-        
-        if response:
-            data = response.get_data()
-            if data is None:
-                await send_msg.send_error(
-                    "Unable to process data."
-                )
-                return
-            await send_msg.send_prompt(
-                (
-                    f"Deleted: {data.deleted}\n"
-                    f"Remaining: {len(data.context)}\n"
-                ),
-                continue_handler = True
-            )
-        else:
-            await send_msg.send_response_check_code(response, "Withdraw Failed")
+    ) -> Response[ChatResponse]:
+        package = CommandCaller.get_instance(Withdraw)
+        await CommandCaller.horizontal_call(
+            package,
+            persona_info,
+            send_msg.copy_with_component(package.component)
+        )
         
         return await super().send_message(
             client,
-            images,
-            audios,
-            videos,
-            message,
+            send_messages,
             persona_info,
             send_msg
         )

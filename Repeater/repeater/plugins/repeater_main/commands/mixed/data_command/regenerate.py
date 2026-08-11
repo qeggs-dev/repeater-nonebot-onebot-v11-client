@@ -1,14 +1,16 @@
 from nonebot import logger
-from ....assist import PersonaInfo, SendMsg
+from ....assist import PersonaInfo, SendMsg, Response
 from ....cmd_info import CmdTypes
 from ....command_register import(
     CommandCaller
 )
-from ....storage import async_text_storage
-from ....clients import ContextClient, ChatClient, ContentRole
-from ..._bases import BaseChat
-from ._default_meta_prompt import META_PROMPT
-
+from ....clients import (
+    ContextClient,
+    ChatClient,
+    ContentRole,
+    ChatResponse
+)
+from ..._bases import BaseChat, SendMessage
 
 @CommandCaller.register
 class Regenerate(BaseChat):
@@ -21,17 +23,14 @@ class Regenerate(BaseChat):
     }
     cmd_type = CmdTypes.MIXED
     empty_exit: bool = False
- 
+    
     async def send_message(
         self,
         client: ChatClient,
-        images: list[str],
-        audios: list[str],
-        videos: list[str],
-        message: str,
+        send_messages: SendMessage,
         persona_info: PersonaInfo,
         send_msg: SendMsg
-    ) -> str:
+    ) -> Response[ChatResponse]:
         user_configs = await persona_info.get_user_configs()
         context_client = ContextClient(persona_info, user_configs)
         response = await context_client.withdraw()
@@ -42,7 +41,7 @@ class Regenerate(BaseChat):
                 await send_msg.send_error(
                     "Unable to process data."
                 )
-                return
+                send_msg.break_handler()
             await send_msg.send_prompt(
                 (
                     f"Deleted: {data.deleted}\n"
@@ -52,6 +51,7 @@ class Regenerate(BaseChat):
             )
         else:
             await send_msg.send_response_check_code(response, "Withdraw Failed")
+            send_msg.break_handler()
         
         context = data.deleted_context
         user_input: list[str] = []
@@ -61,12 +61,11 @@ class Regenerate(BaseChat):
                     self.sub_user_raw_input(unit.content)
                 )
 
+        send_messages.text = "\n\n".join(user_input)
+
         return await super().send_message(
             client,
-            images,
-            audios,
-            videos,
-            "\n\n".join(user_input),
+            send_messages,
             persona_info,
             send_msg
         )
