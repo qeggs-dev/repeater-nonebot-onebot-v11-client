@@ -72,7 +72,6 @@ class GeneratePrompt(CommandPackage):
             await send_msg.send_response_check_code(prompt_response, "Set Prompt failed")
         else:
             await send_msg.send_mixed_render(
-                text = "Prompt generated:",
-                text_to_render = text,
-                prompt_mode = True
+                prefix_text = "Prompt generated:",
+                text_to_render = text
             )
