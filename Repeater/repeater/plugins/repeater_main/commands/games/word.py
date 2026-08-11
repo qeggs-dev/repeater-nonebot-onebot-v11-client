@@ -4,7 +4,7 @@ from ...command_register import(
     CommandCaller,
     CommandPackage
 )
-from ...client_configs import storage_configs
+from nonebot.adapters.onebot.v11 import Message
 
 
 @CommandCaller.register
@@ -24,13 +24,13 @@ class Word(CommandPackage):
         ```
     """
     def __post_init__(self):
-        self.word: str | None = None
+        self.word: Message | None = None
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        if persona_info.message_striped_str:
-            self.word = persona_info.message_striped_str
+        if persona_info:
+            self.word = persona_info.message
             await send_msg.send_prompt("Got it!")
         elif self.word:
-            await send_msg.send_text(self.word)
+            await send_msg.send_any(self.word, reply = False)
         else:
             await send_msg.send_error("Please write a sentence.")
