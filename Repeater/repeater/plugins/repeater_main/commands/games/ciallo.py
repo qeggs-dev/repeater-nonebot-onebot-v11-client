@@ -12,6 +12,7 @@ class Ciallo(CommandPackage):
     cmd = "ciallo"
     aliases = {
         "Ciallo",
+        "CIALLO"
     }
     cmd_type = CmdTypes.GAMES
     description = f"""
