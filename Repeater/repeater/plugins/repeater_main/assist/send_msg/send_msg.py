@@ -751,8 +751,9 @@ class SendMsg:
     async def send_mixed_render(
             self,
             text_to_render: str,
-            text: str | None = None,
-            prompt_mode: bool = False,
+            prefix_text: str | None = None,
+            suffix_text: str | None = None,
+            prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[False] = False
@@ -762,8 +763,9 @@ class SendMsg:
     async def send_mixed_render(
             self,
             text_to_render: str,
-            text: str | None = None,
-            prompt_mode: bool = False,
+            prefix_text: str | None = None,
+            suffix_text: str | None = None,
+            prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[True] = True
@@ -772,8 +774,9 @@ class SendMsg:
     async def send_mixed_render(
             self,
             text_to_render: str,
-            text: str | None = None,
-            prompt_mode: bool = False,
+            prefix_text: str | None = None,
+            suffix_text: str | None = None,
+            prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: bool = False
@@ -781,8 +784,9 @@ class SendMsg:
         """
         发送混合渲染文本
 
-        :param text: 普通文本内容
+        :param prefix_text: 前缀文本内容
         :param text_to_render: 需要渲染的文本内容
+        :param suffix_text: 后缀文本内容
         :param reply: 是否携带引用
         :param continue_handler: 是否继续运行当前处理流程
         """
@@ -793,18 +797,15 @@ class SendMsg:
             text_to_render,
             document_bottom_comment = document_bottom_comment
         )
+        message = Message()
 
-        if text is None:
-            message = Message(
-                image
-            )
-        else:
-            message = Message(
-                [
-                    MessageSegment.text(text),
-                    image,
-                ]
-            )
+        if prefix_text:
+            message.append(prefix_text)
+
+        message.append(image)
+
+        if suffix_text:
+            message.append(suffix_text)
         
         if prompt_mode:
             await self.send_prompt(
@@ -1143,9 +1144,9 @@ class SendMsg:
         if length_score >= threshold:
             await self.send_mixed_render(
                 text,
-                self.prompt_prefix,
                 document_bottom_comment = document_bottom_comments,
                 reply = reply,
+                prompt_mode = True,
                 continue_handler = continue_handler
             )
         else:
