@@ -4,7 +4,7 @@ from ...logger import logger
 from ...clients import ChatClient, ContentRole, ChatResponse
 from ...assist import PersonaInfo, SendMsg, Response
 from ...command_register import CommandCaller
-from .._bases import BaseChat
+from .._bases import BaseChat, SendMessage
 
 @CommandCaller.register
 class GenerateCandidateAnswer(BaseChat):
@@ -32,10 +32,7 @@ class GenerateCandidateAnswer(BaseChat):
     async def send_message(
         self,
         client: ChatClient,
-        images: list[str],
-        audios: list[str],
-        videos: list[str],
-        message: str,
+        send_messages: SendMessage,
         persona_info: PersonaInfo,
         send_msg: SendMsg
     ) -> Response[ChatResponse]:
