@@ -61,10 +61,7 @@ class BaseFIM(BaseChat):
 
         response = await self.send_message(
             client = client,
-            images = message.images,
-            audios = message.audios,
-            videos = message.videos,
-            message = message.text,
+            send_messages = message,
             suffix = message.suffix,
             persona_info = persona_info,
             send_msg = send_msg
@@ -98,21 +95,18 @@ class BaseFIM(BaseChat):
     async def send_message(
         self,
         client: ChatClient,
-        images: list[str] | None,
-        audios: list[str] | None,
-        videos: list[str] | None,
-        message: str | None,
+        send_messages: SendMessage,
         suffix: str | None,
         persona_info: PersonaInfo,
         send_msg: SendMsg
     ) -> Response[ChatResponse]:
         response: Response[ChatResponse] = await client.send_message(
-            message = message,
-            image_url = images,
-            audio_url = audios,
-            video_url = videos,
+            message = send_messages.text,
+            image_url = send_messages.images,
+            audio_url = send_messages.audios,
+            video_url = send_messages.videos,
+            file_url = send_messages.files,
             suffix = suffix,
-            echo = self.echo,
             fim_mode = True,
             add_metadata = False
         )
