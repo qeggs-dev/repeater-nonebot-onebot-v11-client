@@ -329,6 +329,12 @@ main_api.json
     // 是否在注册时打印 Handler 名称
     // 默认为 true
     "log_registed_handler_name": true,
+
+    // 计算模型 Token 时，Tokenizer 缓存的大小上限
+    "tokenizer_cache_size": 50,
+
+    // 在计算模型 Token 时，会显示多少个最常用的 Token
+    "tokenizer_most_frequent_tokens": 5,
     
     // 平台接口配置
     "platform_interface": {
