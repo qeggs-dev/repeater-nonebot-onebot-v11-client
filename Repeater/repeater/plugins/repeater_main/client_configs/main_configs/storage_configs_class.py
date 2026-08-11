@@ -32,6 +32,8 @@ class StorageConfigs(BaseModel):
     hash_user_id: bool = False
     allow_send_any_message: bool = False
     model_first_chunk_timeout: int | float | None = 90.0
+    tokenizer_cache_size: int = 50
+    tokenizer_most_frequent_tokens: int = 5
     max_reply_chain_length: int = 5
     max_text_file_size: int | None = None
     text_file_encoding: str = "utf-8"
