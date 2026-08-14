@@ -32,14 +32,18 @@ class GenerateImageBase(CommandPackage):
         return ImageClient(persona_info, user_configs)
     
     async def get_prompt(self, persona_info: PersonaInfo, send_msg: SendMsg) -> tuple[list[FILE_TYPES] | None, str]:
-        prompt = persona_info.message_striped_str
-        if not prompt:
-            await send_msg.send_error("Error: No prompt provided")
+        prompts: list[str] = []
 
         images: list[FILE_TYPES] = []
         for reply in await persona_info.from_reference_reversed_chain():
+            prompts.append(reply.message_striped_str)
             images.extend(await self.get_images(reply))
         images.extend(await self.get_images(persona_info))
+
+        prompts.append(persona_info.message_striped_str)
+        prompt = "\n\n".join(prompts).strip()
+        if not prompt:
+            await send_msg.send_error("Error: No prompt provided")
 
         return images or None, prompt
 
