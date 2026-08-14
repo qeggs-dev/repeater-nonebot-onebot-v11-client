@@ -9,7 +9,7 @@ class ClientInfo(BaseModel, frozen=True):
     proxy: str | None = None
     limits: ClientLimits | None = None
     follow_redirects: bool = True
-    timeout: int | float | ClientTimeout = 5.0
+    timeout: int | float | ClientTimeout | None = 5.0
     encoding: str = "utf-8"
 
     def _default_limits(self) -> Limits:
@@ -34,7 +34,9 @@ class ClientInfo(BaseModel, frozen=True):
             limits = self._default_limits()
         else:
             limits = self.limits.to_limits()
-        
+
+        if self.timeout is None:
+            timeout = None
         if isinstance(self.timeout, int | float):
             timeout = self.timeout
         elif isinstance(self.timeout, ClientTimeout):

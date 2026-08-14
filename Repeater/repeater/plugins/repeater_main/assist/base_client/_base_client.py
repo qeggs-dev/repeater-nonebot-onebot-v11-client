@@ -21,7 +21,7 @@ class BaseClient:
     _httpx_clients: ClassVar[ClientPool] = ClientPool(storage_configs.client_pool_size)
     follow_redirects: ClassVar[bool] = False
     base_router: ClassVar[str | None] = None
-    timeout: ClassVar[int | float | ClientTimeout] = 5
+    timeout: ClassVar[int | float | ClientTimeout | None] = 5
     limits: ClassVar[ClientLimits | None] = None
     encoding: ClassVar[str] = "utf-8"
 
