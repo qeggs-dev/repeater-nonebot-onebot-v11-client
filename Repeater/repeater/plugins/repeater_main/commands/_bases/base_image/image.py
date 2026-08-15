@@ -92,7 +92,7 @@ class GenerateImageBase(CommandPackage):
             style: ImageStyle | None = None,
             user: str | None = None,
             image_client: ImageClient,
-            send_msg: SendMsg) -> list[bytes]:
+            send_msg: SendMsg) -> list[str | bytes]:
         response = await image_client.generate(
             model_id = model_id,
 
@@ -116,10 +116,14 @@ class GenerateImageBase(CommandPackage):
             if data is None:
                 await send_msg.send_error_response(response)
             else:
-                gen_images: list[bytes] = []
+                gen_images: list[bytes | str] = []
                 if data.data:
                     for index, image in enumerate(data.data):
-                        if image.b64_json is not None:
+                        if image.url is not None:
+                            gen_images.append(
+                                image.url
+                            )
+                        elif image.b64_json is not None:
                             gen_images.append(
                                 base64.b64decode(image.b64_json)
                             )
