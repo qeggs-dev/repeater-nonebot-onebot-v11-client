@@ -360,7 +360,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: SendMsg object
         """
         if isinstance(exception, BreakWithErrorMessage):
-            await send_msg.send_error(str(exception))
+            await send_msg.send_error_render(str(exception))
         elif isinstance(exception, BreakHandler):
             return SubCmdBreaked
 
@@ -385,7 +385,7 @@ class CommandPackage(ABC, Generic[T]):
             )
         else:
             logger.exception(f"Error: {exception}")
-            await send_msg.send_error(exception)
+            await send_msg.send_error_render(exception)
     
     async def on_interpreter_error(self, exception: BaseException, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """
@@ -433,7 +433,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: Send message interface
         :return: None
         """
-        await send_msg.send_error("Insufficient access rights.")
+        await send_msg.send_error_render("Insufficient access rights.")
         send_msg.break_handler()
     
     async def on_blacklist(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
