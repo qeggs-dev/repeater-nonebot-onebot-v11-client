@@ -25,9 +25,18 @@ class BaseClient:
     limits: ClassVar[ClientLimits | None] = None
     encoding: ClassVar[str] = "utf-8"
 
-    def _get_limits(self) -> ClientLimits | None:
-        if self.limits is None:
+    @classmethod
+    def _get_limits(cls) -> ClientLimits | None:
+        if cls.limits is None:
+            if storage_configs.client_limits is None:
+                return None
             
+            return ClientLimits(
+                keepalive_expiry = storage_configs.client_limits.keepalive_expiry,
+                max_connections = storage_configs.client_limits.max_connections,
+                max_keepalive_connections = storage_configs.client_limits.max_keepalive_connections
+            )
+        return cls.limits
 
     def __init__(self, persona_info: PersonaInfo, user_configs: UserConfigs, namespace: str | Namespace | None = None):
         self._persona_info = persona_info
@@ -38,7 +47,7 @@ class BaseClient:
             url = self.base_url,
             follow_redirects = self.follow_redirects,
             timeout = self.timeout,
-            limits = self.limits,
+            limits = self._get_limits(),
             encoding = self.encoding
         )
         self.client = self._httpx_clients.get_client(client_info)
