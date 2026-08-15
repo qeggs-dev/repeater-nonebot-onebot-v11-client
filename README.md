@@ -294,6 +294,28 @@ main_api.json
     // 是否使用缩写来显示分支文件大小
     "branch_file_size_use_abbreviation": true,
 
+    // 客户端限制
+    "client_limits": {
+
+        // 最大并发连接数
+        "max_connections": 1000,
+
+        // 最大存活连接数
+        "max_keepalive_connections": 20,
+
+        // 保持连接的时间
+        "keepalive_expiry": 5
+    }
+
+    // 出错时，使用 markdown 渲染错误信息
+    "render_error_message": {
+        // 渲染错误信息的样式
+        "style": null,
+
+        // 渲染错误信息的模板
+        "html_template": null
+    },
+
     // 总计并收缩使用的默认消息内容
     "summarize_and_contract_default_message": "System Message: please sum up all the contents above.",
 
