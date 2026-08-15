@@ -305,7 +305,7 @@ main_api.json
 
         // 保持连接的时间
         "keepalive_expiry": 5
-    }
+    },
 
     // 出错时，使用 markdown 渲染错误信息
     "render_error_message": {
