@@ -25,6 +25,10 @@ class BaseClient:
     limits: ClassVar[ClientLimits | None] = None
     encoding: ClassVar[str] = "utf-8"
 
+    def _get_limits(self) -> ClientLimits | None:
+        if self.limits is None:
+            
+
     def __init__(self, persona_info: PersonaInfo, user_configs: UserConfigs, namespace: str | Namespace | None = None):
         self._persona_info = persona_info
         self.user_configs = user_configs
