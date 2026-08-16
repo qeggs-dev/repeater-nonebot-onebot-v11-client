@@ -29,8 +29,9 @@ class WaitCall(CommandPackage):
             /{cmd} times command
     """
 
-    pattern = re.compile(r"^(?P<times>\d+)?\s+(?P<command>\w+)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
-    async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
+    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>\S+?)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    
+    async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg) -> None:
         msg = persona_info.message_striped_str
         matched = self.pattern.match(msg)
         if matched:

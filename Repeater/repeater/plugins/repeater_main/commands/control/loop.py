@@ -28,7 +28,7 @@ class Loop(CommandPackage):
             /{cmd} times command args
     """
 
-    pattern = re.compile(r"^(?P<times>\d+)?\s+(?P<command>\w+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>\S+?)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = persona_info.message
