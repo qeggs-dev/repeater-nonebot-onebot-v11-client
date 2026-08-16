@@ -8,6 +8,7 @@ from ...command_register import(
     CommandCaller,
     CommandPackage
 )
+from ._remove_cmd_prefix import remove_cmd_prefix
 
 @CommandCaller.register
 class WaitCall(CommandPackage):
@@ -29,7 +30,6 @@ class WaitCall(CommandPackage):
     """
 
     pattern = re.compile(r"^(?P<times>\d+)?\s+(?P<command>\w+)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
-
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = persona_info.message_striped_str
         matched = self.pattern.match(msg)
@@ -39,6 +39,8 @@ class WaitCall(CommandPackage):
 
             assert isinstance(times_str, str), "times_str must be str"
             assert isinstance(command, str), "command must be str"
+
+            command = remove_cmd_prefix(command)
 
             if not times_str:
                 times = 1

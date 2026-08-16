@@ -9,6 +9,7 @@ from ...command_register import(
     CommandCaller,
     CommandPackage
 )
+from ._remove_cmd_prefix import remove_cmd_prefix
 
 @CommandCaller.register
 class Loop(CommandPackage):
@@ -43,6 +44,8 @@ class Loop(CommandPackage):
             assert isinstance(times_str, str), "times_str must be str"
             assert isinstance(command, str), "command must be str"
             assert isinstance(args_prefix, str), "args_prefix must be str"
+
+            command = remove_cmd_prefix(command)
 
             args = MessageSegment.text(args_prefix) + msg[1:]
 

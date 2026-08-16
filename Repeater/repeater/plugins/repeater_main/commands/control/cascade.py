@@ -1,4 +1,4 @@
-from typing import Any, Type, Coroutine
+from typing import Any, Type
 from nonebot.adapters.onebot.v11 import Message
 from ...assist import PersonaInfo, SendMsg, SendingTarget
 from ...cmd_info import CmdTypes
@@ -75,4 +75,9 @@ class Cascade(CommandPackage):
             last_result = current_result
         
         if last_result:
+            while last_result:
+                if last_result[0].type == "reply":
+                    last_result.pop(0)
+                else:
+                    break
             await send_msg.send_any(last_result)
