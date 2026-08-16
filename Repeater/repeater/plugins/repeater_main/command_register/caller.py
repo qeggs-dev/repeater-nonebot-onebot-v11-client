@@ -54,7 +54,7 @@ class CommandCaller:
         return cls.triggers[trigger]
 
     @classmethod
-    def from_component(cls, component: str) -> Type[CommandPackage[Any]]:
+    def match_component(cls, component: str) -> Type[CommandPackage[Any]]:
         return cls.components[component]
     
     @classmethod
