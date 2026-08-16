@@ -89,6 +89,7 @@ PS: 此处的长度评分函数并非实际算法，仅为演示使用
 | numpy      | 2.4.2   | BSD 3-Clause | [BSD-3-Clause](https://github.com/numpy/numpy/blob/main/LICENSE.txt)   | *Entire Project*              |
 | cachetools | 7.1.4   | MIT License  | [MIT](https://github.com/tkem/cachetools/blob/master/LICENSE)          | *Entire Project*              |
 | croniter   | 6.2.2   | MIT License  | [MIT](https://github.com/pallets-eco/croniter/blob/master/LICENSE)     | Hello Content                 |
+| tokenizer  | 0.23.1  | MIT License  | [MIT](https://github.com/mideind/Tokenizer/blob/master/LICENSE.txt)    | Count tokens in a string      |
 
 具体依赖的License请查看[LICENSES.md](LICENSES.md)
 
