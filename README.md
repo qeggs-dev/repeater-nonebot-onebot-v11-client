@@ -833,8 +833,8 @@ PS：`CHAT` 类型命令大部分都做到了支持视觉输入
 - `snake_case`
 - `Upper_Snake_Case`
 - `UPPER_CASE`
-- `abr` (Abridge)
-- `ABR` (UPPER ABRIDGE)
+- `ia` (Initials Abridge)
+- `IA` (UPPER INITIALS ABRIDGE)
 
 而单个单词的命令有些特殊：
 
