@@ -6,7 +6,7 @@ from ...cmd_info import CmdTypes
 from ...assist import PersonaInfo, SendMsg
 
 @CommandCaller.register
-class Echo(CommandPackage):
+class NPEcho(CommandPackage):
     cmd = "noPromptEcho"
     aliases = {
         "npecho",
