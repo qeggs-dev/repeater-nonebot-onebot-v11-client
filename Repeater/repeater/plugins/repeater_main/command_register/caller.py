@@ -35,6 +35,7 @@ class CommandCaller:
     triggers: dict[str | tuple[str, ...], Type[CommandPackage[Any]]] = {}
     types: dict[CmdTypes, list[Type[CommandPackage[Any]]]] = {}
     matchers: dict[Type[CommandPackage[Any]], Type[Matcher]] = {}
+    components: dict[str, Type[CommandPackage[Any]]] = {}
     runnings: dict[uuid.UUID, RunningPackage] = {}
     running_map: dict[Namespace, set[uuid.UUID]] = {}
     listen_message_tasks: dict[Namespace, set[asyncio.Future[PersonaInfo]]] = {}
@@ -51,6 +52,10 @@ class CommandCaller:
     @classmethod
     def match_trigger(cls, trigger: str | tuple[str, ...]) -> Type[CommandPackage[Any]]:
         return cls.triggers[trigger]
+
+    @classmethod
+    def from_component(cls, component: str) -> Type[CommandPackage[Any]]:
+        return cls.components[component]
     
     @classmethod
     def get_instance(cls, package: Type[CommandPackage[T_Handler_Result]]) -> CommandPackage[T_Handler_Result]:
@@ -382,6 +387,7 @@ class CommandCaller:
         main_trigger: Type[CommandPackage[Any]] = cls.triggers.pop(package.cmd)
         types: list[Type[CommandPackage[Any]]] = cls.types.pop(package_instance.cmd_type)
         triggers: list[Type[CommandPackage[T_Handler_Result]]] = []
+        components: Type[CommandPackage[Any]] = cls.components.pop(package_instance.component)
         if package_instance.aliases is not None:
             triggers = [
                 cls.triggers.pop(trigger) for trigger in package_instance.aliases
@@ -408,6 +414,7 @@ class CommandCaller:
         cls.commands[package] = package_instance
         cls.matchers[package] = matcher
         cls._reg_types(package_instance.cmd_type, package)
+        cls.components[package_instance.component] = package
         if package_instance.listen_type == ListenType.Command:
             cls._reg_triggers(package_instance.cmd, package)
             if package_instance.aliases:
