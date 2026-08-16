@@ -486,6 +486,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `cancel`                   | `cl`     | `Cancel`                  | `CONTROL`   | 4.8.3.2        | 取消一个命令                   | 任务 ID                                   | 取消一个命令 |
 | `taskList`                 | `tl`     | `TaskList`                | `CONTROL`   | 4.8.3.2        | 查看当前任务列表                | 无                                       | 查看当前用户所有正在运行的 Task 实例 |
 | `cascade`                  | `cas`    | `Cascade`                 | `CONTROL`   | 4.8.5.0        | 级联执行命令                   | 格式为: 命令 参数                         | 每行一个命令，下一个命令执行时，会使用上一个命令的输出作为输入，最后一个直接输出 |
+| `execute`                  | `e`      | `Execute`                 | `CONTROL`   | 4.9.1.0        | 使用 components 调用命令        | 格式为: components 参数                  | 当只知道 components 但不知道其 trigger 时，可以使用这种方法调用 |
 
 ### Chat Command
 
@@ -727,9 +728,11 @@ PS：该配置文件是专门用于对接ChatTTS的
 
 | Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
 | :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
-| `seeCmd`                   | `sc`     | `SeeCmd`                  | `SEE_CMD`   | 4.6.4.0        | 显示命令                       | 命令名称                                  | 显示指定命令的详细帮助信息 |
+| `seeCmd`                   | `sc`     | `SeeCmd`                  | `SEE_CMD`   | 4.6.4.0        | 显示命令详细信息               | 命令名称                                   | 显示指定命令的详细帮助信息 |
 | `cmdTypesList`             | `ctl`    | `CmdTypesList`            | `SEE_CMD`   | 4.6.4.0        | 列出命令类型                   | 无                                        | 列出所有命令类型 |
 | `cmdType`                  | `ct`     | `CmdType`                 | `SEE_CMD`   | 4.6.5.0        | 列出命令类型下的所有命令        | 命令类型                                   | 列出命令类型下的所有命令 |
+| `help`                     | `h`      | `Help`                    | `SEE_CMD`   | 4.9.1.0        | 显示帮助信息                   | 无                                        | 提供兼容生态习惯的入口，引导用户学习内容 |
+| `seeComponents`            | `scmp`   | `SeeComponents`           | `SEE_CMD`   | 4.9.1.0        | 通过 component 显式命令详细信息 | 命令 component                            | 显示指定 component 的详细帮助信息 |
 
 ### Version Command
 
