@@ -260,6 +260,16 @@ class CommandPackage(ABC, Generic[T]):
             )
         persona_info_copy = PersonaInfo.from_horizontal(persona_info)
         return persona_info_copy, send_msg
+
+    async def enter_check(self, persona_info: PersonaInfo, send_msg: SendMsg) -> bool:
+        """
+        This method is called to check if the call is valid.
+
+        :param persona_info: PersonaInfo object
+        :param send_msg: SendMsg object
+        :return: bool
+        """
+        return not storage_configs.ignore_enter_check(persona_info.group_id, persona_info.user_id)
     
     async def permissions_check(self, persona_info: PersonaInfo, send_msg: SendMsg) -> bool:
         """

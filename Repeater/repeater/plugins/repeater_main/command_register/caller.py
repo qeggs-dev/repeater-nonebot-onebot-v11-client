@@ -164,9 +164,17 @@ class CommandCaller:
         """
         try:
             logger.info(
-                "Enter command from message: {message_id}",
+                "Enter command from message: {message_id} ({enter_mode} Mode)",
                 message_id = persona_info.message_id,
+                enter_mode = persona_info.enter_type.name,
             )
+
+            if not await package.enter_check(persona_info, send_msg):
+                logger.warning(
+                    "Enter check blocked: {name}",
+                    name = package.component
+                )
+                send_msg.break_handler()
 
             if not await package.permissions_check(persona_info, send_msg):
                 logger.warning(
