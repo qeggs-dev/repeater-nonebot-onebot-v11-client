@@ -842,8 +842,8 @@ PS：`CHAT` 类型命令大部分都做到了支持视觉输入
 - `Uppercase`
 - `s` (Single Character)
 - `S` (UPPER SINGLE CHARACTER)
-- `slbc` (Syllabic abbreviations)
-- `SLBC` (UPPER SYLLABIC ABBREVIATIONS)
+- `slabv` (Syllabic abbreviations)
+- `SLABV` (UPPER SYLLABIC ABBREVIATIONS)
 
 ---
 
