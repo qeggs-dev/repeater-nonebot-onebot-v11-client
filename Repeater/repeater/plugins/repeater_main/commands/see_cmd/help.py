@@ -2,6 +2,7 @@ from ...command_register import(
     CommandCaller,
     CommandPackage
 )
+from nonebot.adapters.onebot.v11 import Message
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from ...clients import VersionAPIClient
@@ -31,7 +32,16 @@ class Help(CommandPackage):
         ```
     """
 
+    @staticmethod
+    async def get_instance(package: type[CommandPackage], persona_info: PersonaInfo, send_msg: SendMsg) -> CommandPackage:
+        try:
+            package_instance = CommandCaller.get_instance(package)
+        except KeyError:
+            await send_msg.send_error(f"Get {package.__name__} instance failed.")
+        return package_instance
+
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
+        message: Message = Message()
         text_buffer: list[str] = []
 
         user_configs = await persona_info.get_user_configs()
@@ -46,22 +56,29 @@ class Help(CommandPackage):
                 backend_version = data.core
 
         if backend_version is None:
-            text_buffer.append("# Repeater [Fetch Backend Version Failed]")
+            text_buffer.append("# Repeater LCSM [Fetch Backend Version Failed]")
         
         else:
-            text_buffer.append(f"# Repeater {backend_version}")
+            text_buffer.append(f"# Repeater LCSM {backend_version}")
 
         text_buffer.append(f"The scheduler version is {__adaptation__}")
-        text_buffer.append("")
+        message.append("\n".join(text_buffer))
+        text_buffer.clear()
 
         text_buffer.append("Enter any non-command content to talk to the AI.")
-        text_buffer.append(f"Execute \"{CmdTypesList.component}\" to get all command types of the Repeater.")
-        text_buffer.append(f"Execute \"{CmdType.component}\" to get information about all commands of the specified type.")
-        text_buffer.append(f"Execute \"{SeeCmd.component}\" to view help information about a specific command.")
-        text_buffer.append(f"Execute \"{SeeComponent.component}\" to view its information through component.")
-        text_buffer.append(f"Use {Execute.component} to Execute commands from component.")
-        text_buffer.append("")
+        text_buffer.append(f"Execute ")
+        text_buffer.append(f"-  `{(await self.get_instance(CmdTypesList, persona_info, send_msg)).component}`")
+        text_buffer.append("     to get all command types of the Repeater.")
+        text_buffer.append(f"-  `{(await self.get_instance(CmdType, persona_info, send_msg)).component}`")
+        text_buffer.append("     to get information about all commands of the specified type.")
+        text_buffer.append(f"-  `{(await self.get_instance(SeeCmd, persona_info, send_msg)).component}`")
+        text_buffer.append("     to view help information about a specific command.")
+        text_buffer.append(f"-  `{(await self.get_instance(SeeComponent, persona_info, send_msg)).component}`")
+        text_buffer.append("     to view its information through component.")
+        text_buffer.append(f"-  `{(await self.get_instance(Execute, persona_info, send_msg)).component}`")
+        text_buffer.append("     to Execute commands from component.")
+        message.append(await send_msg.render_text_to_msg_segment("\n".join(text_buffer)))
 
-        text_buffer.append("Let's give it a try!")
+        message.append("Let's give it a try!")
 
-        await send_msg.send_text("\n".join(text_buffer))
+        await send_msg.send_any(message)
