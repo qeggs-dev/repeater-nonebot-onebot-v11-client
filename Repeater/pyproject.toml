@@ -17,6 +17,7 @@ dependencies = [
     "cachetools<8.0.0,>=7.1.4",
     "nonebot-adapter-qq>=1.7.1",
     "croniter (>=6.2.2,<7.0.0)",
+    "tokenizers (>=0.23.1,<0.24.0)",
 ]
 
 [project.optional-dependencies]
