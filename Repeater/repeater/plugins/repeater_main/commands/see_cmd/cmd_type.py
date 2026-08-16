@@ -29,7 +29,7 @@ class CmdType(CommandPackage):
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        commands: dict[CmdTypes, list[CommandPackage]] = {}
+        commands: list[CommandPackage] = []
 
         try:
             cmd_type = CmdTypes(persona_info.message_striped_str)
@@ -37,19 +37,19 @@ class CmdType(CommandPackage):
             await send_msg.send_error("Invalid command type.")
             return
 
-        delimiters = CommandCaller.delimiters()
-
         if cmd_type not in CommandCaller.types:
             await send_msg.send_error(f"\"{cmd_type}\" is not a valid command type.")
             return
         now_type_cmds: list[Type[CommandPackage]] = CommandCaller.types[cmd_type]
-        commands[cmd_type] = [CommandCaller.commands[cmd] for cmd in now_type_cmds]
+        commands = [CommandCaller.commands[cmd] for cmd in now_type_cmds]
         
         if not now_type_cmds:
             await send_msg.send_error(f"\"{cmd_type}\" has not any commands")
-        
-        await see_cmds(
-            commands = commands,
-            delimiters = delimiters,
-            send_msg = send_msg
+
+        text_buffer: list[str] = []
+        for cmd in commands:
+            text_buffer.append(cmd.component)
+
+        await send_msg.send_check_length_prompt(
+            "\n".join(text_buffer)
         )
