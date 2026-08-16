@@ -29,7 +29,7 @@ class StorageConfigs(BaseModel):
     download_image_timeout: float = 600.0
     generate_image_file_type: GenerateImageFileType = GenerateImageFileType.URL
     render_error_message: RenderErrorMessage = Field(default_factory = RenderErrorMessage)
-    client_limits: ClientLimits | None = Field(default_factory = ClientLimits)
+    client_limits: ClientLimits = Field(default_factory = ClientLimits)
     summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
     ciallo_content: str = "Ciallo~ (∠・ω< )⌒★"
     branch_file_size_use_abbreviation: bool = True
