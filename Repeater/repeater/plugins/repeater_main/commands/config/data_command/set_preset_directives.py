@@ -28,7 +28,7 @@ class SetPresetDirectives(BaseConfig):
         send_msg: SendMsg,
         raw_value: Any | None = None
     ) -> dict[str, list[str]] | None:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         data = json.loads(msg)
         try:
             input_data = self.Input(preset_directives=data)

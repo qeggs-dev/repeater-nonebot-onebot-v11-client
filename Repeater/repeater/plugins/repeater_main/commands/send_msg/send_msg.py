@@ -32,7 +32,7 @@ class SendMessage(CommandPackage):
             return
 
         try:
-            message_body = json.loads(persona_info.message_striped_str)
+            message_body = json.loads(persona_info.message_stripped_str)
         except json.JSONDecodeError:
             await send_msg.send_error("Send_Message must enter a valid JSON")
             return

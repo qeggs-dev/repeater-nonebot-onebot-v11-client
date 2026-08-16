@@ -26,7 +26,7 @@ class InjectAssistantContent(CommandPackage):
         response = await context_client.inject_context(
             content_unit=ContentUnit(
                 role=ContentRole.ASSISTANT,
-                content=persona_info.message_striped_str
+                content=persona_info.message_stripped_str
             )
         )
 

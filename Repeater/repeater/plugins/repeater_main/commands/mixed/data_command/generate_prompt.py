@@ -24,7 +24,7 @@ class GeneratePrompt(CommandPackage):
     cmd_type = CmdTypes.MIXED
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        message = persona_info.message_striped_str
+        message = persona_info.message_stripped_str
 
         user_configs = await persona_info.get_user_configs()
 

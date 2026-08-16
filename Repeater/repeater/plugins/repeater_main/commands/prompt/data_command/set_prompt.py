@@ -20,7 +20,7 @@ class SetPrompt(CommandPackage):
     cmd_type = CmdTypes.PROMPT
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
 
         user_configs = await persona_info.get_user_configs()
         prompt_client = PromptClient(persona_info, user_configs)

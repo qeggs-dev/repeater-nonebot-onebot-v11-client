@@ -33,7 +33,7 @@ class ChangeBackend(CommandPackage):
         raw_backend = user_configs.backend
         if raw_backend is None:
             raw_backend = storage_configs.default_backend
-        user_configs.backend = persona_info.message_striped_str
+        user_configs.backend = persona_info.message_stripped_str
         await persona_info.set_user_configs(user_configs)
 
         await send_msg.send_prompt(

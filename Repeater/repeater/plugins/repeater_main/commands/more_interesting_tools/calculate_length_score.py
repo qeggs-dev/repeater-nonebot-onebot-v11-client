@@ -19,7 +19,7 @@ class CalculateLengthScore(CommandPackage):
     cmd_type = CmdTypes.OTHER
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        text = persona_info.message_striped_str
+        text = persona_info.message_stripped_str
         length = len(text)
         length_score = send_msg.text_length_score(text)
         length_score_threshold = send_msg.text_length_score_threshold

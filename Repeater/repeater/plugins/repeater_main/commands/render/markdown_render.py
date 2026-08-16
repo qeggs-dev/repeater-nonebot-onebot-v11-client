@@ -20,4 +20,4 @@ class MarkdownRender(CommandPackage):
     cmd_type = CmdTypes.RENDER
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        await send_msg.send_render(persona_info.message_striped_str)
+        await send_msg.send_render(persona_info.message_stripped_str)

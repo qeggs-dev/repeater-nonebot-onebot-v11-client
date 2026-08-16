@@ -24,7 +24,7 @@ class ModelRequestLoopTimes(BaseConfig):
         raw_value: int,
     )  -> int:
         try:
-            value = int(persona_info.message_striped_str)
+            value = int(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Please input a number.")
         

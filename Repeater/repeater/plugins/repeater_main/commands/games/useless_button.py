@@ -43,7 +43,7 @@ class UselessButton(CommandPackage):
             return storage_configs.useless_button_missing
     
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             times = int(msg)
         except ValueError:

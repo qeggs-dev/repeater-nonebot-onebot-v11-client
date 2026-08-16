@@ -30,9 +30,9 @@ class WaitCall(CommandPackage):
     """
 
     pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>\S+?)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
-    
+
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg) -> None:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         matched = self.pattern.match(msg)
         if matched:
             times_str = matched.group("times")

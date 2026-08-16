@@ -36,11 +36,11 @@ class GenerateImageBase(CommandPackage):
 
         images: list[FILE_TYPES] = []
         for reply in await persona_info.from_reference_reversed_chain():
-            prompts.append(reply.message_striped_str)
+            prompts.append(reply.message_stripped_str)
             images.extend(await self.get_images(reply))
         images.extend(await self.get_images(persona_info))
 
-        prompts.append(persona_info.message_striped_str)
+        prompts.append(persona_info.message_stripped_str)
         prompt = "\n\n".join(prompts).strip()
         if not prompt:
             await send_msg.send_error("Error: No prompt provided")

@@ -24,7 +24,7 @@ class SetAutoShrinkLength(BaseConfig):
         raw_value: int | None,
     )  -> int:
         try:
-            value = int(persona_info.message_striped_str)
+            value = int(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Message must be a number")
         return value

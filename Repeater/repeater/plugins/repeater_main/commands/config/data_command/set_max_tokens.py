@@ -23,7 +23,7 @@ class SetMaxTokens(BaseConfig):
         send_msg: SendMsg,
         raw_value: int | None,
     )  -> int:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             value = int(msg)
         except ValueError:

@@ -47,7 +47,7 @@ class AddPresetDirectives(BaseConfig):
     ):
         if raw_value is None:
             raw_value = {}
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         update_directives = self.parse_input(msg)
         if update_directives is None:
             await send_msg.send_error("Invalid input format. Expected: <name>: <value>...")

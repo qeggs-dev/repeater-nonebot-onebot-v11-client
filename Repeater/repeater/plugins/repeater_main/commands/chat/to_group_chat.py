@@ -37,7 +37,7 @@ class ToGroupChat(BaseChat):
         return message_text
     
     async def get_client(self, persona_info: PersonaInfo) -> ChatClient:
-        matched = self.pattern.match(persona_info.message_striped_str)
+        matched = self.pattern.match(persona_info.message_stripped_str)
         if matched:
             group_id_str = matched.group("group_id")
             assert isinstance(group_id_str, str), "The group_id must be a string"

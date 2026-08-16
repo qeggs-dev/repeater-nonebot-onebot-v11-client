@@ -20,9 +20,9 @@ class BaseFIM(BaseChat):
         send_msg: SendMsg
     ) -> SendMessage:
         if self.echo:
-            text = persona_info.message_striped_str
+            text = persona_info.message_stripped_str
         else:
-            msg = persona_info.message_striped_str
+            msg = persona_info.message_stripped_str
             match_fim = self.fim_regex.match(msg)
             if match_fim:
                 text = match_fim.group("prompt")
@@ -50,7 +50,7 @@ class BaseFIM(BaseChat):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         logger.info(
             "Received a message {message} from {namespace}",
-            message = persona_info.message_striped_str,
+            message = persona_info.message_stripped_str,
             namespace = persona_info.namespace_str,
             module = send_msg.component
         )

@@ -24,7 +24,7 @@ class DisallowTools(BaseConfig):
         send_msg: SendMsg,
         raw_value: list[str] | None = None
     ):
-        disable_tools = set(parse_delimited_string(persona_info.message_striped_str))
+        disable_tools = set(parse_delimited_string(persona_info.message_stripped_str))
         disabled_tools: list[str] = []
         for tool in raw_value or []:
             if tool not in disable_tools:

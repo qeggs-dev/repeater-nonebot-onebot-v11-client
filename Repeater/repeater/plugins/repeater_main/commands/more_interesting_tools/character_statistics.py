@@ -74,7 +74,7 @@ class CharacterStatistics(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         group_id = persona_info.group_id
 
-        args = parse_delimited_string(persona_info.message_striped_str)
+        args = parse_delimited_string(persona_info.message_stripped_str)
         if len(args) != 2:
             await send_msg.send_error("Please enter two positive integers.")
             return

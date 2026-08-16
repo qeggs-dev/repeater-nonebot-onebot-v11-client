@@ -66,7 +66,7 @@ class RecentSpeakingRanking(CommandPackage):
         group_id = persona_info.group_id
 
         try:
-            n = int(persona_info.message_striped_str)
+            n = int(persona_info.message_stripped_str)
         except (ValueError, TypeError):
             await send_msg.send_error("Please enter a valid number.")
 

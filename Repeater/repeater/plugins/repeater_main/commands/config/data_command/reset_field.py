@@ -22,7 +22,7 @@ class ResetField(BaseConfig):
             send_msg: SendMsg,
             raw_value: Any | None = None,
         ):
-        field = persona_info.message_striped_str
+        field = persona_info.message_stripped_str
         return field, None
     
     async def finish_message(

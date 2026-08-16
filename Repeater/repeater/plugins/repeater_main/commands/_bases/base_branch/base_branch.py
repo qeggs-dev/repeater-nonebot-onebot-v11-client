@@ -41,7 +41,7 @@ class BaseBranch(CommandPackage):
         pass
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
 
         client = await self.get_client(persona_info)
         await self.parser(msg, client, send_msg)

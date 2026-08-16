@@ -7,10 +7,10 @@ class DownloadFromNexus(BaseNexus):
         nexus_client = await self.get_client(persona_info)
         
         try:
-            response = await nexus_client.download_from_nexus(persona_info.message_striped_str)
+            response = await nexus_client.download_from_nexus(persona_info.message_stripped_str)
         except ValueError as e:
             await send_msg.send_error(
-                f"Invalid UUID: {persona_info.message_striped_str}"
+                f"Invalid UUID: {persona_info.message_stripped_str}"
             )
 
         if response.code == 200:

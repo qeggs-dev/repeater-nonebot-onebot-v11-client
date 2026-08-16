@@ -23,7 +23,7 @@ class ChangeDefaultPersonality(BaseConfig):
         send_msg: SendMsg,
         raw_value: str | None,
     )  -> str:
-        return persona_info.message_striped_str
+        return persona_info.message_stripped_str
     
     async def finish_message(
             self,

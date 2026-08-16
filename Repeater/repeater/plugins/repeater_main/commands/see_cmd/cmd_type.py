@@ -32,7 +32,7 @@ class CmdType(CommandPackage):
         commands: list[CommandPackage] = []
 
         try:
-            cmd_type = CmdTypes(persona_info.message_striped_str)
+            cmd_type = CmdTypes(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Invalid command type.")
             return

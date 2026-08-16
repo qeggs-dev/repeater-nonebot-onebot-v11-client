@@ -28,7 +28,7 @@ class AllowTools(BaseConfig):
             tools = []
         else:
             tools = raw_value
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         add_tools = parse_delimited_string(msg)
         tools.extend(add_tools)
         return tools

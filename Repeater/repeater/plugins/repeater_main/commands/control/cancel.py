@@ -25,7 +25,7 @@ class Cancel(CommandPackage):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         try:
-            task_id = uuid.UUID(persona_info.message_striped_str)
+            task_id = uuid.UUID(persona_info.message_stripped_str)
         except ValueError:
             await send_msg("Invalid task id.")
         

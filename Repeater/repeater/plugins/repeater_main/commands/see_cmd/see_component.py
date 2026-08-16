@@ -34,7 +34,7 @@ class SeeComponent(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         commands: dict[CmdTypes, list[CommandPackage]] = {}
 
-        cmd_component: str = persona_info.message_striped_str
+        cmd_component: str = persona_info.message_stripped_str
         try:
             package: type[CommandPackage] = CommandCaller.match_component(cmd_component)
         except KeyError: 

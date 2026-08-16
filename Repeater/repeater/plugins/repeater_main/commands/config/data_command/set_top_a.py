@@ -23,7 +23,7 @@ class SetTopA(BaseConfig):
         send_msg: SendMsg,
         raw_value: float | None,
     )  -> float:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             value = float(msg)
         except ValueError:

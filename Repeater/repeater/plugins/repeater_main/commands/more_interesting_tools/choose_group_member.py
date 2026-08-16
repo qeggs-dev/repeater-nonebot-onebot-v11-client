@@ -40,7 +40,7 @@ class ChooseGroupMember(CommandPackage):
             await send_msg.send_error("The current feature cannot be used in private chat.")
         else:
             try:
-                n = int(persona_info.message_striped_str)
+                n = int(persona_info.message_stripped_str)
             except (ValueError, TypeError):
                 await send_msg.send_error("Please enter a number.")
 

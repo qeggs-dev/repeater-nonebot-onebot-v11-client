@@ -118,7 +118,7 @@ class BaseChat(CommandPackage):
                 persona_info,
                 send_msg,
                 await self.post_parse_input_text(
-                    persona_info.message_striped_str
+                    persona_info.message_stripped_str
                 )
             )
 
@@ -143,7 +143,7 @@ class BaseChat(CommandPackage):
                 ) = await self.parse_input(
                     msg,
                     send_msg,
-                    persona_info.message_striped_str
+                    persona_info.message_stripped_str
                 )
 
                 reply_msgs_texts.append(reference_text)
@@ -173,7 +173,7 @@ class BaseChat(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         logger.info(
             "Received a message {message} from {namespace}",
-            message = persona_info.message_striped_str,
+            message = persona_info.message_stripped_str,
             namespace = persona_info.namespace_str,
             module = send_msg.component
         )

@@ -23,7 +23,7 @@ class SetCustomAge(BaseConfig):
         send_msg: SendMsg,
         raw_value: int | float | None,
     )  -> int | float:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             value = int(msg)
         except ValueError:

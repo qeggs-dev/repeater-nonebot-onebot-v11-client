@@ -25,7 +25,7 @@ class InjectSystemContent(CommandPackage):
         context_client = ContextClient(persona_info, user_config)
         response = await context_client.inject_context(
             content_unit=ContentUnit(
-                content=persona_info.message_striped_str,
+                content=persona_info.message_stripped_str,
                 role=ContentRole.SYSTEM
             )
         )

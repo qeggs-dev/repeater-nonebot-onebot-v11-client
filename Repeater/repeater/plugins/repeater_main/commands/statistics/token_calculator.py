@@ -71,12 +71,12 @@ class TokenCalculator(CommandPackage):
         logger.info("Inited tokenizer in {init_time:.2f}ms.", init_time=(init_end_time - init_start_time) / 1e6)
         logger.info("Calculating tokens...")
         start_time = time.perf_counter_ns()
-        tokens_encoding = tokenizer.encode(persona_info.message_striped_str)
+        tokens_encoding = tokenizer.encode(persona_info.message_stripped_str)
         counter = Counter(tokens_encoding.ids)
         end_time = time.perf_counter_ns()
         logger.info("Calculated tokens in {calc_time:.2f}ms.", calc_time=(end_time - start_time) / 1e6)
         tokens_count = len(tokens_encoding.ids)
-        text_count = len(persona_info.message_striped_str)
+        text_count = len(persona_info.message_stripped_str)
         most_frequent: list[str] = ["Most frequent:"]
         for id, count in counter.most_common(storage_configs.tokenizer_most_frequent_tokens):
             token = tokenizer.id_to_token(id) or "[UNK]"

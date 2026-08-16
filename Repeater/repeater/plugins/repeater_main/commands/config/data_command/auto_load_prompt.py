@@ -24,7 +24,7 @@ class SetAutoLoadPrompt(BaseConfig):
         raw_value: bool | None,
     )  -> bool:
         try:
-            value = str_to_bool(persona_info.message_striped_str)
+            value = str_to_bool(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Not a valid boolean value")
         return value

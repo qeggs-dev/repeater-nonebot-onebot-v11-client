@@ -33,7 +33,7 @@ class GetConfigs(BaseConfig):
         send_msg: SendMsg,
         raw_value: FormatType | None,
     )  -> FormatType:
-        msg = persona_info.message_striped_str.strip()
+        msg = persona_info.message_stripped_str.strip()
         if not msg:
             return FormatType.JSON  # default to JSON
         try:

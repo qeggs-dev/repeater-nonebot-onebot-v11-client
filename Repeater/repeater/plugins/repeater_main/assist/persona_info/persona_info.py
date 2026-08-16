@@ -529,7 +529,7 @@ class PersonaInfo:
         return self.message.extract_plain_text()
     
     @property
-    def message_striped_str(self) -> str:
+    def message_stripped_str(self) -> str:
         """
         消息字符串（去除首尾空格）
         """

@@ -22,7 +22,7 @@ class PingProviderHost(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
         model_info_client = ModelInfoClient(persona_info, user_configs)
-        model_id = persona_info.message_striped_str
+        model_id = persona_info.message_stripped_str
         if not model_id:
             model_id = None
 

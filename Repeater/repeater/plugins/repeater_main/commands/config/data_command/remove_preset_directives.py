@@ -45,7 +45,7 @@ class RemovePresetDirectives(BaseConfig):
         send_msg: SendMsg,
         raw_value: dict[str, list[str]] | None = None
     ):
-        removed_diretives = self.parse_input(persona_info.message_striped_str)
+        removed_diretives = self.parse_input(persona_info.message_stripped_str)
         if removed_diretives is None:
             await send_msg.send_error("Invalid input format. Expected: <name>: <value>...")
 

@@ -34,7 +34,7 @@ class SeeCmd(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         commands: dict[CmdTypes, list[CommandPackage]] = {}
 
-        cmd_name: str = persona_info.message_striped_str
+        cmd_name: str = persona_info.message_stripped_str
         delimiters = CommandCaller.delimiters()
         cmd_names: set[str | tuple[str, ...]] = set()
 
