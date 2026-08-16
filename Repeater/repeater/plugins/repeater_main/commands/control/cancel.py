@@ -31,7 +31,8 @@ class Cancel(CommandPackage):
         
         if task_id in CommandCaller.running_map.get(persona_info.namespace, set()):
             task = CommandCaller.runnings[task_id]
+            component = task.package.component
             task.cancel()
-            await send_msg.send_prompt("Task cancelled.")
+            await send_msg.send_prompt(f"Task `{component}`({task_id}) cancelled.")
         else:
             await send_msg.send_error("Task not found.")
