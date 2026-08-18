@@ -183,7 +183,23 @@ main_api.json
 
         // 当发现 Handler 重复时
         // 是否抛出异常
-        "handler": true
+        "handler": true,
+
+        // 当发现 Matcher 重复时
+        // 是否抛出异常
+        "matcher": true,
+
+        // 当发现 Type 重复时
+        // 是否抛出异常
+        "type": true,
+
+        // 当发现 Component 重复时
+        // 是否抛出异常
+        "component": true,
+
+        // 当发现 Class Name 重复时
+        // 是否抛出异常
+        "class_name": true
     },
 
     // 在发现命令模块注册失败时
