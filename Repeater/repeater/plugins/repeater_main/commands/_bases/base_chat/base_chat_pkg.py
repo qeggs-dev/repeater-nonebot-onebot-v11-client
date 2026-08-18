@@ -104,7 +104,6 @@ class BaseChat(CommandPackage):
         if self.no_input:
             return SendMessage()
         else:
-            message = persona_info.message
             if not persona_info:
                 await self.empty_message(persona_info, send_msg)
             
@@ -178,9 +177,9 @@ class BaseChat(CommandPackage):
             module = send_msg.component
         )
         
-        client = await self.get_client(persona_info)
-
         message = await self.parse_message(persona_info, send_msg)
+
+        client = await self.get_client(persona_info)
 
         response = await self.send_message(
             client = client,
