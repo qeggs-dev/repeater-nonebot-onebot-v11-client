@@ -56,6 +56,27 @@ class CommandCaller:
     @classmethod
     def match_component(cls, component: str) -> Type[CommandPackage[Any]]:
         return cls.components[component]
+
+    @classmethod
+    def match_trigger_or_component(cls, string: str | tuple[str, ...]) -> Type[CommandPackage[Any]]:
+        if isinstance(string, str):
+            package: type[CommandPackage] | None = None
+            try:
+                package = CommandCaller.match_component(string)
+            except KeyError:
+                for prefix in CommandCaller.cmd_prefixs():
+                    if string.startswith(prefix):
+                        package = CommandCaller.match_trigger(
+                            string.removeprefix(prefix)
+                        )
+                        break
+            if package is None:
+                raise KeyError(f"Unknown component: {string}")
+            return package
+        elif isinstance(string, tuple):
+            return cls.match_trigger(string)
+        else:
+            raise TypeError(f"Unsupported type: {type(string).__name__}")
     
     @classmethod
     def get_instance(cls, package: Type[CommandPackage[T_Handler_Result]]) -> CommandPackage[T_Handler_Result]:
@@ -116,7 +137,8 @@ class CommandCaller:
         :param task: The task.
         :return: None
         """
-        future: asyncio.Future[PersonaInfo] = asyncio.get_event_loop().create_future()
+        loop = asyncio.get_event_loop()
+        future: asyncio.Future[PersonaInfo] = loop.create_future()
         async with cls.listen_lock:
             cls.listen_message_tasks.setdefault(namepsace, set()).add(future)
         logger.info(

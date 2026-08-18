@@ -269,7 +269,11 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: SendMsg object
         :return: bool
         """
-        return not storage_configs.ignore_enter_check(persona_info.group_id, persona_info.user_id)
+        block = storage_configs.ignore_enter.ignore_enter_check(persona_info.group_id, persona_info.user_id)
+
+        if block:
+            return self.component in storage_configs.ignore_enter.unignore_enter_commands
+        return True
     
     async def permissions_check(self, persona_info: PersonaInfo, send_msg: SendMsg) -> bool:
         """

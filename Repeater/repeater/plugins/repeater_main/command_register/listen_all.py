@@ -16,6 +16,9 @@ class FrameworkMessageListener(CommandPackage):
     A Handler inside the Repeater framework for unfiltered message listening.
     """
 
+    async def enter_check(self, persona_info: PersonaInfo, send_msg: SendMsg) -> bool:
+        return True
+
     async def enter_handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         send_msg.sending_target = SendingTarget.NULL
         return await super().enter_handler(persona_info, send_msg)
