@@ -358,6 +358,22 @@ main_api.json
 
     // 在计算模型 Token 时，会显示多少个最常用的 Token
     "tokenizer_most_frequent_tokens": 5,
+
+    // 入口忽略配置
+    "ignore_enter": {
+        // 忽略指定群聊的消息
+        "group_ignore_enter_set": [],
+
+        // 忽略指定用户的消息
+        "user_ignore_enter_set": [],
+
+        // 单独取消忽略的命令
+        // 需要使用 component 而非 trigger
+        "unignore_enter_commands": [],
+
+        // 是否单独开启在线检查
+        "allow_online_check": true
+    },
     
     // 平台接口配置
     "platform_interface": {
