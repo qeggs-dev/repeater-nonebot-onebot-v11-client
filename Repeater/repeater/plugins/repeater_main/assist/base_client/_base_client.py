@@ -11,8 +11,11 @@ from .client_pool import (
     ClientTimeout,
     ClientLimits
 )
+from ...client_configs import (
+    storage_configs,
+    ClientLimits as StorageClientLimits
+)
 from urllib.parse import urljoin, quote
-from ...client_configs import *
 from ..namespace import Namespace
 from ..persona_info import PersonaInfo
 from ..user_config import UserConfigs
@@ -22,7 +25,7 @@ class BaseClient:
     follow_redirects: ClassVar[bool] = False
     base_router: ClassVar[str | None] = None
     timeout: ClassVar[int | float | ClientTimeout | None] = 5
-    limits: ClassVar[ClientLimits | None] = None
+    limits: ClassVar[ClientLimits | StorageClientLimits | None] = None
     encoding: ClassVar[str] = "utf-8"
 
     @classmethod
@@ -31,12 +34,14 @@ class BaseClient:
             if storage_configs.client_limits is None:
                 return None
             
-            return ClientLimits(
-                keepalive_expiry = storage_configs.client_limits.keepalive_expiry,
-                max_connections = storage_configs.client_limits.max_connections,
-                max_keepalive_connections = storage_configs.client_limits.max_keepalive_connections
-            )
-        return cls.limits
+            return ClientLimits(**storage_configs.client_limits.model_dump())
+
+        if isinstance(cls.limits, StorageClientLimits):
+            return ClientLimits(**cls.limits.model_dump())
+        elif isinstance(cls.limits, ClientLimits):
+            return cls.limits
+        else:
+            return None
 
     def __init__(self, persona_info: PersonaInfo, user_configs: UserConfigs, namespace: str | Namespace | None = None):
         self._persona_info = persona_info
