@@ -2,8 +2,11 @@ from ...command_register import CommandCaller
 
 def remove_cmd_prefix(command: str) -> str:
     command = command.strip()
-    for delimiter in CommandCaller.delimiters():
+    cmd_prefixs = CommandCaller.cmd_prefixs()
+    for delimiter in cmd_prefixs:
         if command.startswith(delimiter):
-            return command[len(delimiter):]
+            return command.removeprefix(delimiter)
 
-    raise ValueError(f"{command} not start with cmd_prefix")
+    if cmd_prefixs:
+        raise ValueError(f"{command} not start with cmd_prefix")
+    return command

@@ -21,10 +21,10 @@ class Execute(CommandPackage):
     }
     cmd_type = CmdTypes.CONTROL
     documents = f"""
-        Pull Up the command invocation through components when only the components of the command are known.
+        Pull Up the command invocation through component when only the component of the command are known.
 
         Usage:
-            /{cmd} components args
+            /{cmd} component args
     """
 
     pattern = re.compile(r"^(?P<components>[\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
