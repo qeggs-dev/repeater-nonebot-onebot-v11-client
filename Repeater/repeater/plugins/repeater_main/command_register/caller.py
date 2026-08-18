@@ -33,6 +33,8 @@ T_Handler_Result = TypeVar("T_Handler_Result")
 class CommandCaller:
     commands: dict[Type[CommandPackage[Any]], CommandPackage[Any]] = {}
     triggers: dict[str | tuple[str, ...], Type[CommandPackage[Any]]] = {}
+    class_names: dict[str, Type[CommandPackage[Any]]] = {}
+    classes: set[type[CommandPackage[Any]]] = set()
     types: dict[CmdTypes, list[Type[CommandPackage[Any]]]] = {}
     matchers: dict[Type[CommandPackage[Any]], Type[Matcher]] = {}
     components: dict[str, Type[CommandPackage[Any]]] = {}
@@ -311,8 +313,6 @@ class CommandCaller:
         if package.enabled:
             register_start_time = time.perf_counter_ns()
             try:
-                if package in cls.commands:
-                    package.on_duplicate_handler()
                 package_instance, matcher, handler = cls._make_pack(package)
             except:
                 package.on_reg_failed(*sys.exc_info())
@@ -441,10 +441,27 @@ class CommandCaller:
         """
         Register package to resource pool
         """
+        if package in cls.commands:
+            package_instance.on_duplicate_handler()
         cls.commands[package] = package_instance
+
+        if package in cls.matchers:
+            package.on_duplicate_matcher(matcher)
         cls.matchers[package] = matcher
-        cls._reg_types(package_instance.cmd_type, package)
+
+        cls._reg_cmd_types(package_instance.cmd_type, package)
+
+        if package in cls.classes:
+            package.on_duplicate_type()
+
+        if package_instance.component in cls.components:
+            package_instance.on_duplicate_component()
         cls.components[package_instance.component] = package
+        
+        if package.__name__ in cls.class_names:
+            package.on_duplicate_class_name()
+        cls.class_names[package.__name__] = package
+        
         if package_instance.listen_type == ListenType.Command:
             cls._reg_triggers(package_instance.cmd, package)
             if package_instance.aliases:
@@ -452,7 +469,7 @@ class CommandCaller:
                     cls._reg_triggers(trigger, package)
     
     @classmethod
-    def _reg_types(cls, cmd_type: CmdTypes, package: Type[CommandPackage[T_Handler_Result]]) -> None:
+    def _reg_cmd_types(cls, cmd_type: CmdTypes, package: Type[CommandPackage[T_Handler_Result]]) -> None:
         """
         Register package to types pool
         """
