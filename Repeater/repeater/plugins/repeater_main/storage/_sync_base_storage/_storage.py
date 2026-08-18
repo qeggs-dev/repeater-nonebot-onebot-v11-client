@@ -3,6 +3,8 @@ import shutil
 from pathlib import Path
 from typing import AsyncGenerator, AsyncIterable, Iterable, Generic, TypeVar
 from abc import ABC, abstractmethod
+from cachetools import LRUCache
+from ...logger import logger
 
 T_STORAGE_DATA = TypeVar("T_STORAGE_DATA")
 
@@ -12,6 +14,10 @@ class SyncStorage(ABC, Generic[T_STORAGE_DATA]):
 
     文件存储管理器
     """
+    storage_cache: LRUCache[str | os.PathLike, T_STORAGE_DATA] = LRUCache(maxsize=1000)
+    _total_read_count: int = 0
+    _cache_hit_read_count: int = 0
+
     def __init__(self, storage_base_path: str | Path):
         """
         :param storage_base_path: 存储路径
@@ -24,24 +30,46 @@ class SyncStorage(ABC, Generic[T_STORAGE_DATA]):
             return path
         return self.storage_base_path / path
     
-    @abstractmethod
     def load(self, path: str | os.PathLike) -> T_STORAGE_DATA:
-        pass
+        self._total_read_count += 1
+        if path in self.storage_cache:
+            self._cache_hit_read_count += 1
+            logger.info(
+                "Cache hit read (Hit rate: {cache_hit_read_rate:.2%})",
+                cache_hit_read_rate = self._cache_hit_read_count / (self._total_read_count)
+            )
+            return self.storage_cache[path]
+        else:
+            logger.info(
+                "Cache miss read (Hit rate: {cache_miss_read_rate:.2%})",
+                cache_miss_read_rate = self._cache_hit_read_count / (self._total_read_count)
+            )
+            data = self._load(path)
+            self.storage_cache[path] = data
+            return data
     
-    @abstractmethod
     def save(self, path: str | os.PathLike, data: T_STORAGE_DATA) -> None:
-        pass
+        self.storage_cache[path] = data
+        self._save(path, data)
 
     @abstractmethod
     def load_line_stream(self, path: str | os.PathLike) -> AsyncGenerator[T_STORAGE_DATA, None]:
         pass
-
+        
     @abstractmethod
     def load_stream(self, path: str | os.PathLike) -> AsyncGenerator[T_STORAGE_DATA, None]:
         pass
 
     @abstractmethod
     def save_stream(self, path: str | os.PathLike, data: Iterable[T_STORAGE_DATA]) -> None:
+        pass
+
+    @abstractmethod
+    def _load(self, path: str | os.PathLike) -> T_STORAGE_DATA:
+        pass
+    
+    @abstractmethod
+    def _save(self, path: str | os.PathLike, data: T_STORAGE_DATA) -> None:
         pass
 
     def move(self, src: str | os.PathLike, dst: str | os.PathLike) -> None:

@@ -7,7 +7,7 @@ from ...logger import logger as base_logger
 logger = base_logger.bind(module = "Storage.Async.Binary")
 
 class BinaryStorage(AsyncStorage[bytes]):
-    async def load(self, path: str | os.PathLike) -> bytes:
+    async def _load(self, path: str | os.PathLike) -> bytes:
         try:
             path = self.path(path)
             logger.info(f"Loading binary from {path}")
@@ -44,7 +44,7 @@ class BinaryStorage(AsyncStorage[bytes]):
             logger.error(f"Error loading binary stream from {path}: {e}")
             raise
     
-    async def save(self, path: str | os.PathLike, data: bytes, append: bool = False) -> None:
+    async def _save(self, path: str | os.PathLike, data: bytes, append: bool = False) -> None:
         try:
             path = self.path(path)
             logger.info(f"Saving binary to {path}")
