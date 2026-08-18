@@ -11,6 +11,7 @@ from .loading import LoadingConfigs
 from .generate_image_file_type import GenerateImageFileType
 from .render_error_message import RenderErrorMessage
 from .cilent_limits import ClientLimits
+from .ignore_enter import IgnoreEnter
 
 class StorageConfigs(BaseModel):
     text_length_score_configs: TextLengthScoreConfigs = Field(default_factory = TextLengthScoreConfigs)
@@ -30,8 +31,7 @@ class StorageConfigs(BaseModel):
     generate_image_file_type: GenerateImageFileType = GenerateImageFileType.URL
     render_error_message: RenderErrorMessage = Field(default_factory = RenderErrorMessage)
     client_limits: ClientLimits = Field(default_factory = ClientLimits)
-    group_ignore_enter_set: set[str] = Field(default_factory=set)
-    user_ignore_enter_set: set[str] = Field(default_factory=set)
+    ignore_enter: IgnoreEnter = Field(default_factory = IgnoreEnter)
     summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
     ciallo_content: str = "Ciallo~ (∠・ω< )⌒★"
     branch_file_size_use_abbreviation: bool = True
@@ -53,9 +53,3 @@ class StorageConfigs(BaseModel):
             return self.behavioral_acts[user_id]
         else:
             return self.default_behavioral_act
-        
-    def ignore_enter_check(self, group_id: str | None, user_id: str) -> bool:
-        if group_id in self.group_ignore_enter_set or user_id in self.user_ignore_enter_set:
-            return True
-        else:
-            return False
