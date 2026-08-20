@@ -136,10 +136,10 @@ class CommandPackage(ABC, Generic[T]):
     def get_description(self) -> str:
         """Handler description"""
         
-        if self.documents is not None:
-            doc = self.documents
-        elif self.description is not None:
+        if self.description is not None:
             doc = self.description
+        elif self.documents is not None:
+            doc = self.documents
         elif self.__doc__ is not None:
             doc = self.__doc__
         else:
@@ -166,9 +166,9 @@ class CommandPackage(ABC, Generic[T]):
         If you need advice try `__pre_init__` and `__post_init__` method.
         """
         self.__pre_init__(*args, **kwargs)
-        if isinstance(self.documents, str):
-            self.documents = textwrap.dedent(
-                self.documents.expandtabs(4)
+        if isinstance(self.description, str):
+            self.description = textwrap.dedent(
+                self.description.expandtabs(4)
             )
         self._args = args
         self._kwargs = kwargs
