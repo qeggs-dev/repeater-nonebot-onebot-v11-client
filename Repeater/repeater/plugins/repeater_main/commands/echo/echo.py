@@ -25,6 +25,7 @@ class Echo(CommandPackage):
         if not persona_info:
             await send_msg.send_prompt("Wait for input message...", continue_handler = True)
             new_message = await CommandCaller.wait_message(persona_info.namespace)
-            await send_msg.send_any(new_message.message, reply = False)
+            message = new_message.message
         else:
-            await send_msg.send_any(persona_info.message, reply = False)
+            message =  persona_info.message
+        await send_msg.send_any(message)

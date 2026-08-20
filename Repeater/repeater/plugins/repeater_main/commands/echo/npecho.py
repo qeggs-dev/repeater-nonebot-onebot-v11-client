@@ -13,7 +13,8 @@ class NPEcho(CommandPackage):
         "NPECHO",
         "no_prompt_echo",
         "No_Prompt_Echo",
-        "NoPromptEcho"
+        "NoPromptEcho",
+        "NO_PROMPT_ECHO"
     }
     cmd_type = CmdTypes.ECHO
     description = f"""
@@ -27,6 +28,7 @@ class NPEcho(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         if not persona_info:
             new_message = await CommandCaller.wait_message(persona_info.namespace)
-            await send_msg.send_any(new_message.message, reply = False)
+            message = new_message.message
         else:
-            await send_msg.send_any(persona_info.message, reply = False)
+            message =  persona_info.message
+        await send_msg.send_any(message)
