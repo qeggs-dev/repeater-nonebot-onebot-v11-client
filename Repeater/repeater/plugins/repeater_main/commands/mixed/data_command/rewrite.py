@@ -33,7 +33,9 @@ class Rewrite(BaseChat):
         await CommandCaller.horizontal_call(
             package,
             persona_info,
-            send_msg.copy_with_component(package.component)
+            send_msg = send_msg.copy(
+                component = package.component
+            )
         )
         
         return await super().send_message(
