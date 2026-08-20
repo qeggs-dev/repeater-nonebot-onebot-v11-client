@@ -8,7 +8,7 @@ from typing import NoReturn
 class SmartAt(BaseChat):
     listen_type = ListenType.Message
     priority = 100
-    documents = """
+    description = """
         Determines whether the input is null,
         to perform a build task,
         or output the specified text

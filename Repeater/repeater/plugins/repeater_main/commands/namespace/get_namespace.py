@@ -23,6 +23,12 @@ class GetNamespace(CommandPackage):
         "GetNamespace",
         "GET_NAMESPACE",
     }
+    description = f"""
+    Get namespace of the group or user.
+
+    Usage:
+      /{cmd}
+    """
     cmd_type = CmdTypes.NAMESPACE
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

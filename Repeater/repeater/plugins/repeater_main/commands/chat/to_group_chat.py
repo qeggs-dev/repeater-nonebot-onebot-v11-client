@@ -15,7 +15,7 @@ class ToGroupChat(BaseChat):
         "ToGroupChat",
         "TO_GROUP_CHAT"
     }
-    documents = f"""
+    description = f"""
         Submits a build request
         using the user identity under the specified group number
         

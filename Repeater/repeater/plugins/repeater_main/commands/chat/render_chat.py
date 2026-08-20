@@ -13,7 +13,7 @@ class RenderChat(BaseChat):
         "RenderChat",
         "RENDER_CHAT"
     }
-    documents = f"""
+    description = f"""
         Initiates a text generation request,
         Return content to force image output.
         

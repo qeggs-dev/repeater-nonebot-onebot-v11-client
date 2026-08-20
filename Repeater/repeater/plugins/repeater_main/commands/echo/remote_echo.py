@@ -19,7 +19,7 @@ class RemoteEcho(CommandPackage):
         "REMOTE_ECHO"
     }
     cmd_type = CmdTypes.ECHO
-    documents = f"""
+    description = f"""
         Send the message somewhere else.
         
         Usage:

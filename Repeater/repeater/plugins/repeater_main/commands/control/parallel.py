@@ -21,7 +21,7 @@ class Parallel(CommandPackage):
         "PARALLEL",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         Execute Commands Parallelly
 
         Usage:

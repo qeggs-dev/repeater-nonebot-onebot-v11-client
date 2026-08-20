@@ -24,6 +24,12 @@ class SendMessage(CommandPackage):
         "SEND_MESSAGE",
     }
     cmd_type = CmdTypes.SENDMSG
+    description = f"""
+    Send an arbitrary Onebot message structure.
+
+    Usage:
+      /{cmd} message_json
+    """
     superuser_permissions = True
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

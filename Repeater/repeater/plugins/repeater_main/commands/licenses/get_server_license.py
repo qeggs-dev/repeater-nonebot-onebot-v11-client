@@ -19,6 +19,12 @@ class GetServerLicenses(CommandPackage):
         "GetServerLicenses",
         "GET_SERVER_LICENSES",
     }
+    description = f"""
+    Get an open source license for the backend.
+
+    Usage:
+      /{cmd}
+    """
     cmd_type = CmdTypes.LICENSES 
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

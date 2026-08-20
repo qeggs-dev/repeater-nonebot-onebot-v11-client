@@ -16,7 +16,7 @@ class Cancel(CommandPackage):
         "CANCEL",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
     Cancel a task.
 
     Usage: 

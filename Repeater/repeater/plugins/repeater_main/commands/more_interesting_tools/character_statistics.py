@@ -24,7 +24,7 @@ class CharacterStatistics(CommandPackage):
     }
     cmd_type = CmdTypes.OTHER
     acceptable_sources = {MessageSource.GROUP}
-    documents = f"""
+    description = f"""
     Statistics chat in the presence of the proportion of characters.
 
     Usage:

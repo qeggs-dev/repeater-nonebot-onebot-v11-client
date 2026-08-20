@@ -22,6 +22,13 @@ class TokenCalculator(CommandPackage):
         "TOKENIZER"
     }
     cmd_type = CmdTypes.STATISTIC
+    description = f"""
+    Count tokens using tokenizer.
+
+    Usage:
+        (reply a tokenizer file)
+        /{cmd} text
+    """
     file_ids_cache: LRUCache[str, str] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
     cache: LRUCache[str, Tokenizer] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
     

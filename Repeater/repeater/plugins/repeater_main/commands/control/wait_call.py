@@ -22,7 +22,7 @@ class WaitCall(CommandPackage):
         "WAIT_CALL"
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         Wait for last input to be called.
 
         Usage:

@@ -17,7 +17,7 @@ class CmdTypesList(CommandPackage):
         "CMD_TYPES_LIST"
     }
     cmd_type = CmdTypes.SEE_CMD
-    documents = f"""
+    description = f"""
         List all command types.
 
         Usage:

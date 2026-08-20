@@ -18,7 +18,7 @@ class ChangeBackend(CommandPackage):
         "ChangeBackend",
         "CHANGE_BACKEND",
     }
-    documents = f"""
+    description = f"""
         Let the connector switch the available backends.
 
         Usage:

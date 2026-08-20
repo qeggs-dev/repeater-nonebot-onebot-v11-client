@@ -14,7 +14,7 @@ class NPChat(BaseChat):
         "NoPromptChat",
         "NO_PROMPT_CHAT"
     }
-    documents = f"""
+    description = f"""
         Generate the task without loading the prompt.
         
         Usage:

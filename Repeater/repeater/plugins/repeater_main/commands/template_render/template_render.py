@@ -27,6 +27,12 @@ class TemplateRender(CommandPackage):
         "VAR_EXPAND",
     }
     cmd_type = CmdTypes.TEMPLATE
+    description = f"""
+    Render a template.
+
+    Usage:
+      /{cmd} template_text
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = persona_info.message_stripped_str

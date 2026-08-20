@@ -15,7 +15,7 @@ class ToPrivateChat(BaseChat):
         "ToPrivateChat",
         "TO_PRIVATE_CHAT"
     }
-    documents = f"""
+    description = f"""
         Send a build request as a private chat.
         
         Usage:

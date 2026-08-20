@@ -19,7 +19,7 @@ class RemoteNoPromptEcho(CommandPackage):
         "REMOTE_NO_PROMPT_ECHO"
     }
     cmd_type = CmdTypes.ECHO
-    documents = f"""
+    description = f"""
         Send the message somewhere else and no prompt.
         
         Usage:

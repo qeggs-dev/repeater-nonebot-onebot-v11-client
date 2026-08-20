@@ -17,7 +17,7 @@ class GenerateCandidateReason(BaseChat):
         "GenerateCandidateReason",
         "GENERATE_CANDIDATE_REASON"
     }
-    documents = f"""
+    description = f"""
         Initiate a text generation request in the opposite role and enable inference mode,
         let AI simulate user-generated content.
         Warning: the presence of a tool call may cause an application error.

@@ -18,7 +18,7 @@ class CancelAll(CommandPackage):
         "CANCEL_ALL",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
     Cancel all tasks where component or trigger match.
 
     Usage: 

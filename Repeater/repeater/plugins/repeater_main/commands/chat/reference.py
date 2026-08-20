@@ -12,7 +12,7 @@ class Reference(BaseChat):
         "Reference",
         "REFERENCE"
     }
-    documents = f"""
+    description = f"""
         References the Context of other members to generate text
         Note: You Need to ensure that you and the other party, as well as the server, all allow cross-user data access.
         

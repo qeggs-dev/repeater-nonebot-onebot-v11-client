@@ -19,7 +19,7 @@ class MessageWithdrawn(CommandPackage):
         "MESSAGE_WITHDRAWN"
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         Withdrawn a droid's own message.
 
         Usage:

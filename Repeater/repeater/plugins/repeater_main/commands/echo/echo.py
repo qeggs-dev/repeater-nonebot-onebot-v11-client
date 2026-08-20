@@ -13,6 +13,13 @@ class Echo(CommandPackage):
         "ECHO"
     }
     cmd_type = CmdTypes.ECHO
+    description = f"""
+    Echo a message.
+    If not arguments, echo the last message.
+
+    Usage:
+      /{cmd} [message]
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         if not persona_info:

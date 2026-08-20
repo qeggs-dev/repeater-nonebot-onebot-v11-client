@@ -18,6 +18,12 @@ class BreakChatTask(CommandPackage):
         "BREAK_CHAT_TASK",
     }
     cmd_type = CmdTypes.STATUS
+    description = f"""
+    Break a chat task.
+
+    Usage:
+      /{cmd} [task_id]
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         task_id = persona_info.message_stripped_str

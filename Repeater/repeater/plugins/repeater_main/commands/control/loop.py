@@ -21,7 +21,7 @@ class Loop(CommandPackage):
         "LOOP"
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         loop execute command times
 
         Usage:

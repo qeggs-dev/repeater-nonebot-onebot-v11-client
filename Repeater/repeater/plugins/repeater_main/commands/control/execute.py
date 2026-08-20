@@ -20,7 +20,7 @@ class Execute(CommandPackage):
         "EXECUTE"
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         Pull Up the command invocation through component when only the component of the command are known.
 
         Usage:

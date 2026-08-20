@@ -17,7 +17,7 @@ class GenerateCandidateAnswer(BaseChat):
         "GenerateCandidateAnswer",
         "GENERATE_CANDIDATE_ANSWER"
     }
-    documents = f"""
+    description = f"""
         Initiate a text generation request in the opposite role,
         let AI mimic user-generated content.
         Warning: the presence of Tool Calls may cause an error in your application.

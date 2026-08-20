@@ -18,7 +18,7 @@ class TaskList(CommandPackage):
         "TASK_LIST",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
     Show all tasks.
 
     Usage: 

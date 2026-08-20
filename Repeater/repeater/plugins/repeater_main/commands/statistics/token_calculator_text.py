@@ -15,6 +15,13 @@ class TokenCalculatorText(TokenCalculator):
         "TOKENIZER_TEXT"
     }
     cmd_type = CmdTypes.STATISTIC
+    description = f"""
+    Count tokens using tokenizer.
+
+    Usage:
+        (reply a tokenizer file)
+        /{cmd} text
+    """
 
     async def output(
             self,

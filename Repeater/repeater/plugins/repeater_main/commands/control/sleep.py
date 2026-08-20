@@ -17,7 +17,7 @@ class Sleep(CommandPackage):
         "SLEEP",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
     Sleep for a specified number of seconds
 
     Usage: 

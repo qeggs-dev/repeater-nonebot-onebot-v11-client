@@ -16,6 +16,13 @@ class Annotation(CommandPackage):
         "ANNOTATION",
     }
     cmd_type = CmdTypes.RESERVED
+    description = """
+    Null command, which can be used for comments.
+
+    Usagge:
+      /#
+      //
+    """
     empty_handler = True
 
     async def handler(self, persona_info, send_msg):

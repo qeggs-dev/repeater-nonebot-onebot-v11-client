@@ -13,7 +13,7 @@ class FillInMiddle(BaseFIM):
         "FillInMiddle",
         "FILL_IN_MIDDLE"
     }
-    documents = f"""
+    description = f"""
         Use The [fill_this] tag or three underscores to mark the spaces and let the AI fill them.
         
         Usage:

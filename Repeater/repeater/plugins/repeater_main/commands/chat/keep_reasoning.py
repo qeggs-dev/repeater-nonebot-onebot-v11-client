@@ -15,7 +15,7 @@ class ChatKeepReasoning(BaseChat):
         "KeepReasoning",
         "KEEP_REASONING"
     }
-    documents = f"""
+    description = f"""
         Let the AI continue generating content and turn on inferential mode. (sending an empty message) 
         
         Usage:

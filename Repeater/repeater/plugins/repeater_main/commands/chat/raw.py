@@ -14,7 +14,7 @@ class RawChat(BaseChat):
         "RawChat",
         "RAW_CHAT"
     }
-    documents = f"""
+    description = f"""
         Generates text without adding metadata.
         
         Usage:

@@ -19,7 +19,7 @@ class Serial(CommandPackage):
         "SERIAL",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         Execute Commands Serially
 
         Usage:

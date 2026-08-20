@@ -15,7 +15,7 @@ class ChatKeepAnswering(BaseChat):
         "KeepAnswering",
         "KEEP_ANSWERING"
     }
-    documents = f"""
+    description = f"""
         Let the AI continue generating content. (sending an empty message) 
         
         Usage:

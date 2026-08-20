@@ -21,7 +21,7 @@ class SetHelloContent(CommandPackage):
         "SetHelloContent",
         "SET_HELLO_CONTENT",
     }
-    documents = f"""
+    description = f"""
         Set the hello content.
 
         Usage:

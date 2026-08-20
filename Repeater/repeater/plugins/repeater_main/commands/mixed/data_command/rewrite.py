@@ -18,7 +18,7 @@ class Rewrite(BaseChat):
         "REWRITE",
     }
     cmd_type = CmdTypes.MIXED
-    documents = """
+    description = """
         Withdraw and send with new content.
     """
 

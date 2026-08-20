@@ -22,7 +22,7 @@ class SeeCmd(CommandPackage):
         "SEE_CMD"
     }
     cmd_type = CmdTypes.SEE_CMD
-    documents = f"""
+    description = f"""
         View the details of the specified command.
 
         Usage:

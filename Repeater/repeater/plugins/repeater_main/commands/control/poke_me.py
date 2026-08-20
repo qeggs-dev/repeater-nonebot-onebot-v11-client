@@ -15,7 +15,7 @@ class PokeMe(CommandPackage):
         "POKE",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
     Send a poke message to the user.
 
     Usage: 

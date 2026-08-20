@@ -19,6 +19,12 @@ class GetRequirementLicenses(CommandPackage):
         "GetRequirementLicenses",
         "GET_REQUIREMENT_LICENSES",
     }
+    description = f"""
+    Obtain an open source license for the requirements.
+
+    Usage:
+      /{cmd} <requirement_name>
+    """
     cmd_type = CmdTypes.LICENSES
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

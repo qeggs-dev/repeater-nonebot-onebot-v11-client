@@ -15,7 +15,7 @@ class SmartAtCmd(BaseChat):
         "SMARTAT",
     }
     listen_type = ListenType.Command
-    documents = """
+    description = """
         The command version of SmartAT.
 
         Usage:

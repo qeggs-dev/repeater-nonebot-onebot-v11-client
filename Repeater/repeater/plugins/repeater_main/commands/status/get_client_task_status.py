@@ -20,6 +20,12 @@ class GetCoreTaskStatus(CommandPackage):
         "GET_CORE_TASK_STATUS",
     }
     cmd_type = CmdTypes.STATUS
+    description = f"""
+    Gets the status of the current LLM Text Content Generation Task.
+
+    Usage:
+      /{cmd}
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()

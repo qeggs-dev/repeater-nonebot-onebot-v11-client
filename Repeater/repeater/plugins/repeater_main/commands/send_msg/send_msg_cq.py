@@ -21,6 +21,12 @@ class SendMessageCQ(CommandPackage):
         "SEND_MESSAGE_CQ",
     }
     cmd_type = CmdTypes.SENDMSG
+    description = f"""
+    Send an arbitrary Onebot cq message.
+
+    Usage:
+      /{cmd} cq_message
+    """
     superuser_permissions = True
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

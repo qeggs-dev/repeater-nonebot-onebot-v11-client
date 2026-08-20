@@ -20,6 +20,12 @@ class AdaptationInfo(CommandPackage):
         "ADAPTATION_INFO",
     }
     cmd_type = CmdTypes.VERSION
+    description = f"""
+    Get the adaptation information.
+
+    Usage:
+      /{cmd}
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()

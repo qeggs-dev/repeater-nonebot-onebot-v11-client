@@ -14,7 +14,7 @@ class SummarizeAndContract(BaseChat):
         "SummarizeAndContract",
         "SUMARAIZE_AND_CONTRACT"
     }
-    documents = f"""
+    description = f"""
         Summarizes the user's contextual content
         And save only summary information
 

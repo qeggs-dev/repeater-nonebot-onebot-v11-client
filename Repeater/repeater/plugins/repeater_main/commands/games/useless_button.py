@@ -19,7 +19,7 @@ class UselessButton(CommandPackage):
         "USELESS_BUTTON"
     }
     cmd_type = CmdTypes.GAMES
-    documents = f"""
+    description = f"""
         A useless button.
 
         Usage:

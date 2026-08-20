@@ -23,7 +23,7 @@ class Help(CommandPackage):
         "HELP"
     }
     cmd_type = CmdTypes.SEE_CMD
-    documents = f"""
+    description = f"""
         View help information.
 
         Usage:

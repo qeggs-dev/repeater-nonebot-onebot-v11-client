@@ -11,7 +11,7 @@ class Chat(BaseChat):
         "Chat",
         "CHAT"
     }
-    documents = f"""
+    description = f"""
         Initiates a text generation request
         Return content to force text output.
         

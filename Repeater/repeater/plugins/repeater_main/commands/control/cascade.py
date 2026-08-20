@@ -19,9 +19,11 @@ class Cascade(CommandPackage):
         "CASCADE",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         Takes the result of the previous command as input to the next command.
         When args exist, use them instead of what was returned by the previous command.
+        Use {{message}} to include the output of the previous entry in args,
+        if there is no way to pass the previous line, the result is printed directly.
 
         Usage:
             /{cmd}
@@ -49,15 +51,28 @@ class Cascade(CommandPackage):
                 await send_msg.send_error(f"[{index}] Handler instance not found")
                 send_msg.break_handler()
         
-        last_result: Message = Message()
+        last_result: PersonaInfo = persona_info
         for package_instance, info in tasks:
-            # 如果当前命令无参数且有上一步结果，使用上一步结果
-            if not info and last_result:
-                info = info.copy_with_args(last_result)
-            
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
+
+            # 如果当前命令无参数且有上一步结果，使用上一步结果
+            if info:
+                if "{message}" in str(info.message):
+                    info = info.copy_with_args(
+                        Message(
+                            str(info.message).format(
+                                message = str(last_result)
+                            )
+                        )
+                    )
+            elif not info and last_result:
+                info = last_result
+            else:
+                await copyed_send_msg.send_any(last_result.message)
+                continue
+            
             copyed_send_msg.sending_target = SendingTarget.BUFFER
             
             await CommandCaller.horizontal_call(
@@ -74,12 +89,13 @@ class Cascade(CommandPackage):
                 else:
                     current_result.append(buffer_result)
             
-            last_result = current_result
+            last_result = info.copy_with_args(current_result)
         
         if last_result:
-            while last_result:
-                if last_result[0].type == "reply":
-                    last_result.pop(0)
+            last_result_message = last_result.message
+            while last_result_message:
+                if last_result_message[0].type == "reply":
+                    last_result_message.pop(0)
                 else:
                     break
-            await send_msg.send_any(last_result)
+            await send_msg.send_any(last_result_message)

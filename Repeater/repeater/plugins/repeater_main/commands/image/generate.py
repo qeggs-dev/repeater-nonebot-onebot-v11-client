@@ -14,3 +14,9 @@ class GenerateImage(GenerateImageBase):
         "GenerateImage",
         "GENERATE_IMAGE",
     }
+    description = f"""
+    Generate an image from a given prompt.
+
+    Usage:
+        /{cmd} prompt
+    """

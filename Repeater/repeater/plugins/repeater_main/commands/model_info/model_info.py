@@ -17,6 +17,13 @@ class GetModelList(CommandPackage):
         "GetModelList",
         "GET_MODEL_LIST",
     }
+    description = f"""
+    Executes the model query expression immediately,
+    and return a list of results.
+
+    Usage:
+      /{cmd} expression
+    """
     cmd_type = CmdTypes.MODEL
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
