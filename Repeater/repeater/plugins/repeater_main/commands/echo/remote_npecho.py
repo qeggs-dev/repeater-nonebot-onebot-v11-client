@@ -28,6 +28,7 @@ class RemoteNoPromptEcho(CommandPackage):
         /{cmd} private:<user_id> <message>
         ```
     """
+    superuser_permissions = True
 
     pattern = re.compile(r"^(?P<mode>group|private)\s*:\s*(?P<id>\d+)\s*(?P<message>.+)$")
 
@@ -57,9 +58,11 @@ class RemoteNoPromptEcho(CommandPackage):
             )
             if not remote_message:
                 new_message = await CommandCaller.wait_message(persona_info.namespace)
-                await remote_send_msg.send_any(new_message.message, reply = False)
+                message = new_message.message
             else:
-                await remote_send_msg.send_any(remote_message.message, reply = False)
+                message = remote_message.message
+
+            await remote_send_msg.send_any(message)
         else:
             await send_msg.send_prompt("Invalid format, please use 'group:<id> <message>' or 'private:<id> <message>'.")
             return
