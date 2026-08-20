@@ -55,11 +55,14 @@ class Help(CommandPackage):
             if data is not None:
                 backend_version = data.core
 
-        if backend_version is None:
-            text_buffer.append("# Repeater LCSM [Fetch Backend Version Failed]")
+        text_buffer.append("# Repeater LCSM")
+        text_buffer.append("Repeater Series LLM Context State Management Middleware")
+        text_buffer.append("OneBot V11 protocol adapter.")
         
+        if backend_version is None:
+            text_buffer.append("[Fetch backend version failed]")
         else:
-            text_buffer.append(f"# Repeater LCSM {backend_version}")
+            text_buffer.append(f"Version: {backend_version}")
 
         text_buffer.append(f"The scheduler version is {__adaptation__}")
         message.append("\n".join(text_buffer))

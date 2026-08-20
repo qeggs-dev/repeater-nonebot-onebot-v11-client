@@ -27,11 +27,20 @@ class CmdTypesList(CommandPackage):
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        total_count = len(CommandCaller.commands)
-        text_buffer: list[str] = []
-        text_buffer.append(f"Total: {total_count}")
+        total_count: int = 0
+        cmd_types: list[tuple[CmdTypes, int]] = []
         for cmd_type, types in CommandCaller.types.items():
-            text_buffer.append(f"{cmd_type.value} ({len(types)}: {len(types) / total_count:.2%})")
+            cmd_types.append((cmd_type, len(types)))
+            total_count += len(types)
+
+        cmd_types.sort(key=lambda x: x[1], reverse=True)
+
+        text_buffer: list[str] = [
+            f"Total: {total_count}",
+            "Command Types:"
+        ]
+        for index, (cmd_type, count) in enumerate(cmd_types, start=1):
+            text_buffer.append(f"{index}. Repeater.{cmd_type.value}: {count}({count / total_count:.2%})")
         
         await send_msg.send_check_length_prompt(
             "\n".join(text_buffer)
