@@ -28,4 +28,4 @@ class Echo(CommandPackage):
             message = new_message.message
         else:
             message =  persona_info.message
-        await send_msg.send_any(message)
+        await send_msg.send_any(message, reply = False)
