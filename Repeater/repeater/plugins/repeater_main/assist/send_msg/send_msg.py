@@ -68,6 +68,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher],
+            target_group: str | None = None,
+            target_user: str | None = None,
             send_target: Literal[SendingTarget.MATCHER] = SendingTarget.MATCHER
         ): ...
     
@@ -77,6 +79,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher] | None = None,
+            target_group: str | None = None,
+            target_user: str | None = None,
             send_target: SendingTarget = SendingTarget.AUTO
         ): ...
 
@@ -85,6 +89,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher] | None = None,
+            target_group: str | None = None,
+            target_user: str | None = None,
             send_target: SendingTarget = SendingTarget.AUTO
         ):
         self._component: str = component
@@ -92,6 +98,8 @@ class SendMsg:
         self._prefix: Message = Message()
         self._chat_tts_api = ChatTTSAPI()
         self._matcher: Type[Matcher] | None = matcher
+        self._target_group: str | None = target_group
+        self._target_user: str | None = target_user
         
         self._buffer: asyncio.Queue[tuple[str | Message | MessageSegment, tuple[Any, ...], dict[str, Any], int]] = asyncio.Queue()
         self.sending_target: SendingTarget = send_target
@@ -105,11 +113,28 @@ class SendMsg:
                 if matcher is None:
                     raise ValueError("Matcher can't be a target, because it's not given.")
     
-    def copy_with_component(self, component: str | None = None) -> "SendMsg":
+    def copy(
+            self,
+            component: str | None = None,
+            persona_info: PersonaInfo | None = None,
+            matcher: Type[Matcher] | None = None,
+            target_group: str | None = None,
+            target_user: str | None = None,
+            send_target: SendingTarget | None = None,
+        ) -> "SendMsg":
+        component = component if component is not None else self._component
+        persona_info = persona_info if persona_info is not None else self._persona_info
+        matcher = matcher if matcher is not None else self._matcher
+        send_target = send_target if send_target is not None else self.sending_target
+        target_group = target_group if target_group is not None else self._target_group
+        target_user = target_user if target_user is not None else self._target_user
         return self.__class__(
-            component = component if component is not None else self._component,
-            persona_info = self._persona_info,
-            matcher = self._matcher,
+            component = component,
+            persona_info = persona_info,
+            matcher = matcher,
+            send_target = send_target,
+            target_group = target_group,
+            target_user = target_user,
         )
     
     def add_prefix(self, prefix: MessageSegment | str):
@@ -1699,7 +1724,21 @@ class SendMsg:
                 message
             )
         bot = self._persona_info.cached_api
-        if self._persona_info.source == MessageSource.GROUP and self._persona_info.group_id is not None:
+        if self._target_user is not None:
+            await bot.send_private_msg(
+                user_id = int(self._target_user),
+                message = message,
+                *args,
+                **kwargs
+            )
+        elif self._target_group is not None:
+            await bot.send_group_msg(
+                group_id = int(self._target_group),
+                message = message,
+                *args,
+                **kwargs
+            )
+        elif self._persona_info.source == MessageSource.GROUP and self._persona_info.group_id is not None:
             await bot.send_group_msg(
                 group_id = int(self._persona_info.group_id),
                 message = message,
