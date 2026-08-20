@@ -70,7 +70,6 @@ class GetConfigs(BaseConfig):
                 await send_msg.send_error(f"Failed to format configs: {e}")
         else:
             error_msg = "Failed to get configs."
-            error_response = response.get_error() if response else None
-            if error_response:
-                await send_msg.send_error_response(error_response)
+            if not response:
+                await send_msg.send_error_response(response)
             await send_msg.send_error(error_msg)
