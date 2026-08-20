@@ -51,8 +51,8 @@ class Cascade(CommandPackage):
                 await send_msg.send_error(f"[{index}] Handler instance not found")
                 send_msg.break_handler()
         
-        last_result: PersonaInfo = persona_info
-        for package_instance, info in tasks:
+        last_result: PersonaInfo = persona_info.copy_with_args(Message())
+        for index, (package_instance, info) in enumerate(tasks):
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
@@ -62,14 +62,15 @@ class Cascade(CommandPackage):
                 if "{message}" in str(info.message):
                     info = info.copy_with_args(
                         Message(
-                            str(info.message).format(
-                                message = str(last_result)
+                            str(info.message).replace(
+                                "{message}",
+                                str(last_result.message)
                             )
                         )
                     )
             elif not info and last_result:
                 info = last_result
-            else:
+            elif index != 0:
                 await copyed_send_msg.send_any(last_result.message)
                 continue
             
