@@ -1,5 +1,4 @@
 from ....assist import PersonaInfo, SendMsg, Response, str_to_bool
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig
 
@@ -16,6 +15,13 @@ class CrossUserDataAccess(BaseConfig):
         "CROSS_USER_DATA_ACCESS"
     }
     field = "cross_user_data_access"
+    documents = f"""
+    Set whether to allow cross user data access
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,

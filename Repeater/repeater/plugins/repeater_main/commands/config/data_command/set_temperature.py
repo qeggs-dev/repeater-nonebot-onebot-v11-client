@@ -16,6 +16,12 @@ class SetTemperature(BaseConfig):
         "SET_TEMPERATURE",
     }
     field = "temperature"
+    description = f"""
+    Set the temperature of the model.
+
+    Usage:
+      /{cmd} temperature
+    """
 
     async def parse_value(
         self,

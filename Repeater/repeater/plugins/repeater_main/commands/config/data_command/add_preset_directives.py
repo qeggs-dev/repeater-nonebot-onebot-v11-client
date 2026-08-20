@@ -1,7 +1,6 @@
 import re
 import json
-from ....assist import PersonaInfo, SendMsg, Response, parse_delimited_string
-from ....cmd_info import CmdTypes
+from ....assist import PersonaInfo, SendMsg, Response
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig, OperationType
 
@@ -18,6 +17,12 @@ class AddPresetDirectives(BaseConfig):
     }
     field = "prompt_directives"
     operation = OperationType.GET_AND_SET
+    description = f"""
+    Add a preset directive to the config file.
+
+    Usage:
+      /{cmd} name:value
+    """
     _pattern = re.compile(r"^(?P<name>\S+)\s*:\s*(?P<value>.*)$", re.DOTALL)
 
     @classmethod
@@ -51,6 +56,7 @@ class AddPresetDirectives(BaseConfig):
         update_directives = self.parse_input(msg)
         if update_directives is None:
             await send_msg.send_error("Invalid input format. Expected: <name>: <value>...")
+            send_msg.break_handler()
         for name, value in update_directives.items():
             if name in raw_value:
                 raw_value[name].append(value)

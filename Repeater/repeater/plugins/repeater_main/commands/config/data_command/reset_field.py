@@ -15,6 +15,12 @@ class ResetField(BaseConfig):
         "ResetConfigField",
         "RESET_CONFIG_FIELD",
     }
+    description = f"""
+    When the configuration field name is known, leave it blank to use the default configuration.
+
+    Usage:
+      /{cmd} field_name
+    """
 
     async def parse_value_free(
             self,

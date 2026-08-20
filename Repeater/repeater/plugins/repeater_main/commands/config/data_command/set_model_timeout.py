@@ -16,6 +16,12 @@ class SetModelTimeout(BaseConfig):
         "SET_MODEL_TIMEOUT",
     }
     field = "model_timeout"
+    description = f"""
+    Set the timeout for the backend HTTP connection when the model is generated.
+
+    Usage:
+      /{cmd} timeout
+    """
 
     async def parse_value(
         self,

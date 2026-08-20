@@ -16,6 +16,12 @@ class SetFrequencyPenalty(BaseConfig):
         "SET_FREQUENCY_PENALTY",
     }
     field = "frequency_penalty"
+    description = f"""
+    Set the frequency penalty.
+
+    Usage:
+      /{cmd} frequency_penalty
+    """
 
     async def parse_value(
         self,

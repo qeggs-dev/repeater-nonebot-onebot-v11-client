@@ -16,6 +16,12 @@ class SetStopKeywords(BaseConfig):
         "SET_STOP_KEYWORDS",
     }
     field = "stop"
+    description = f"""
+    Set the stop keywords for the model.
+
+    Usage:
+      /{cmd} stop_keyword [stop_keyword...]
+    """
 
     async def parse_value(
         self,
@@ -35,6 +41,6 @@ class SetStopKeywords(BaseConfig):
             send_msg: SendMsg,
             response: Response,
             field: str,
-            value: bool
+            value: list[str]
         ):
         await send_msg.send_response_check_code(response, f"Set Stop Keywords to {', '.join(value)}")

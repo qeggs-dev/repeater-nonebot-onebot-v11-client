@@ -4,15 +4,12 @@ import yaml
 from enum import StrEnum
 
 from ....assist import PersonaInfo, SendMsg, Response
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig, OperationType
-
 
 class FormatType(StrEnum):
     JSON = "json"
     YAML = "yaml"
-
 
 @CommandCaller.register
 class GetConfigs(BaseConfig):
@@ -26,6 +23,13 @@ class GetConfigs(BaseConfig):
         "GET_CONFIGS"
     }
     operation = OperationType.GET
+    description = f"""
+    Get configs.
+
+    Usage:
+      /{cmd} json
+      /{cmd} yaml
+    """
 
     async def parse_value(
         self,

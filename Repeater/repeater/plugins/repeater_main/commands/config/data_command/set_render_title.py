@@ -16,6 +16,12 @@ class SetRenderTitle(BaseConfig):
         "SET_RENDER_TITLE",
     }
     field = "render_title"
+    description = f"""
+    Sets a caption that is fixed at the top of the image during rendering.
+
+    Usage:
+      /{cmd} title
+    """
 
     # 字符串类型，不需要重写 parse_value
     

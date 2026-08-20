@@ -16,6 +16,12 @@ class SetDefaultModel(BaseConfig):
         "SET_DEFAULT_MODEL",
     }
     field = "model_id"
+    description = f"""
+    Set a default model for chat.
+
+    Usage:
+      /{cmd} model_id
+    """
     
     async def finish_message(
             self,

@@ -16,6 +16,13 @@ class SetSaveTextOnly(BaseConfig):
         "SET_SAVE_TEXT_ONLY",
     }
     field = "save_text_only"
+    description = f"""
+    Whether to remove all non-text content when storing context.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,

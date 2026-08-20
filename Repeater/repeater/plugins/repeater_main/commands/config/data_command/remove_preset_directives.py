@@ -19,6 +19,12 @@ class RemovePresetDirectives(BaseConfig):
     field = "prompt_directives"
     operation = OperationType.GET_AND_SET
     _pattern = re.compile(r"^(?P<name>\S+)\s*:\s*(?P<value>.*)$", re.DOTALL)
+    description = f"""
+    Remove a preset directive from the config file.
+
+    Usage:
+      /{cmd} name:value
+    """
 
     @classmethod
     def parse_input(
@@ -48,7 +54,11 @@ class RemovePresetDirectives(BaseConfig):
         removed_diretives = self.parse_input(persona_info.message_stripped_str)
         if removed_diretives is None:
             await send_msg.send_error("Invalid input format. Expected: <name>: <value>...")
-
+            send_msg.break_handler()
+        
+        if raw_value is None:
+            return raw_value
+        
         for type in removed_diretives:
             if type in raw_value:
                 diretives = removed_diretives[type]

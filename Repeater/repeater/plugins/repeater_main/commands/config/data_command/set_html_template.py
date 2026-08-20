@@ -16,6 +16,12 @@ class SetHtmlTemplate(BaseConfig):
         "SET_HTML_TEMPLATE",
     }
     field = "render_html_template"
+    description = f"""
+    Set the HTML Template name to use when rendering.
+
+    Usage:
+      /{cmd} html_template_name
+    """
     
     async def finish_message(
             self,

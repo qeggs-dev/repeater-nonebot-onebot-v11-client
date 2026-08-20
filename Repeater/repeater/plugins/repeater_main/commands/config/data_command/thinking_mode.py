@@ -16,6 +16,13 @@ class ThinkingMode(BaseConfig):
         "THINKING_MODE",
     }
     field = "thinking"
+    description = f"""
+    Turn on the inference mode of hybrid inference model.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,

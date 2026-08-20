@@ -16,6 +16,12 @@ class SetTimezone(BaseConfig):
         "SET_TIMEZONE",
     }
     field = "timezone"
+    description = f"""
+    Set User's Timezone
+
+    Usage:
+      /{cmd} timezone
+    """
 
     # 字符串类型，不需要重写 parse_value
     

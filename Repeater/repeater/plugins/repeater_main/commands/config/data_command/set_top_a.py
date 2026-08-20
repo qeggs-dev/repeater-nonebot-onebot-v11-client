@@ -16,6 +16,12 @@ class SetTopA(BaseConfig):
         "SET_TOP_A",
     }
     field = "top_a"
+    description = f"""
+    Set Top_A
+
+    Usage:
+      /{cmd} top_a
+    """
 
     async def parse_value(
         self,

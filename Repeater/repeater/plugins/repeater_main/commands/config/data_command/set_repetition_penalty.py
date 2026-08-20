@@ -16,6 +16,12 @@ class SetRepetitionPenalty(BaseConfig):
         "SET_REPETITION_PENALTY",
     }
     field = "repetition_penalty"
+    description = f"""
+    Set Repetition Penalty
+
+    Usage:
+      /{cmd} repeatition_penalty
+    """
 
     async def parse_value(
         self,

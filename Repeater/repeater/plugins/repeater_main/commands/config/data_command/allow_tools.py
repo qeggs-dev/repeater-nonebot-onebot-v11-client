@@ -1,6 +1,5 @@
 import json
 from ....assist import PersonaInfo, SendMsg, Response, parse_delimited_string
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig, OperationType
 
@@ -17,6 +16,12 @@ class AllowTools(BaseConfig):
     }
     field = "allowed_tool_calls"
     operation = OperationType.GET_AND_SET
+    description = f"""
+    Add an allowed tool calls.
+
+    Usage:
+      /{cmd} tool_id [tool_id...]
+    """
 
     async def parse_value(
         self,

@@ -16,6 +16,12 @@ class SetImageModelTimeout(BaseConfig):
         "SET_IMAGE_MODEL_TIMEOUT",
     }
     field = "gen_image_timeout"
+    description = f"""
+    Set the timeout for the backend HTTP connection when the image model is generated.
+
+    Usage:
+      /{cmd} timeout
+    """
 
     async def parse_value(
         self,

@@ -16,6 +16,13 @@ class ModelRequestLoopTimes(BaseConfig):
         "MODEL_REQUEST_LOOP_TIMES",
     }
     field = "max_generate_times"
+    description = f"""
+    Number of times to regenerate.
+    This number is consumed by model error retries and tool calls.
+
+    Usage:
+      /{cmd} <number>
+    """
 
     async def parse_value(
         self,

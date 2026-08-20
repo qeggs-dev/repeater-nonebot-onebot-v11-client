@@ -16,6 +16,12 @@ class SetImageModel(BaseConfig):
         "SET_IMAGE_MODEL",
     }
     field = "image_model_id"
+    description = f"""
+    Set up a model for generating images.
+
+    Usage:
+      /{cmd} model_id
+    """
     
     async def finish_message(
             self,

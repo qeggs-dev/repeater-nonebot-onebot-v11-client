@@ -16,6 +16,12 @@ class SetPresencePenalty(BaseConfig):
         "SET_PRESENCE_PENALTY",
     }
     field = "presence_penalty"
+    description = f"""
+    Set Presence Penalty
+
+    Usage:
+      /{cmd} presence_penalty
+    """
 
     async def parse_value(
         self,

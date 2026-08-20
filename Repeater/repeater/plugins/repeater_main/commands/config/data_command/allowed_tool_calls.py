@@ -1,6 +1,5 @@
 import json
 from ....assist import PersonaInfo, SendMsg, Response, parse_delimited_string
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig
 from typing import Any
@@ -17,6 +16,12 @@ class AllowedToolCalls(BaseConfig):
         "ALLOWED_TOOL_CALLS",
     }
     field = "allowed_tool_calls"
+    description = f"""
+    Set allowed tool calls.
+
+    Usage:
+      /{cmd} json_array
+    """
 
     async def parse_value(
         self,

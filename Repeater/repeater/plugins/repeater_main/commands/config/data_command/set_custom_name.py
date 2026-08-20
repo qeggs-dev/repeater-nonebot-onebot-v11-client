@@ -16,6 +16,12 @@ class SetCustomName(BaseConfig):
         "SET_CUSTOM_NAME",
     }
     field = "user_name"
+    description = f"""
+    Customize the settings for the name in the user profile.
+
+    Usage:
+      /{cmd} name
+    """
     
     async def finish_message(
             self,

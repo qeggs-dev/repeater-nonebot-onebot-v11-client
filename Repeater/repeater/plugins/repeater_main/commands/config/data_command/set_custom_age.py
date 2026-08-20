@@ -16,6 +16,12 @@ class SetCustomAge(BaseConfig):
         "SET_CUSTOM_AGE",
     }
     field = "user_age"
+    description = f"""
+    Customize the age setting in a user profile.
+
+    Usage:
+      /{cmd} age
+    """
 
     async def parse_value(
         self,

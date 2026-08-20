@@ -16,6 +16,13 @@ class RemoveReasoningPrompt(BaseConfig):
         "REMOVE_REASONING_PROMPT",
     }
     field = "remove_reasoning_prompt"
+    description = f"""
+    When the context is committed, the inference chain content in the context is removed to comply with API requirements or to reduce Token overhead.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,

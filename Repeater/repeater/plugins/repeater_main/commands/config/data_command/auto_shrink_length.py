@@ -1,5 +1,4 @@
 from ....assist import PersonaInfo, SendMsg, Response
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig
 
@@ -16,6 +15,14 @@ class SetAutoShrinkLength(BaseConfig):
         "SET_AUTO_SHRINK_LENGTH"
     }
     field = "context_shrink_limit"
+    description = f"""
+    Sets the length limit, in characters.
+    If this limit is exceeded, the system will attempt to gradually delete the longest segment,
+    to reduce the total number of characters below the set value.
+
+    Usage:
+      /{cmd} char_limit
+    """
 
     async def parse_value(
         self,

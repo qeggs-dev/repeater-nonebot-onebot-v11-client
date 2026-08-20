@@ -16,6 +16,13 @@ class ToolCallingRemoveReasoning(BaseConfig):
         "TOOL_CALLING_REMOVE_REASONING",
     }
     field = "tool_calling_remove_reasoning"
+    description = f"""
+    Whether to remove the inference chain content when the tool invokes the loop.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,

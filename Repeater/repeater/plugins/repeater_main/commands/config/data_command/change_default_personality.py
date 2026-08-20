@@ -1,5 +1,4 @@
 from ....assist import PersonaInfo, SendMsg, Response
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig
 
@@ -16,6 +15,12 @@ class ChangeDefaultPersonality(BaseConfig):
         "CHANGE_DEFAULT_PERSONALITY"
     }
     field = "preset_prompt_name"
+    description = f"""
+    Sets the default personality for the system.
+
+    Usage:
+      /{cmd} prompt_postion
+    """
 
     async def parse_value(
         self,

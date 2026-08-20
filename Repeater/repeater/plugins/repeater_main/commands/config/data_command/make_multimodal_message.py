@@ -16,6 +16,13 @@ class MakeMultimodalMessage(BaseConfig):
         "MAKE_MULTIMODAL_MESSAGE",
     }
     field = "make_multimodal_message"
+    description = f"""
+    Whether to use multimodality to build new content when passing in an image.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,

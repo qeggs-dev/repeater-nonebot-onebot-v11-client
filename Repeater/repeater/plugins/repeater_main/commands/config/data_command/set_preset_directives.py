@@ -18,6 +18,13 @@ class SetPresetDirectives(BaseConfig):
         "SET_PRESET_DIRECTIVES",
     }
     field = "prompt_directives"
+    description = f"""
+    Set preset directives.
+    They are small, quick-to-use templates that can be loaded modularly.
+
+    Usage:
+      /{cmd} json
+    """
 
     class Input(BaseModel):
         preset_directives: dict[str, list[str]]

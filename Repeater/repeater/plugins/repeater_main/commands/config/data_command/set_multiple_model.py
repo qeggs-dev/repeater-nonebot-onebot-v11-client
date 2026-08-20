@@ -16,6 +16,12 @@ class SetMultipleModel(BaseConfig):
         "SET_MULTIPLE_MODEL",
     }
     field = "model_id"
+    description = f"""
+    Set multiple model id.
+
+    Usage:
+      /{cmd} model_id1 [model_id...]
+    """
 
     async def parse_value(
         self,
