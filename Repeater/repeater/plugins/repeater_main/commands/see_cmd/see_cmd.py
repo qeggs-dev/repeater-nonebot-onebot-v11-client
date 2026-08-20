@@ -3,7 +3,7 @@ from ...command_register import(
     CommandCaller,
     CommandPackage
 )
-from ...assist import PersonaInfo, SendMsg
+from ...assist import PersonaInfo, SendMsg, parse_delimited_string
 from ...cmd_info import CmdTypes
 from ._assists import (
     all_splited_commands,
@@ -31,10 +31,9 @@ class SeeCmd(CommandPackage):
         ```
     """
 
-    async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
+    def parse_commands(self, cmd_name: str):
         commands: dict[CmdTypes, list[CommandPackage]] = {}
 
-        cmd_name: str = persona_info.message_stripped_str
         delimiters = CommandCaller.delimiters()
         cmd_names: set[str | tuple[str, ...]] = set()
 
@@ -53,9 +52,20 @@ class SeeCmd(CommandPackage):
                 package = CommandCaller.triggers[name]
                 package_instance = CommandCaller.commands[package]
                 commands.setdefault(package.cmd_type, []).append(package_instance)
-        
-        if not commands:
-            await send_msg.send_error(f"\"{cmd_name}\" is Not A Valid Command")
+
+        return commands
+
+    async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
+        commands: dict[CmdTypes, list[CommandPackage]] = {}
+
+        for cmd_name in parse_delimited_string(persona_info.message_stripped_str):
+            sub_commands = self.parse_commands(cmd_name)
+            if not sub_commands:
+                await send_msg.send_error(f"\"{cmd_name}\" is Not A Valid Command")
+            for cmd_type, cmd_packages in sub_commands.items():
+                commands.setdefault(cmd_type, []).extend(cmd_packages)
+            
+        delimiters = CommandCaller.delimiters()
         
         await see_cmds(
             delimiters = delimiters,
