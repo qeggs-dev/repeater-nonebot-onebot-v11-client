@@ -48,8 +48,8 @@ class Parallel(CommandPackage):
                 await send_msg.send_error(f"[{index}] Handler instance not found")
                 send_msg.break_handler()
             copyed_persona_info = persona_info.copy_with_args(args)
-            copyed_send_msg = send_msg.copy_with_component(
-                package_instance.component
+            copyed_send_msg = send_msg.copy(
+                component = package_instance.component
             )
             tasks.append(
                 asyncio.create_task(

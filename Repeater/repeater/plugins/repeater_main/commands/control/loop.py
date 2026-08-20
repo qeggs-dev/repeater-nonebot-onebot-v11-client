@@ -73,8 +73,8 @@ class Loop(CommandPackage):
             copyed_persona_info = persona_info.copy_with_args(
                 args = args
             )
-            copyed_send_msg = send_msg.copy_with_component(
-                package_instance.component
+            copyed_send_msg = send_msg.copy(
+                component = package_instance.component
             )
             for i in range(times):
                 await CommandCaller.horizontal_call(

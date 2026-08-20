@@ -55,7 +55,9 @@ class Cascade(CommandPackage):
             if not info and last_result:
                 info = info.copy_with_args(last_result)
             
-            copyed_send_msg = send_msg.copy_with_component(package_instance.component)
+            copyed_send_msg = send_msg.copy(
+                component = package_instance.component
+            )
             copyed_send_msg.sending_target = SendingTarget.BUFFER
             
             await CommandCaller.horizontal_call(

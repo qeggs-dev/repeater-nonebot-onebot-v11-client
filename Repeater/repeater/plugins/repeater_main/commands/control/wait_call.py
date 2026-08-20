@@ -69,8 +69,8 @@ class WaitCall(CommandPackage):
                 result = await CommandCaller.wait_message(
                     persona_info.namespace
                 )
-            copyed_send_msg = send_msg.copy_with_component(
-                package_instance.component
+            copyed_send_msg = send_msg.copy(
+                component = package_instance.component
             )
             await CommandCaller.horizontal_call(
                 package_instance,
