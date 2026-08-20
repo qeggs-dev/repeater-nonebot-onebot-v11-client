@@ -437,7 +437,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: The send_msg object
         :return: None
         """
-        pass
+        logger.info(f"{self.component} exited")
 
     async def insufficient_access(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """

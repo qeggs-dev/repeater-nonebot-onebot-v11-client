@@ -131,7 +131,7 @@ class CommandCaller:
         return message_handler
     
     @classmethod
-    async def wait_message(cls, namepsace: Namespace) -> PersonaInfo:
+    async def wait_message(cls, namespace: Namespace) -> PersonaInfo:
         """
         Wait for the message.
 
@@ -142,12 +142,17 @@ class CommandCaller:
         loop = asyncio.get_event_loop()
         future: asyncio.Future[PersonaInfo] = loop.create_future()
         async with cls.listen_lock:
-            cls.listen_message_tasks.setdefault(namepsace, set()).add(future)
-        logger.info(
-            "Create Wait Message Task: {future}",
-            future = repr(future),
-        )
+            logger.info(
+                "Create Wait {namespace} Message Task: {future}",
+                namespace = namespace.namespace_str,
+                future = repr(future),
+            )
+            cls.listen_message_tasks.setdefault(namespace, set()).add(future)
         result = await future
+        logger.info(
+            "{namespace} Message Wait Finished",
+            namespace = namespace.namespace_str,
+        )
         return result
     
     @classmethod
@@ -188,7 +193,8 @@ class CommandCaller:
         """
         try:
             logger.info(
-                "Enter command from message: {message_id} ({enter_mode} Mode)",
+                "Enter {command} from message: {message_id} ({enter_mode} Mode)",
+                command = package.component,
                 message_id = persona_info.message_id,
                 enter_mode = persona_info.enter_type.name,
             )
