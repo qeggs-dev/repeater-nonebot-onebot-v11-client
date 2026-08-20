@@ -94,9 +94,4 @@ class Cascade(CommandPackage):
         
         if last_result:
             last_result_message = last_result.message
-            while last_result_message:
-                if last_result_message[0].type == "reply":
-                    last_result_message.pop(0)
-                else:
-                    break
-            await send_msg.send_any(last_result_message)
+            await send_msg.send_any(last_result_message, reply = False)
