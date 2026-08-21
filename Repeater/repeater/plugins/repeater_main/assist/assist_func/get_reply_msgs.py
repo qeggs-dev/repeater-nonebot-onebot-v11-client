@@ -12,8 +12,4 @@ async def get_reply_msgs(bot: Bot, message: Message) -> list[MessageEvent]:
             msgs.append(
                 MessageEvent(**reply_msg)
             )
-    if not msgs:
-        logger.warning(
-            "Reply is not found"
-        )
     return msgs
