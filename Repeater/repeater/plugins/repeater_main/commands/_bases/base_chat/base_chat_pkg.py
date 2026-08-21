@@ -23,20 +23,6 @@ class BaseChat(CommandPackage):
         if self.empty_exit:
             send_msg.break_handler()
     
-    async def parse_forward_msgs(
-        self,
-        persona_info: PersonaInfo,
-        send_msg: SendMsg,
-    ) -> str:
-        forward_msgs = await persona_info.get_forward_msgs()
-        if forward_msgs:
-            forward_msgs_text = persona_info.generates_text_from_messages_list(forward_msgs)
-            message_text = f"Forwarded messages:\n{forward_msgs_text}\n\n---\n\n"
-        else:
-            message_text = ""
-        
-        return message_text
-    
     @staticmethod
     async def open_file(
         persona_info: PersonaInfo
@@ -84,7 +70,7 @@ class BaseChat(CommandPackage):
             input_text: str
         ) -> tuple[str, list[str], list[str], list[str], list[str]]:
         messages_text = await self.parse_forward_msgs(persona_info, send_msg)
-        text = messages_text + await self.post_parse_input_text(persona_info, input_text)
+        text = messages_text + await self.post_parse_text(input_text)
         images: list[str] = await persona_info.get_images_url()
         audios: list[str] = persona_info.get_audio_url()
         videos: list[str] = persona_info.get_video_url()
@@ -98,13 +84,37 @@ class BaseChat(CommandPackage):
             not_open_files
         )
     
-    async def post_parse_input_text(self, persona_info: PersonaInfo, text: str) -> str:
-        reply_msgs_text = "\n> " + text.replace("\n", "\n> ")
+    async def post_parse_text(self, text: str) -> str:
+        return text
+    
+    async def parse_reply_text(self, persona_info: PersonaInfo, text: str) -> str:
+        reply_msgs_text = "> " + text.replace("\n", "\n> ")
         text_buffer: list[str] = [
             f"[From {persona_info.display_name}({persona_info.namespace_str})]",
             reply_msgs_text,
         ]
-        return "\n".join(text_buffer)
+        return await self.post_parse_text("\n".join(text_buffer))
+    
+    async def parse_forward_msgs(
+        self,
+        persona_info: PersonaInfo,
+        send_msg: SendMsg,
+    ) -> str:
+        forward_msgs = await persona_info.get_forward_msgs()
+        if forward_msgs:
+            forward_msgs_text = persona_info.generates_text_from_messages_list(forward_msgs)
+            message_text = f"Forwarded messages:\n{forward_msgs_text}\n\n---\n\n"
+        else:
+            message_text = ""
+        
+        return message_text
+
+    async def parse_input_text(
+        self,
+        persona_info: PersonaInfo,
+        send_msg: SendMsg,
+    ) -> str:
+        return persona_info.message_stripped_str
 
     async def parse_message(
         self,
@@ -126,7 +136,10 @@ class BaseChat(CommandPackage):
             ) = await self.parse_input(
                 persona_info,
                 send_msg,
-                persona_info.message_stripped_str
+                await self.parse_input_text(
+                    persona_info,
+                    send_msg
+                )
             )
 
             reply_msgs_texts: list[str] = []
@@ -135,7 +148,7 @@ class BaseChat(CommandPackage):
             reply_videos_list: list[str] = []
             reply_files_list: list[str] = []
             
-            reply_msgs = await persona_info.from_reference_reversed_chain( continue_iterating = lambda persona_info: not persona_info.is_self)
+            reply_msgs = await persona_info.from_reference_reversed_chain( break_chain = lambda persona_info: persona_info.is_self)
             
             for msg in reply_msgs:
 
@@ -148,7 +161,7 @@ class BaseChat(CommandPackage):
                 ) = await self.parse_input(
                     msg,
                     send_msg,
-                    msg.message_stripped_str
+                    await self.parse_reply_text(msg, msg.message_stripped_str)
                 )
 
                 reply_msgs_texts.append(reference_text)
