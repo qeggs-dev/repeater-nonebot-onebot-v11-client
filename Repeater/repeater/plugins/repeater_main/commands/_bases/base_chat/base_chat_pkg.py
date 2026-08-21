@@ -149,42 +149,47 @@ class BaseChat(CommandPackage):
             reply_files_list: list[str] = []
             
             reply_msgs = await persona_info.from_reference_reversed_chain( break_chain = lambda persona_info: persona_info.is_self)
-            
-            for msg in reply_msgs:
+            reply_msgs_text = ""
 
-                (
-                    reference_text,
-                    reference_images,
-                    reference_audios,
-                    reference_videos,
-                    reference_files
-                ) = await self.parse_input(
-                    msg,
-                    send_msg,
-                    await self.parse_reply_text(msg, msg.message_stripped_str)
-                )
+            if not reply_msgs:
+                logger.warning("No reply messages")
+            else:
+                for msg in reply_msgs:
+                    (
+                        reference_text,
+                        reference_images,
+                        reference_audios,
+                        reference_videos,
+                        reference_files
+                    ) = await self.parse_input(
+                        msg,
+                        send_msg,
+                        await self.parse_reply_text(msg, msg.message_stripped_str)
+                    )
 
-                reply_msgs_texts.append(reference_text)
-                reply_images_list.extend(reference_images)
-                reply_audios_list.extend(reference_audios)
-                reply_videos_list.extend(reference_videos)
-                reply_files_list.extend(reference_files)
-                
+                    reply_msgs_texts.append(reference_text)
+                    reply_images_list.extend(reference_images)
+                    reply_audios_list.extend(reference_audios)
+                    reply_videos_list.extend(reference_videos)
+                    reply_files_list.extend(reference_files)
+                    
+                reply_msgs_text = "\n\n".join(reply_msgs_texts)
 
-            reply_msgs_text = "\n\n".join(reply_msgs_texts)
-
-            if any(reply_images_list):
-                if message_text:
-                    message_text = f"Reply messages:\n{reply_msgs_text}\n\n---\n\n{message_text}"
-                else:
-                    message_text = reply_msgs_text
+                if any(reply_msgs_texts):
+                    if message_text:
+                        message_text = "Reply messages:\n{{reply_msgs_text}}\n\n---\n\n" + message_text
+                    else:
+                        message_text = reply_msgs_text
             
             return SendMessage(
                 text = message_text,
-                images = images,
-                audios = audios,
-                videos = videos,
-                files = files
+                images = reply_images_list + images,
+                audios = reply_audios_list + audios,
+                videos = reply_videos_list + videos,
+                files = reply_files_list + files,
+                extra = {
+                    "reply_msgs_text": reply_msgs_text
+                }
             )
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
@@ -245,6 +250,7 @@ class BaseChat(CommandPackage):
             audio_url = send_messages.audios,
             video_url = send_messages.videos,
             file_url = send_messages.files,
+            extra_template_fields = send_messages.extra
         )
         return response
     
