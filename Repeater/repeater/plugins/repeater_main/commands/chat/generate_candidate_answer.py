@@ -39,7 +39,7 @@ class GenerateCandidateAnswer(BaseChat):
 
         response = await client.send_message(
             message = None,
-            add_metadata = False,
+            raw_message = False,
             save_context = False,
             temporary_prompt = (
                 "{%- if user_profile -%}\n"

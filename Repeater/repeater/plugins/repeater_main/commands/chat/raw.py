@@ -36,6 +36,6 @@ class RawChat(BaseChat):
             audio_url = send_messages.audios,
             video_url = send_messages.videos,
             file_url = send_messages.files,
-            add_metadata = False
+            raw_message = True
         )
         return response
