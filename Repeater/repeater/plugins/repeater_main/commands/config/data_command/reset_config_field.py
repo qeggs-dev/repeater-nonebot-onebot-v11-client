@@ -5,7 +5,7 @@ from ..._bases import BaseConfig
 from typing import Any
 
 @CommandCaller.register
-class ResetField(BaseConfig):
+class ResetConfigField(BaseConfig):
     cmd = "resetConfigField"
     aliases = {
         "rcf",

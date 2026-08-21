@@ -40,7 +40,7 @@ class GeneratePrompt(CommandPackage):
         image_url = await persona_info.get_images_url()
         chat_response = await chat_client.send_message(
             message,
-            add_metadata = False,
+            raw_message = False,
             save_context = False,
             history_messages = [],
             allow_tool_calls = False,

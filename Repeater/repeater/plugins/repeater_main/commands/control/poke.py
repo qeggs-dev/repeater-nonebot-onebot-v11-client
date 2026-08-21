@@ -8,7 +8,7 @@ from ...command_register import(
 )
 
 @CommandCaller.register
-class PokeMe(CommandPackage):
+class Poke(CommandPackage):
     cmd = "poke"
     aliases = {
         "Poke",

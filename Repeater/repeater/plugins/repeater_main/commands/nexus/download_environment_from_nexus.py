@@ -4,7 +4,7 @@ from ...clients import NexusClient
 from ...assist import PersonaInfo
 
 @CommandCaller.register
-class EnvironmentDownloadFromNexus(DownloadFromNexus):
+class EnvDownloadFromNexus(DownloadFromNexus):
     cmd = "envDownloadFromNexus"
     aliases = {
         "edfn",

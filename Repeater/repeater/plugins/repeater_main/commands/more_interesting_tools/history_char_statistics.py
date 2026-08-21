@@ -12,7 +12,7 @@ from ...command_register import(
 from ...logger import logger
 
 @CommandCaller.register
-class CharacterStatistics(CommandPackage):
+class HistoryCharStatistics(CommandPackage):
     cmd = "historyCharStatistics"
     aliases = {
         "hcs",
