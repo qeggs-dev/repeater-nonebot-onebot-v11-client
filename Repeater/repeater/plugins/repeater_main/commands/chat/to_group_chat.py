@@ -26,7 +26,7 @@ class ToGroupChat(BaseChat):
     """
     pattern = re.compile(r"^(?P<group_id>\d+)\s*(?P<text>.*)$", re.DOTALL)
 
-    async def post_parse_input_text(self, persona_info: PersonaInfo, text: str) -> str:
+    async def parse_input_text(self, persona_info: PersonaInfo, text: str) -> str:
         matched = self.pattern.match(text)
         if matched:
             message_text = matched.group("text")
