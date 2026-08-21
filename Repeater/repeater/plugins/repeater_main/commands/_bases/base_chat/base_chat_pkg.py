@@ -77,9 +77,14 @@ class BaseChat(CommandPackage):
         
         return reply_msgs_texts, not_open_files
 
-    async def parse_input(self, persona_info: PersonaInfo, send_msg: SendMsg, input_text: str) -> tuple[str, list[str], list[str], list[str], list[str]]:
+    async def parse_input(
+            self,
+            persona_info: PersonaInfo,
+            send_msg: SendMsg,
+            input_text: str
+        ) -> tuple[str, list[str], list[str], list[str], list[str]]:
         messages_text = await self.parse_forward_msgs(persona_info, send_msg)
-        text = messages_text + input_text
+        text = messages_text + await self.post_parse_input_text(persona_info, input_text)
         images: list[str] = await persona_info.get_images_url()
         audios: list[str] = persona_info.get_audio_url()
         videos: list[str] = persona_info.get_video_url()
@@ -93,8 +98,13 @@ class BaseChat(CommandPackage):
             not_open_files
         )
     
-    async def post_parse_input_text(self, text: str) -> str:
-        return text
+    async def post_parse_input_text(self, persona_info: PersonaInfo, text: str) -> str:
+        reply_msgs_text = "\n> " + text.replace("\n", "\n> ")
+        text_buffer: list[str] = [
+            f"[From {persona_info.display_name}({persona_info.namespace_str})]",
+            reply_msgs_text,
+        ]
+        return "\n".join(text_buffer)
 
     async def parse_message(
         self,
@@ -116,9 +126,7 @@ class BaseChat(CommandPackage):
             ) = await self.parse_input(
                 persona_info,
                 send_msg,
-                await self.post_parse_input_text(
-                    persona_info.message_stripped_str
-                )
+                persona_info.message_stripped_str
             )
 
             reply_msgs_texts: list[str] = []
@@ -127,11 +135,9 @@ class BaseChat(CommandPackage):
             reply_videos_list: list[str] = []
             reply_files_list: list[str] = []
             
-            reply_msgs = await persona_info.from_reference_reversed_chain()
+            reply_msgs = await persona_info.from_reference_reversed_chain( continue_iterating = lambda persona_info: not persona_info.is_self)
             
             for msg in reply_msgs:
-                if msg.is_self:
-                    break
 
                 (
                     reference_text,
@@ -153,7 +159,6 @@ class BaseChat(CommandPackage):
                 
 
             reply_msgs_text = "\n\n".join(reply_msgs_texts)
-            reply_msgs_text = "\n> " + reply_msgs_text.replace("\n", "\n> ")
 
             if any(reply_images_list):
                 if message_text:
