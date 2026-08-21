@@ -108,6 +108,6 @@ class BaseFIM(BaseChat):
             file_url = send_messages.files,
             suffix = suffix,
             fim_mode = True,
-            add_metadata = False
+            raw_message = False
         )
         return response
