@@ -191,7 +191,7 @@ class PersonaInfo:
         instance._enter_type = self._enter_type
         return instance
 
-    async def from_reference_reversed_chain(self) -> list[PersonaInfo]:
+    async def from_reference_reversed_chain(self, no_self: bool = False) -> list[PersonaInfo]:
         """
         从引用链构建 PersonaInfo 实例，且反向
 
@@ -200,6 +200,8 @@ class PersonaInfo:
         """
         reference_chain: list[PersonaInfo] = []
         async for persona_info in self.from_reference_chain():
+            if no_self and persona_info.is_self:
+                break
             reference_chain.append(persona_info)
         return reference_chain[::-1]
     
