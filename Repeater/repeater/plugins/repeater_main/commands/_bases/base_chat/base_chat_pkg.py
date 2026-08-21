@@ -142,7 +142,7 @@ class BaseChat(CommandPackage):
                 ) = await self.parse_input(
                     msg,
                     send_msg,
-                    persona_info.message_stripped_str
+                    msg.message_stripped_str
                 )
 
                 reply_msgs_texts.append(reference_text)
@@ -152,10 +152,10 @@ class BaseChat(CommandPackage):
                 reply_files_list.extend(reference_files)
                 
 
-            reply_msgs_text = "\n\n".join(reversed(reply_msgs_texts))
-            reply_msgs_text = reply_msgs_text.replace("\n", "\n> ")
+            reply_msgs_text = "\n\n".join(reply_msgs_texts)
+            reply_msgs_text = "\n> " + reply_msgs_text.replace("\n", "\n> ")
 
-            if reply_msgs_text:
+            if any(reply_images_list):
                 if message_text:
                     message_text = f"Reply messages:\n{reply_msgs_text}\n\n---\n\n{message_text}"
                 else:
