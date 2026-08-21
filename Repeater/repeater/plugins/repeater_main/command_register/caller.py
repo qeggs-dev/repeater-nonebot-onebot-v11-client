@@ -473,6 +473,21 @@ class CommandCaller:
             if package_instance.aliases:
                 for trigger in package_instance.aliases:
                     cls._reg_triggers(trigger, package)
+        
+        if storage_configs.loading.recommended_class_name_is_trigger:
+            if package.aliases is not None:
+                commands = set(package.aliases)
+            else:
+                commands = set()
+
+            if hasattr(package, "cmd"):
+                commands.add(package.cmd)
+
+            if package.__name__ not in commands:
+                logger.warning(
+                    "Recommended class name is trigger, but {class_name} is not",
+                    class_name = package_instance.component
+                )
     
     @classmethod
     def _reg_cmd_types(cls, cmd_type: CmdTypes, package: Type[CommandPackage[T_Handler_Result]]) -> None:
