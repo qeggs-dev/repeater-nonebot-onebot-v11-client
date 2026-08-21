@@ -5,7 +5,7 @@ import aiofiles
 from nonebot import get_bots
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment, Message
 from nonebot.internal.adapter.adapter import Adapter
-from typing import AsyncGenerator, Container, Iterable
+from typing import AsyncGenerator, Container, Iterable, Callable
 
 from nonebot.internal.adapter.bot import Bot
 from ..assist_func import (
@@ -191,7 +191,7 @@ class PersonaInfo:
         instance._enter_type = self._enter_type
         return instance
 
-    async def from_reference_reversed_chain(self, no_self: bool = False) -> list[PersonaInfo]:
+    async def from_reference_reversed_chain(self, break_chain: Callable[[PersonaInfo], bool] = lambda _: False) -> list[PersonaInfo]:
         """
         从引用链构建 PersonaInfo 实例，且反向
 
@@ -200,7 +200,7 @@ class PersonaInfo:
         """
         reference_chain: list[PersonaInfo] = []
         async for persona_info in self.from_reference_chain():
-            if no_self and persona_info.is_self:
+            if break_chain(persona_info):
                 break
             reference_chain.append(persona_info)
         return reference_chain[::-1]
