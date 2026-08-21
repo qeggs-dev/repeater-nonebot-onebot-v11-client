@@ -60,17 +60,17 @@ class Loader(Generic[T_MODEL]):
             raise ValueError("Unknown mode")
 
     @staticmethod
-    def _decode_json(file_path: str | os.PathLike):
+    def _decode_json(file_path: str | os.PathLike) -> Any:
         return json_storage.load_json(file_path)
 
     @staticmethod
-    def _decode_yaml(file_path: str | os.PathLike):
+    def _decode_yaml(file_path: str | os.PathLike) -> Any:
         return yaml_storage.load_yaml(file_path)
     
     @staticmethod
-    def _encode_json(file_path: str | os.PathLike, data: Any):
+    def _encode_json(file_path: str | os.PathLike, data: Any) -> None:
         return json_storage.save_json(file_path, data)
 
     @staticmethod
-    def _encode_yaml(file_path: str | os.PathLike, data: Any):
+    def _encode_yaml(file_path: str | os.PathLike, data: Any) -> None:
         return yaml_storage.save_yaml(file_path, data)
