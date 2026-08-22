@@ -40,6 +40,12 @@ from ...exceptions import (
 )
 from ...logger import logger as base_logger
 from .sending_target import SendingTarget
+from .text_tender_exceptions import (
+    InvalidResponseData,
+    RenderResponseException,
+    NotInitializedResponse,
+    TextRenderException,
+)
 
 logger = base_logger.bind(module = "SendMsg")
 
@@ -62,6 +68,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher],
+            target_group: str | None = None,
+            target_user: str | None = None,
             send_target: Literal[SendingTarget.MATCHER] = SendingTarget.MATCHER
         ): ...
     
@@ -71,6 +79,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher] | None = None,
+            target_group: str | None = None,
+            target_user: str | None = None,
             send_target: SendingTarget = SendingTarget.AUTO
         ): ...
 
@@ -79,6 +89,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher] | None = None,
+            target_group: str | None = None,
+            target_user: str | None = None,
             send_target: SendingTarget = SendingTarget.AUTO
         ):
         self._component: str = component
@@ -86,6 +98,8 @@ class SendMsg:
         self._prefix: Message = Message()
         self._chat_tts_api = ChatTTSAPI()
         self._matcher: Type[Matcher] | None = matcher
+        self._target_group: str | None = target_group
+        self._target_user: str | None = target_user
         
         self._buffer: asyncio.Queue[tuple[str | Message | MessageSegment, tuple[Any, ...], dict[str, Any], int]] = asyncio.Queue()
         self.sending_target: SendingTarget = send_target
@@ -99,11 +113,28 @@ class SendMsg:
                 if matcher is None:
                     raise ValueError("Matcher can't be a target, because it's not given.")
     
-    def copy_with_component(self, component: str | None = None) -> "SendMsg":
+    def copy(
+            self,
+            component: str | None = None,
+            persona_info: PersonaInfo | None = None,
+            matcher: Type[Matcher] | None = None,
+            target_group: str | None = None,
+            target_user: str | None = None,
+            send_target: SendingTarget | None = None,
+        ) -> "SendMsg":
+        component = component if component is not None else self._component
+        persona_info = persona_info if persona_info is not None else self._persona_info
+        matcher = matcher if matcher is not None else self._matcher
+        send_target = send_target if send_target is not None else self.sending_target
+        target_group = target_group if target_group is not None else self._target_group
+        target_user = target_user if target_user is not None else self._target_user
         return self.__class__(
-            component = component if component is not None else self._component,
-            persona_info = self._persona_info,
-            matcher = self._matcher,
+            component = component,
+            persona_info = persona_info,
+            matcher = matcher,
+            send_target = send_target,
+            target_group = target_group,
+            target_user = target_user,
         )
     
     def add_prefix(self, prefix: MessageSegment | str):
@@ -268,7 +299,7 @@ class SendMsg:
     async def send_response_check_code(
             self,
             response: Response[T_RESPONSE],
-            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            message: str | None = None,
             reply: bool = True,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
@@ -277,7 +308,7 @@ class SendMsg:
     async def send_response_check_code(
             self,
             response: Response[T_RESPONSE],
-            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            message: str | None = None,
             reply: bool = True,
             continue_handler: Literal[True] = True,
         ) -> None: ...
@@ -285,7 +316,7 @@ class SendMsg:
     async def send_response_check_code(
             self,
             response: Response[T_RESPONSE],
-            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            message: str | None = None,
             reply: bool = True,
             continue_handler: bool = False,
         ) -> NoReturn | None:
@@ -323,7 +354,7 @@ class SendMsg:
     async def send_error_response(
             self,
             response: Response[T_RESPONSE],
-            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            message: str | None = None,
             reply: bool = True,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
@@ -332,7 +363,7 @@ class SendMsg:
     async def send_error_response(
             self,
             response: Response[T_RESPONSE],
-            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            message: str | None = None,
             reply: bool = True,
             continue_handler: Literal[True] = True,
         ) -> None: ...
@@ -340,7 +371,7 @@ class SendMsg:
     async def send_error_response(
             self,
             response: Response[T_RESPONSE],
-            message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
+            message: str | None = None,
             reply: bool = True,
             continue_handler: bool = False,
         ) -> NoReturn | None:
@@ -355,24 +386,11 @@ class SendMsg:
             logger.info(
                 "Send Error Response"
             )
-            if message is None:
-                error = response.get_error()
-                if error is not None:
-                    message = f"{error.error_message}\n{error.source_exception}: {error.exception_message}"
-                elif response.text:
-                    message = response.text
-                else:
-                    message = f"[Error Info Is Invalid]"
-            else:
-                message = message
-            
-            await self.send_response(
-                response,
-                message,
-                reply = reply,
-                continue_handler = continue_handler,
+            await self.send_error_render(
+                response if message is None else message,
+                get_error_response = True
             )
-    
+            
     @overload
     async def send_response(
             self,
@@ -751,8 +769,9 @@ class SendMsg:
     async def send_mixed_render(
             self,
             text_to_render: str,
-            text: str | None = None,
-            prompt_mode: bool = False,
+            prefix_text: str | None = None,
+            suffix_text: str | None = None,
+            prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[False] = False
@@ -762,8 +781,9 @@ class SendMsg:
     async def send_mixed_render(
             self,
             text_to_render: str,
-            text: str | None = None,
-            prompt_mode: bool = False,
+            prefix_text: str | None = None,
+            suffix_text: str | None = None,
+            prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[True] = True
@@ -772,8 +792,9 @@ class SendMsg:
     async def send_mixed_render(
             self,
             text_to_render: str,
-            text: str | None = None,
-            prompt_mode: bool = False,
+            prefix_text: str | None = None,
+            suffix_text: str | None = None,
+            prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: bool = False
@@ -781,8 +802,9 @@ class SendMsg:
         """
         发送混合渲染文本
 
-        :param text: 普通文本内容
+        :param prefix_text: 前缀文本内容
         :param text_to_render: 需要渲染的文本内容
+        :param suffix_text: 后缀文本内容
         :param reply: 是否携带引用
         :param continue_handler: 是否继续运行当前处理流程
         """
@@ -793,18 +815,15 @@ class SendMsg:
             text_to_render,
             document_bottom_comment = document_bottom_comment
         )
+        message = Message()
 
-        if text is None:
-            message = Message(
-                image
-            )
-        else:
-            message = Message(
-                [
-                    MessageSegment.text(text),
-                    image,
-                ]
-            )
+        if prefix_text:
+            message.append(prefix_text)
+
+        message.append(image)
+
+        if suffix_text:
+            message.append(suffix_text)
         
         if prompt_mode:
             await self.send_prompt(
@@ -1031,6 +1050,103 @@ class SendMsg:
             await self.send_response(response, message = "TTS Error.")
         else:
             logger.error(f"Send TTS Error: {response.code} {response.text}")
+
+    @overload
+    async def send_error_render(
+            self,
+            *errors: str | Message | Exception | Response,
+            threshold: float = 1.0,
+            get_error_response: bool = False,
+            document_bottom_comment: str = "",
+            reply: bool = True,
+            continue_handler: Literal[False] = False
+        ) -> NoReturn: ...
+
+    @overload
+    async def send_error_render(
+            self,
+            *errors: str | Message | Exception | Response,
+            threshold: float = 1.0,
+            get_error_response: bool = False,
+            document_bottom_comment: str = "",
+            reply: bool = True,
+            continue_handler: Literal[True] = True
+        ) -> None: ...
+
+    async def send_error_render(
+            self,
+            *errors: str | Message | Exception | Response,
+            threshold: float = 1.0,
+            get_error_response: bool = False,
+            document_bottom_comment: str = "",
+            reply: bool = True,
+            continue_handler: bool = False
+        ) -> None | NoReturn:
+        """
+        发送错误渲染
+
+        :param errors: 错误信息
+        :param threshold: 长度阈值
+        :param document_bottom_comment: 文档底部注释
+        :param reply: 是否回复
+        :param continue_handler: 是否继续处理流程
+        """
+        logger.info(
+            "Send Error Render"
+        )
+        texts: list[str] = []
+        for error in errors:
+            if isinstance(error, str):
+                texts.append(error)
+            elif isinstance(error, Message):
+                texts.append(error.extract_plain_text())
+            elif isinstance(error, Exception):
+                texts.append(f"{error.__class__.__name__}: {error}")
+            elif isinstance(error, Response):
+                if get_error_response:
+                    error_response = error.get_error()
+                    if error_response is not None:
+                        message = f"{error_response.error_message}\n{error_response.source_exception}: {error_response.exception_message}"
+                    elif error.text:
+                        message = error.text
+                    else:
+                        message = f"[Error Info Is Invalid]"
+                    texts.append(message)
+                else:
+                    texts.append(f"{error.code}({HTTPCode(error.code).message}): {error.text}")
+
+        text = "\n".join(texts)
+        length_score = self.text_length_score(text)
+        logger.info(
+            "Text Length Score: {length_score}",
+            length_score = length_score
+        )
+    
+        message = Message()
+
+        if length_score >= threshold:
+            try:
+                image = await self.render_text_to_msg_segment(
+                    text,
+                    document_bottom_comment = document_bottom_comment,
+                    style = storage_configs.render_error_message.style,
+                    html_template = storage_configs.render_error_message.html_template
+                )
+                message.append(image)
+            except TextRenderException as e:
+                logger.error(
+                    "Render Error Message Failed: {exc_info}",
+                    exc_info = e
+                )
+                message.append(MessageSegment.text(text))
+        else:
+            message.append(MessageSegment.text(text))
+
+        await self.send_prompt(
+            message,
+            reply = reply,
+            continue_handler = continue_handler
+        )
     
     @overload
     async def send_check_length(
@@ -1143,9 +1259,9 @@ class SendMsg:
         if length_score >= threshold:
             await self.send_mixed_render(
                 text,
-                self.prompt_prefix,
                 document_bottom_comment = document_bottom_comments,
                 reply = reply,
+                prompt_mode = True,
                 continue_handler = continue_handler
             )
         else:
@@ -1356,7 +1472,20 @@ class SendMsg:
         )
         raise BreakHandler
     
-    async def render_text_to_msg_segment(self, text: str, direct_output: bool = False, document_bottom_comment: str = "") -> MessageSegment:
+    async def render_text_to_msg_segment(
+        self,
+        text: str,
+        style: str | None = None,
+        image_expiry_time: int | None = None,
+        html_template: str | None = None,
+        document_bottom_comment: str | None = None,
+        width: int | None = None,
+        height: int | None = None,
+        direct_output: bool | None = None,
+        no_pre_labels: bool | None = None,
+        no_escape: bool | None = None,
+        quality: int | None = None
+    ) -> MessageSegment:
         """
         渲染文本
 
@@ -1367,19 +1496,48 @@ class SendMsg:
         """
         return MessageSegment.image(
             await self.render_text(
-                text,
-                direct_output,
-                document_bottom_comment
+                text = text,
+                style = style,
+                image_expiry_time = image_expiry_time,
+                html_template = html_template,
+                document_bottom_comment = document_bottom_comment,
+                width = width,
+                height = height,
+                direct_output = direct_output,
+                no_pre_labels = no_pre_labels,
+                no_escape = no_escape,
+                quality = quality
             )
         )
 
-    async def render_text(self, text: str, direct_output: bool = False, document_bottom_comment: str = "") -> str:
+    async def render_text(
+        self,
+        text: str,
+        style: str | None = None,
+        image_expiry_time: int | None = None,
+        html_template: str | None = None,
+        document_bottom_comment: str | None = None,
+        width: int | None = None,
+        height: int | None = None,
+        direct_output: bool | None = None,
+        no_pre_labels: bool | None = None,
+        no_escape: bool | None = None,
+        quality: int | None = None
+    ) -> str:
         """
         渲染文本
 
         :param text: 渲染文本内容
-        :param direct_output: 是否直接输出
+        :param style: 渲染样式
+        :param image_expiry_time: 图片过期时间
+        :param html_template: HTML 模板
         :param document_bottom_comment: 文档底部注释
+        :param width: 图片宽度
+        :param height: 图片高度
+        :param direct_output: 是否直接输出
+        :param no_pre_labels: 是否不添加标签
+        :param no_escape: 是否不转义
+        :param quality: 图片质量
         :return: 渲染图片的 URL
         """
         logger.info(
@@ -1393,9 +1551,17 @@ class SendMsg:
         )
         if text:
             render_response: Response[RendedImage] = await text_render.render(
-                text,
+                text = text,
+                style = style,
+                image_expiry_time = image_expiry_time,
+                html_template = html_template,
+                document_bottom_comment = document_bottom_comment,
+                width = width,
+                height = height,
                 direct_output = direct_output,
-                document_bottom_comment = document_bottom_comment
+                no_pre_labels = no_pre_labels,
+                no_escape = no_escape,
+                quality = quality
             )
             if render_response:
                 data = render_response.get_data()
@@ -1404,15 +1570,13 @@ class SendMsg:
                     return url
                 else:
                     logger.error(f"Render Data Is Invalid")
-                    await self.send_response(render_response, "Render Response Is Invalid")
+                    raise InvalidResponseData(render_response)
             elif render_response.initialized:
-                await self.send_error_response(render_response)
+                raise NotInitializedResponse(render_response)
             else:
-                await self.send_response(render_response, lambda response: f"Render Error: {response.text}")
+                raise RenderResponseException(render_response)
         else:
             raise ValueError("Text is empty.")
-        
-        assert False, "This line is not reachable."
     
     @overload
     async def _send(
@@ -1560,7 +1724,21 @@ class SendMsg:
                 message
             )
         bot = self._persona_info.cached_api
-        if self._persona_info.source == MessageSource.GROUP and self._persona_info.group_id is not None:
+        if self._target_user is not None:
+            await bot.send_private_msg(
+                user_id = int(self._target_user),
+                message = message,
+                *args,
+                **kwargs
+            )
+        elif self._target_group is not None:
+            await bot.send_group_msg(
+                group_id = int(self._target_group),
+                message = message,
+                *args,
+                **kwargs
+            )
+        elif self._persona_info.source == MessageSource.GROUP and self._persona_info.group_id is not None:
             await bot.send_group_msg(
                 group_id = int(self._persona_info.group_id),
                 message = message,

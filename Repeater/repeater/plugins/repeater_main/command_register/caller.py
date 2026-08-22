@@ -33,8 +33,11 @@ T_Handler_Result = TypeVar("T_Handler_Result")
 class CommandCaller:
     commands: dict[Type[CommandPackage[Any]], CommandPackage[Any]] = {}
     triggers: dict[str | tuple[str, ...], Type[CommandPackage[Any]]] = {}
+    class_names: dict[str, Type[CommandPackage[Any]]] = {}
+    classes: set[type[CommandPackage[Any]]] = set()
     types: dict[CmdTypes, list[Type[CommandPackage[Any]]]] = {}
     matchers: dict[Type[CommandPackage[Any]], Type[Matcher]] = {}
+    components: dict[str, Type[CommandPackage[Any]]] = {}
     runnings: dict[uuid.UUID, RunningPackage] = {}
     running_map: dict[Namespace, set[uuid.UUID]] = {}
     listen_message_tasks: dict[Namespace, set[asyncio.Future[PersonaInfo]]] = {}
@@ -51,6 +54,31 @@ class CommandCaller:
     @classmethod
     def match_trigger(cls, trigger: str | tuple[str, ...]) -> Type[CommandPackage[Any]]:
         return cls.triggers[trigger]
+
+    @classmethod
+    def match_component(cls, component: str) -> Type[CommandPackage[Any]]:
+        return cls.components[component]
+
+    @classmethod
+    def match_trigger_or_component(cls, string: str | tuple[str, ...]) -> Type[CommandPackage[Any]]:
+        if isinstance(string, str):
+            package: type[CommandPackage] | None = None
+            try:
+                package = CommandCaller.match_component(string)
+            except KeyError:
+                for prefix in CommandCaller.cmd_prefixs():
+                    if string.startswith(prefix):
+                        package = CommandCaller.match_trigger(
+                            string.removeprefix(prefix)
+                        )
+                        break
+            if package is None:
+                raise KeyError(f"Unknown component: {string}")
+            return package
+        elif isinstance(string, tuple):
+            return cls.match_trigger(string)
+        else:
+            raise TypeError(f"Unsupported type: {type(string).__name__}")
     
     @classmethod
     def get_instance(cls, package: Type[CommandPackage[T_Handler_Result]]) -> CommandPackage[T_Handler_Result]:
@@ -103,7 +131,7 @@ class CommandCaller:
         return message_handler
     
     @classmethod
-    async def wait_message(cls, namepsace: Namespace) -> PersonaInfo:
+    async def wait_message(cls, namespace: Namespace) -> PersonaInfo:
         """
         Wait for the message.
 
@@ -111,14 +139,20 @@ class CommandCaller:
         :param task: The task.
         :return: None
         """
-        future: asyncio.Future[PersonaInfo] = asyncio.get_event_loop().create_future()
+        loop = asyncio.get_event_loop()
+        future: asyncio.Future[PersonaInfo] = loop.create_future()
         async with cls.listen_lock:
-            cls.listen_message_tasks.setdefault(namepsace, set()).add(future)
-        logger.info(
-            "Create Wait Message Task: {future}",
-            future = repr(future),
-        )
+            logger.info(
+                "Create Wait {namespace} Message Task: {future}",
+                namespace = namespace.namespace_str,
+                future = repr(future),
+            )
+            cls.listen_message_tasks.setdefault(namespace, set()).add(future)
         result = await future
+        logger.info(
+            "{namespace} Message Wait Finished",
+            namespace = namespace.namespace_str,
+        )
         return result
     
     @classmethod
@@ -159,9 +193,18 @@ class CommandCaller:
         """
         try:
             logger.info(
-                "Enter command from message: {message_id}",
+                "Enter {command} from message: {message_id} ({enter_mode} Mode)",
+                command = package.component,
                 message_id = persona_info.message_id,
+                enter_mode = persona_info.enter_type.name,
             )
+
+            if not await package.enter_check(persona_info, send_msg):
+                logger.warning(
+                    "Enter check blocked: {name}",
+                    name = package.component
+                )
+                send_msg.break_handler()
 
             if not await package.permissions_check(persona_info, send_msg):
                 logger.warning(
@@ -276,8 +319,6 @@ class CommandCaller:
         if package.enabled:
             register_start_time = time.perf_counter_ns()
             try:
-                if package in cls.commands:
-                    package.on_duplicate_handler()
                 package_instance, matcher, handler = cls._make_pack(package)
             except:
                 package.on_reg_failed(*sys.exc_info())
@@ -382,6 +423,7 @@ class CommandCaller:
         main_trigger: Type[CommandPackage[Any]] = cls.triggers.pop(package.cmd)
         types: list[Type[CommandPackage[Any]]] = cls.types.pop(package_instance.cmd_type)
         triggers: list[Type[CommandPackage[T_Handler_Result]]] = []
+        components: Type[CommandPackage[Any]] = cls.components.pop(package_instance.component)
         if package_instance.aliases is not None:
             triggers = [
                 cls.triggers.pop(trigger) for trigger in package_instance.aliases
@@ -405,17 +447,50 @@ class CommandCaller:
         """
         Register package to resource pool
         """
+        if package in cls.commands:
+            package_instance.on_duplicate_handler()
         cls.commands[package] = package_instance
+
+        if package in cls.matchers:
+            package.on_duplicate_matcher(matcher)
         cls.matchers[package] = matcher
-        cls._reg_types(package_instance.cmd_type, package)
+
+        cls._reg_cmd_types(package_instance.cmd_type, package)
+
+        if package in cls.classes:
+            package.on_duplicate_type()
+
+        if package_instance.component in cls.components:
+            package_instance.on_duplicate_component()
+        cls.components[package_instance.component] = package
+        
+        if package.__name__ in cls.class_names:
+            package.on_duplicate_class_name()
+        cls.class_names[package.__name__] = package
+        
         if package_instance.listen_type == ListenType.Command:
             cls._reg_triggers(package_instance.cmd, package)
             if package_instance.aliases:
                 for trigger in package_instance.aliases:
                     cls._reg_triggers(trigger, package)
+        
+        if storage_configs.loading.recommended_class_name_is_trigger:
+            if package.aliases is not None:
+                commands = set(package.aliases)
+            else:
+                commands = set()
+
+            if hasattr(package, "cmd"):
+                commands.add(package.cmd)
+
+            if package.__name__ not in commands:
+                logger.warning(
+                    "Recommended class name is trigger, but {class_name} is not",
+                    class_name = package_instance.component
+                )
     
     @classmethod
-    def _reg_types(cls, cmd_type: CmdTypes, package: Type[CommandPackage[T_Handler_Result]]) -> None:
+    def _reg_cmd_types(cls, cmd_type: CmdTypes, package: Type[CommandPackage[T_Handler_Result]]) -> None:
         """
         Register package to types pool
         """

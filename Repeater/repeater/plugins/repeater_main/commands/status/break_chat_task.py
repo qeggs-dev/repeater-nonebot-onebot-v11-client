@@ -18,9 +18,15 @@ class BreakChatTask(CommandPackage):
         "BREAK_CHAT_TASK",
     }
     cmd_type = CmdTypes.STATUS
+    description = f"""
+    Break a chat task.
+
+    Usage:
+      /{cmd} [task_id]
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        task_id = persona_info.message_striped_str
+        task_id = persona_info.message_stripped_str
         user_configs = await persona_info.get_user_configs()
         client = ChatClient(persona_info, user_configs)
         response = await client.break_chat_task(task_id if task_id else None)

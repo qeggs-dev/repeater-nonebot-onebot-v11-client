@@ -21,7 +21,7 @@ class SetHelloContent(CommandPackage):
         "SetHelloContent",
         "SET_HELLO_CONTENT",
     }
-    documents = f"""
+    description = f"""
         Set the hello content.
 
         Usage:
@@ -33,7 +33,7 @@ class SetHelloContent(CommandPackage):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
-        hello_content = persona_info.message_striped_str
+        hello_content = persona_info.message_stripped_str
         try:
             data = orjson.loads(hello_content)
         except orjson.JSONDecodeError:

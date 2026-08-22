@@ -19,6 +19,12 @@ class GetChatBuffer(CommandPackage):
         "GET_CHAT_BUFFER",
     }
     cmd_type = CmdTypes.STATUS
+    description = f"""
+    Get the chat buffer of the current chat session.
+
+    Usage:
+      /{cmd} task_id
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
@@ -29,11 +35,11 @@ class GetChatBuffer(CommandPackage):
             if buffer_response is None:
                 await send_msg.send_error_response(response)
             else:
-                for task_id, buffer in buffer_response.buffers.items():
+                if persona_info.message_stripped_str in buffer_response.buffers:
+                    buffer = buffer_response.buffers[persona_info.message_stripped_str]
                     await send_msg.send_chat_response(
                         reasoning_content = buffer.reasoning,
-                        content = buffer.content,
-                        continue_handler = True
+                        content = buffer.content
                     )
         
         send_msg.break_handler()

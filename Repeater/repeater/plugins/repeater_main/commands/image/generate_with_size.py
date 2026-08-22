@@ -17,6 +17,15 @@ class GenerateImageWithSize(GenerateImageBase):
         "GenerateImageWithSize",
         "GENERATE_IMAGE_WITH_SIZE",
     }
+    description = f"""
+    Generate an image from a given prompt.
+    When a picture is present in the message, it is extracted as a reference graph.
+    When there is a reference, the picture in the reference message will be loaded first.
+    The size of the image can be specified by using the format "widthxheight".
+
+    Usage:
+        /{cmd} (x)x(y) prompt
+    """
 
     pattern = re.compile(r"^(?P<size>\d+?x\d+)\s*?(?P<prompt>.*)$", re.DOTALL)
     

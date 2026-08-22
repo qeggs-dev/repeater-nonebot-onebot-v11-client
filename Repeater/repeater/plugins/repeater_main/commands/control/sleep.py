@@ -17,7 +17,7 @@ class Sleep(CommandPackage):
         "SLEEP",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
     Sleep for a specified number of seconds
 
     Usage: 
@@ -26,7 +26,7 @@ class Sleep(CommandPackage):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         try:
-            sleep_time = float(persona_info.message_striped_str)
+            sleep_time = float(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Please enter a valid number")
             return

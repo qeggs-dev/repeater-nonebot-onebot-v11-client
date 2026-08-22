@@ -24,7 +24,7 @@ class GeneratePrompt(CommandPackage):
     cmd_type = CmdTypes.MIXED
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        message = persona_info.message_striped_str
+        message = persona_info.message_stripped_str
 
         user_configs = await persona_info.get_user_configs()
 
@@ -40,7 +40,7 @@ class GeneratePrompt(CommandPackage):
         image_url = await persona_info.get_images_url()
         chat_response = await chat_client.send_message(
             message,
-            add_metadata = False,
+            raw_message = False,
             save_context = False,
             history_messages = [],
             allow_tool_calls = False,
@@ -72,7 +72,6 @@ class GeneratePrompt(CommandPackage):
             await send_msg.send_response_check_code(prompt_response, "Set Prompt failed")
         else:
             await send_msg.send_mixed_render(
-                text = "Prompt generated:",
-                text_to_render = text,
-                prompt_mode = True
+                prefix_text = "Prompt generated:",
+                text_to_render = text
             )

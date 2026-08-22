@@ -9,6 +9,9 @@ from .hello_content import HelloContent
 from .platform_interface import PlatformInterface
 from .loading import LoadingConfigs
 from .generate_image_file_type import GenerateImageFileType
+from .render_error_message import RenderErrorMessage
+from .cilent_limits import ClientLimits
+from .ignore_enter import IgnoreEnter
 
 class StorageConfigs(BaseModel):
     text_length_score_configs: TextLengthScoreConfigs = Field(default_factory = TextLengthScoreConfigs)
@@ -26,12 +29,17 @@ class StorageConfigs(BaseModel):
     camouflage: Camouflage = Field(default_factory = Camouflage)
     download_image_timeout: float = 600.0
     generate_image_file_type: GenerateImageFileType = GenerateImageFileType.URL
+    render_error_message: RenderErrorMessage = Field(default_factory = RenderErrorMessage)
+    client_limits: ClientLimits = Field(default_factory = ClientLimits)
+    ignore_enter: IgnoreEnter = Field(default_factory = IgnoreEnter)
     summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
     ciallo_content: str = "Ciallo~ (∠・ω< )⌒★"
     branch_file_size_use_abbreviation: bool = True
     hash_user_id: bool = False
     allow_send_any_message: bool = False
     model_first_chunk_timeout: int | float | None = 90.0
+    tokenizer_cache_size: int = 50
+    tokenizer_most_frequent_tokens: int = 5
     max_reply_chain_length: int = 5
     max_text_file_size: int | None = None
     text_file_encoding: str = "utf-8"

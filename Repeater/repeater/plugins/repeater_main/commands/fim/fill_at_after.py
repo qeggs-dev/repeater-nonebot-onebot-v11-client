@@ -13,7 +13,7 @@ class FillAtAfter(BaseFIM):
         "FillAtAfter",
         "FILL_AT_AFTER"
     }
-    documents = f"""
+    description = f"""
         Given a prefix, let AI write the following.
         
         Usage:

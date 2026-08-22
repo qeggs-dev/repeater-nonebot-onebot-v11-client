@@ -16,6 +16,12 @@ class RenderDocBottomComment(BaseConfig):
         "RENDER_DOC_BOTTOM_COMMENT",
     }
     field = "render_document_bottom_comment"
+    description = f"""
+    Fixed the content of the comment at the bottom when rendering the image.
+
+    Usage:
+      /{cmd} text
+    """
     
     async def finish_message(
             self,

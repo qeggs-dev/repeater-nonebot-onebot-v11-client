@@ -16,6 +16,12 @@ class SetCustomGender(BaseConfig):
         "SET_CUSTOM_GENDER",
     }
     field = "user_gender"
+    description = f"""
+    Customize the setting of gender in a user profile.
+
+    Usage:
+      /{cmd} gender
+    """
     
     async def finish_message(
             self,

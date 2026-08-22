@@ -24,6 +24,7 @@ async def see_cmds(
             text_buffer.append("")
             text_buffer.append(f"**{package.component}**")
             text_buffer.append(f"**type**: `{cmd_type.value}`")
+            text_buffer.append(f"**Superuser permissions required**: `{package.superuser_permissions}`")
             if package.description:
                 text_buffer.append("")
                 text_buffer.append(package.get_description().replace("\n", "\n> "))

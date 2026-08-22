@@ -21,7 +21,7 @@ class RandomFortune(CommandPackage):
         "RANDOM_FORTUNE"
     }
     cmd_type = CmdTypes.GAMES
-    documents = f"""
+    description = f"""
         Randomly generate daily fortunes.
 
         Usage:

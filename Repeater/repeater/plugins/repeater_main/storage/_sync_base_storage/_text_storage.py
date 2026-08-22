@@ -6,7 +6,7 @@ from ...logger import logger as base_logger
 logger = base_logger.bind(module = "Storage.Sync.Text")
 
 class TextStorage(SyncStorage[str]):
-    def load(self, path: str | os.PathLike, encoding: str = "utf-8") -> str:
+    def _load(self, path: str | os.PathLike, encoding: str = "utf-8") -> str:
         try:
             path = self.path(path)
             logger.info(f"Load {path}")
@@ -41,7 +41,7 @@ class TextStorage(SyncStorage[str]):
             logger.error(f"Load {path} failed: {e}")
             raise
 
-    def save(self, path: str | os.PathLike, data: str, encoding: str = "utf-8", append: bool = False) -> None:
+    def _save(self, path: str | os.PathLike, data: str, encoding: str = "utf-8", append: bool = False) -> None:
         try:
             path = self.path(path)
             logger.info(f"Saving text to {path}")

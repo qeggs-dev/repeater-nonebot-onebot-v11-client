@@ -16,6 +16,13 @@ class ModelRequestLoopTimes(BaseConfig):
         "MODEL_REQUEST_LOOP_TIMES",
     }
     field = "max_generate_times"
+    description = f"""
+    Number of times to regenerate.
+    This number is consumed by model error retries and tool calls.
+
+    Usage:
+      /{cmd} <number>
+    """
 
     async def parse_value(
         self,
@@ -24,7 +31,7 @@ class ModelRequestLoopTimes(BaseConfig):
         raw_value: int,
     )  -> int:
         try:
-            value = int(persona_info.message_striped_str)
+            value = int(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Please input a number.")
         

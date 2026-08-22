@@ -16,6 +16,13 @@ class ThinkingMode(BaseConfig):
         "THINKING_MODE",
     }
     field = "thinking"
+    description = f"""
+    Turn on the inference mode of hybrid inference model.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,
@@ -24,7 +31,7 @@ class ThinkingMode(BaseConfig):
         raw_value: bool | None,
     )  -> bool | None:
         try:
-            value = str_to_bool(persona_info.message_striped_str, optional=True)
+            value = str_to_bool(persona_info.message_stripped_str, optional=True)
         except ValueError:
             await send_msg.send_error("Not a valid value")
         return value

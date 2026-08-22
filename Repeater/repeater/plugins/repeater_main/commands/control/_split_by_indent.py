@@ -1,30 +1,54 @@
 from typing import Iterable, Generator
 from nonebot.adapters.onebot.v11 import Message
 
+from typing import List
+
 def split_by_indent(
     message: Message,
     indent: int = 2,
     indent_char: str = " "
-) -> list[Message]:
-    results: list[Message] = []
-    lines = splitlines(message)
-    last_indent: int = 0
-    now_message: Message = Message()
-    for now_indent, line in enumerate_indent(lines, indent, indent_char):
+) -> list[list[Message]]:   # 返回顶级块列表，每个块是 [父行, 子块（可选）]
+    lines = list(enumerate_indent(splitlines(message), indent, indent_char))
+    results: list[list[Message]] = []
+
+    current_root: Message | None = None   # 当前顶级行（缩进0）
+    current_children: list[str] = []      # 当前子行剥离一级缩进后的文本
+
+    for now_indent, line in lines:
         if now_indent == 0:
-            now_message = Message() # 不能使用 clear，这会导致已经添加的 segment 被清空
-            results.append(line)
-        elif indent >= last_indent:
-            now_message.extend(line)
-        elif indent < last_indent:
-            results.append(now_message)
-            now_message = Message()
-            now_message.extend(line)
-        last_indent = now_indent
-    
-    if now_message:
-        results.append(now_message)
-    
+            # 完成上一个顶级块
+            if current_root is not None:
+                block = [current_root]
+                if current_children:
+                    merged_text = "\n".join(current_children)
+                    # 创建新的 Message 来承载合并后的文本
+                    # 使用构造函数，具体根据您的 Message API 调整
+                    child_msg = Message(merged_text)
+                    block.append(child_msg)
+                results.append(block)
+
+            # 开始新顶级块
+            current_root = line
+            current_children = []
+
+        else:
+            # 缩进 > 0：删除一级缩进（indent 个 indent_char）
+            line_text = str(line)
+            prefix = indent_char * indent
+            if line_text.startswith(prefix):
+                line_text = line_text[len(prefix):]   # 去掉一级缩进
+            # 保留剩余缩进（如果有）
+            current_children.append(line_text)
+
+    # 处理最后一个顶级块
+    if current_root is not None:
+        block = [current_root]
+        if current_children:
+            merged_text = "\n".join(current_children)
+            child_msg = Message(merged_text)
+            block.append(child_msg)
+        results.append(block)
+
     return results
 
 def enumerate_indent(

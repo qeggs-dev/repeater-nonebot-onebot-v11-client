@@ -7,7 +7,7 @@ from ...logger import logger as base_logger
 logger = base_logger.bind(module = "Storage.Async.Text")
 
 class TextStorage(AsyncStorage[str]):
-    async def load(self, path: str | os.PathLike, encoding: str = "utf-8") -> str:
+    async def _load(self, path: str | os.PathLike, encoding: str = "utf-8") -> str:
         try:
             path = self.path(path)
             logger.info(f"Load {path}")
@@ -42,7 +42,7 @@ class TextStorage(AsyncStorage[str]):
             logger.error(f"Load {path} failed: {e}")
             raise
 
-    async def save(self, path: str | os.PathLike, data: str, encoding: str = "utf-8", append: bool = False) -> None:
+    async def _save(self, path: str | os.PathLike, data: str, encoding: str = "utf-8", append: bool = False) -> None:
         try:
             path = self.path(path)
             logger.info(f"Saving text to {path}")

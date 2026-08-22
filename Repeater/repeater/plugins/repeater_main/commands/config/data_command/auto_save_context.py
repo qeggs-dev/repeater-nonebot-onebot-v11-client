@@ -1,5 +1,4 @@
 from ....assist import PersonaInfo, SendMsg, Response, str_to_bool
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig
 
@@ -16,6 +15,14 @@ class SetAutoSaveContext(BaseConfig):
         "SET_AUTO_SAVE_CONTEXT"
     }
     field = "save_context"
+    description = f"""
+    Whether to allow the process to save the context.
+    Tip: when set to false, RUL is closed and user requests can be processed in parallel.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,
@@ -24,7 +31,7 @@ class SetAutoSaveContext(BaseConfig):
         raw_value: bool | None,
     )  -> bool:
         try:
-            value = str_to_bool(persona_info.message_striped_str)
+            value = str_to_bool(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Not a valid boolean value")
         return value

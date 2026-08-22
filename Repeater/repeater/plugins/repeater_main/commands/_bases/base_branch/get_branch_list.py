@@ -7,7 +7,7 @@ class GetBranchList(BaseBranch):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         try:
-            pattern = re.compile(persona_info.message_striped_str)
+            pattern = re.compile(persona_info.message_stripped_str)
         except re.error:
             await send_msg.send_error("Invalid regex pattern.")
         

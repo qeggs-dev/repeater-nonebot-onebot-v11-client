@@ -14,3 +14,11 @@ class GenerateImage(GenerateImageBase):
         "GenerateImage",
         "GENERATE_IMAGE",
     }
+    description = f"""
+    Generate an image from a given prompt.
+    When a picture is present in the message, it is extracted as a reference graph.
+    When there is a reference, the picture in the reference message will be loaded first.
+
+    Usage:
+        /{cmd} prompt
+    """

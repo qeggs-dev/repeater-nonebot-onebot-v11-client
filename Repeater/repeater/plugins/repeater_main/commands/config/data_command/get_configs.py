@@ -4,15 +4,12 @@ import yaml
 from enum import StrEnum
 
 from ....assist import PersonaInfo, SendMsg, Response
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig, OperationType
-
 
 class FormatType(StrEnum):
     JSON = "json"
     YAML = "yaml"
-
 
 @CommandCaller.register
 class GetConfigs(BaseConfig):
@@ -26,6 +23,13 @@ class GetConfigs(BaseConfig):
         "GET_CONFIGS"
     }
     operation = OperationType.GET
+    description = f"""
+    Get configs.
+
+    Usage:
+      /{cmd} json
+      /{cmd} yaml
+    """
 
     async def parse_value(
         self,
@@ -33,7 +37,7 @@ class GetConfigs(BaseConfig):
         send_msg: SendMsg,
         raw_value: FormatType | None,
     )  -> FormatType:
-        msg = persona_info.message_striped_str.strip()
+        msg = persona_info.message_stripped_str.strip()
         if not msg:
             return FormatType.JSON  # default to JSON
         try:
@@ -70,7 +74,6 @@ class GetConfigs(BaseConfig):
                 await send_msg.send_error(f"Failed to format configs: {e}")
         else:
             error_msg = "Failed to get configs."
-            error_response = response.get_error() if response else None
-            if error_response:
-                await send_msg.send_error_response(error_response)
+            if not response:
+                await send_msg.send_error_response(response)
             await send_msg.send_error(error_msg)

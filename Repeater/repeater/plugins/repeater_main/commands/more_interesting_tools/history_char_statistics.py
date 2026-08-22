@@ -12,7 +12,7 @@ from ...command_register import(
 from ...logger import logger
 
 @CommandCaller.register
-class CharacterStatistics(CommandPackage):
+class HistoryCharStatistics(CommandPackage):
     cmd = "historyCharStatistics"
     aliases = {
         "hcs",
@@ -24,7 +24,7 @@ class CharacterStatistics(CommandPackage):
     }
     cmd_type = CmdTypes.OTHER
     acceptable_sources = {MessageSource.GROUP}
-    documents = f"""
+    description = f"""
     Statistics chat in the presence of the proportion of characters.
 
     Usage:
@@ -74,7 +74,7 @@ class CharacterStatistics(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         group_id = persona_info.group_id
 
-        args = parse_delimited_string(persona_info.message_striped_str)
+        args = parse_delimited_string(persona_info.message_stripped_str)
         if len(args) != 2:
             await send_msg.send_error("Please enter two positive integers.")
             return

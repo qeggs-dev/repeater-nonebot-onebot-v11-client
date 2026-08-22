@@ -8,14 +8,14 @@ from ...command_register import(
 )
 
 @CommandCaller.register
-class PokeMe(CommandPackage):
+class Poke(CommandPackage):
     cmd = "poke"
     aliases = {
         "Poke",
         "POKE",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
     Send a poke message to the user.
 
     Usage: 

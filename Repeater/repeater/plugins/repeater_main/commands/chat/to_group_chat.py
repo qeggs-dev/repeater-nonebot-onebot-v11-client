@@ -15,7 +15,7 @@ class ToGroupChat(BaseChat):
         "ToGroupChat",
         "TO_GROUP_CHAT"
     }
-    documents = f"""
+    description = f"""
         Submits a build request
         using the user identity under the specified group number
         
@@ -26,8 +26,7 @@ class ToGroupChat(BaseChat):
     """
     pattern = re.compile(r"^(?P<group_id>\d+)\s*(?P<text>.*)$", re.DOTALL)
 
-    async def parse_input(self, persona_info: PersonaInfo) -> str:
-        text = persona_info.message_striped_str
+    async def parse_input_text(self, persona_info: PersonaInfo, text: str) -> str:
         matched = self.pattern.match(text)
         if matched:
             message_text = matched.group("text")
@@ -38,7 +37,7 @@ class ToGroupChat(BaseChat):
         return message_text
     
     async def get_client(self, persona_info: PersonaInfo) -> ChatClient:
-        matched = self.pattern.match(persona_info.message_striped_str)
+        matched = self.pattern.match(persona_info.message_stripped_str)
         if matched:
             group_id_str = matched.group("group_id")
             assert isinstance(group_id_str, str), "The group_id must be a string"

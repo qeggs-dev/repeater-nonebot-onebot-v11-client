@@ -8,9 +8,9 @@ class UploadToNexus(BaseNexus):
         nexus_client = await self.get_client(persona_info)
 
         timeout = None
-        if persona_info.message_striped_str:
+        if persona_info.message_stripped_str:
             try:
-                timeout = int(persona_info.message_striped_str)
+                timeout = int(persona_info.message_stripped_str)
             except ValueError:
                 await send_msg.send_error("Invalid timeout value")
 

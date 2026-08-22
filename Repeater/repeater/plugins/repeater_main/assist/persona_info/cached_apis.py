@@ -53,6 +53,7 @@ class CachedAPI(Bot):
 
         if storage_configs.platform_interface.cache:
             async with self.cache_lock:
-                self.cache[key] = result
+                if cacheable:
+                    self.cache[key] = result
         
         return result

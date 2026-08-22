@@ -19,12 +19,18 @@ class GetRequirementLicenses(CommandPackage):
         "GetRequirementLicenses",
         "GET_REQUIREMENT_LICENSES",
     }
+    description = f"""
+    Obtain an open source license for the requirements.
+
+    Usage:
+      /{cmd} <requirement_name>
+    """
     cmd_type = CmdTypes.LICENSES
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
         license_client = LicenseClient(persona_info, user_configs)
-        server_version = await license_client.get_requirement_license(persona_info.message_striped_str)
+        server_version = await license_client.get_requirement_license(persona_info.message_stripped_str)
         version_data = server_version.get_data()
         if version_data is None:
             await send_msg.send_error("Server license data is invalid.")

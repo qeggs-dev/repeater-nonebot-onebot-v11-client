@@ -16,6 +16,12 @@ class SetRepetitionPenalty(BaseConfig):
         "SET_REPETITION_PENALTY",
     }
     field = "repetition_penalty"
+    description = f"""
+    Set Repetition Penalty
+
+    Usage:
+      /{cmd} repeatition_penalty
+    """
 
     async def parse_value(
         self,
@@ -23,7 +29,7 @@ class SetRepetitionPenalty(BaseConfig):
         send_msg: SendMsg,
         raw_value: float | None,
     )  -> float | None:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             if msg.endswith("%"):
                 msg = msg[:-1]

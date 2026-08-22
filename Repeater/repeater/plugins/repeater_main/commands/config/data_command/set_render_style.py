@@ -16,6 +16,12 @@ class SetRenderStyle(BaseConfig):
         "SET_RENDER_STYLE",
     }
     field = "render_style"
+    description = f"""
+    Set the CSS style name to use when rendering.
+
+    Usage:
+      /{cmd} style_name
+    """
     
     async def finish_message(
             self,

@@ -18,6 +18,12 @@ class GetRequirementList(CommandPackage):
         "GetRequirementList",
         "GET_REQUIREMENT_LIST",
     }
+    description = f"""
+    Gets a list of requirements.
+
+    Usage:
+      /{cmd}
+    """
     cmd_type = CmdTypes.LICENSES
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

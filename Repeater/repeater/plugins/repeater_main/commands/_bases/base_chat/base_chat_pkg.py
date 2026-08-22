@@ -23,29 +23,14 @@ class BaseChat(CommandPackage):
         if self.empty_exit:
             send_msg.break_handler()
     
-    async def parse_forward_msgs(
-        self,
-        persona_info: PersonaInfo,
-        send_msg: SendMsg,
-    ) -> str:
-        forward_msgs = await persona_info.get_forward_msgs()
-        if forward_msgs:
-            forward_msgs_text = persona_info.generates_text_from_messages_list(forward_msgs)
-            message_text = f"Forwarded messages:\n{forward_msgs_text}\n\n---\n\n"
-        else:
-            message_text = ""
-        
-        return message_text
-    
     @staticmethod
     async def open_file(
-        persona_info: PersonaInfo,
-        reply_msgs_texts: list[str],
-        files_list: list[list[str]],
-        file_ids: list[str]
-    ):
+        persona_info: PersonaInfo
+    ) -> tuple[list[str], list[str]]:
         not_open_files: list[str] = []
-        for file_id in file_ids:
+        reply_msgs_texts: list[str] = []
+
+        for file_id in persona_info.get_file_ids():
             info = await persona_info.get_file_info(file_id)
             name = info.file_name
             size = int(info.file_size)
@@ -59,17 +44,16 @@ class BaseChat(CommandPackage):
                     not_open_files.append(name)
                     continue
             try:
+                logger.info(
+                    "Opening file {name}",
+                    name = name
+                )
                 file_data = await persona_info.open_text_file(
                     info,
                     storage_configs.text_file_encoding
                 )
-                reply_msgs_texts.append(
-                    f"[File {name}]\n[File Content Begin]{file_data}\n[File Content End]"
-                )
-                logger.info(
-                    "File {name} was opened successfully",
-                    name = name
-                )
+                reply_msgs_text = f"[File {name}]\n[File Content Begin]{file_data}\n[File Content End]"
+                reply_msgs_texts.append(reply_msgs_text)
             except UnicodeDecodeError:
                 logger.warning(
                     "File {name} was not opened",
@@ -77,11 +61,60 @@ class BaseChat(CommandPackage):
                 )
                 not_open_files.append(file_id)
         
-        files_list.append(not_open_files)
+        return reply_msgs_texts, not_open_files
+
+    async def parse_input(
+            self,
+            persona_info: PersonaInfo,
+            send_msg: SendMsg,
+            input_text: str
+        ) -> tuple[str, list[str], list[str], list[str], list[str]]:
+        messages_text = await self.parse_forward_msgs(persona_info, send_msg)
+        text = messages_text + await self.post_parse_text(input_text)
+        images: list[str] = await persona_info.get_images_url()
+        audios: list[str] = persona_info.get_audio_url()
+        videos: list[str] = persona_info.get_video_url()
+        reply_msgs_texts, not_open_files = await self.open_file(persona_info)
+
+        return (
+            "\n".join(reply_msgs_texts) + text,
+            images,
+            audios,
+            videos,
+            not_open_files
+        )
     
-    async def parse_input(self, persona_info: PersonaInfo) -> str:
-        message_text = persona_info.message_striped_str
+    async def post_parse_text(self, text: str) -> str:
+        return text
+    
+    async def parse_reply_text(self, persona_info: PersonaInfo, text: str) -> str:
+        reply_msgs_text = "> " + text.replace("\n", "\n> ")
+        text_buffer: list[str] = [
+            f"[From {persona_info.display_name}({persona_info.namespace_str})]",
+            reply_msgs_text,
+        ]
+        return await self.post_parse_text("\n".join(text_buffer))
+    
+    async def parse_forward_msgs(
+        self,
+        persona_info: PersonaInfo,
+        send_msg: SendMsg,
+    ) -> str:
+        forward_msgs = await persona_info.get_forward_msgs()
+        if forward_msgs:
+            forward_msgs_text = persona_info.generates_text_from_messages_list(forward_msgs)
+            message_text = f"Forwarded messages:\n{forward_msgs_text}\n\n---\n\n"
+        else:
+            message_text = ""
+        
         return message_text
+
+    async def parse_input_text(
+        self,
+        persona_info: PersonaInfo,
+        send_msg: SendMsg,
+    ) -> str:
+        return persona_info.message_stripped_str
 
     async def parse_message(
         self,
@@ -91,99 +124,89 @@ class BaseChat(CommandPackage):
         if self.no_input:
             return SendMessage()
         else:
-            message = persona_info.message
             if not persona_info:
                 await self.empty_message(persona_info, send_msg)
             
-            message_text = await self.parse_input(persona_info)
-
-            message_text = await self.parse_forward_msgs(persona_info, send_msg) + message_text
-
-            images: list[str] = await persona_info.get_images_url()
-            audios: list[str] = persona_info.get_audio_url()
-            videos: list[str] = persona_info.get_video_url()
-            files: list[str] = persona_info.get_file_ids()
-
-            images_list: list[list[str]] = [images]
-            audios_list: list[list[str]] = [audios]
-            videos_list: list[list[str]] = [videos]
-            files_list: list[list[str]] = []
-            
-            reply_msgs = persona_info.from_reference_chain()
-            reply_msgs_texts: list[str] = []
-            
-            await self.open_file(
-                persona_info,
-                reply_msgs_texts,
-                files_list,
+            (
+                message_text,
+                images,
+                audios,
+                videos,
                 files
-            )
-            
-            async for msg in reply_msgs:
-                if msg.is_self:
-                    break
-
-                forward_msgs_text = await self.parse_forward_msgs(msg, send_msg)
-                if forward_msgs_text:
-                    reply_msgs_texts.append(forward_msgs_text)
-                reply_msgs_texts.append(msg.message_striped_str)
-                reply_msgs_images: list[str] = await msg.get_images_url()
-                reply_msgs_audios: list[str] = msg.get_audio_url()
-                reply_msgs_videos: list[str] = msg.get_video_url()
-                reply_msgs_files: list[str] = msg.get_file_ids()
-
-                images_list.append(reply_msgs_images)
-                audios_list.append(reply_msgs_audios)
-                videos_list.append(reply_msgs_videos)
-                await self.open_file(
-                    msg,
-                    reply_msgs_texts,
-                    files_list,
-                    reply_msgs_files
+            ) = await self.parse_input(
+                persona_info,
+                send_msg,
+                await self.parse_input_text(
+                    persona_info,
+                    send_msg
                 )
+            )
 
-            reply_msgs_text = "\n\n".join(reversed(reply_msgs_texts))
-            reply_msgs_text = reply_msgs_text.replace("\n", "\n> ")
-
-            if reply_msgs_text:
-                if message_text:
-                    message_text = f"Reply messages:\n{reply_msgs_text}\n\n---\n\n{message_text}"
-                else:
-                    message_text = reply_msgs_text
+            reply_msgs_texts: list[str] = []
+            reply_images_list: list[str] = []
+            reply_audios_list: list[str] = []
+            reply_videos_list: list[str] = []
+            reply_files_list: list[str] = []
             
-            # 恢复消息顺序
-            images = list(chain.from_iterable(reversed(images_list)))
-            audios = list(chain.from_iterable(reversed(audios_list)))
-            videos = list(chain.from_iterable(reversed(videos_list)))
+            reply_msgs = await persona_info.from_reference_reversed_chain( break_chain = lambda persona_info: persona_info.is_self)
+            reply_msgs_text = ""
 
-            if not (message_text or images or audios or videos):
-                message_text = str(message)
+            if not reply_msgs:
+                logger.warning("No reply messages")
+            else:
+                for msg in reply_msgs:
+                    (
+                        reference_text,
+                        reference_images,
+                        reference_audios,
+                        reference_videos,
+                        reference_files
+                    ) = await self.parse_input(
+                        msg,
+                        send_msg,
+                        await self.parse_reply_text(msg, msg.message_stripped_str)
+                    )
+
+                    reply_msgs_texts.append(reference_text)
+                    reply_images_list.extend(reference_images)
+                    reply_audios_list.extend(reference_audios)
+                    reply_videos_list.extend(reference_videos)
+                    reply_files_list.extend(reference_files)
+                    
+                reply_msgs_text = "\n\n".join(reply_msgs_texts)
+
+                if any(reply_msgs_texts):
+                    if message_text:
+                        message_text = "Reply messages:\n{{reply_msgs_text}}\n\n---\n\n" + message_text
+                    else:
+                        message_text = reply_msgs_text
             
             return SendMessage(
                 text = message_text,
-                images = images,
-                audios = audios,
-                videos = videos
+                images = reply_images_list + images,
+                audios = reply_audios_list + audios,
+                videos = reply_videos_list + videos,
+                files = reply_files_list + files,
+                extra = {
+                    "reply_msgs_text": reply_msgs_text
+                }
             )
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         logger.info(
             "Received a message {message} from {namespace}",
-            message = persona_info.message_striped_str,
+            message = persona_info.message_stripped_str,
             namespace = persona_info.namespace_str,
             module = send_msg.component
         )
         
-        client = await self.get_client(persona_info)
-
         message = await self.parse_message(persona_info, send_msg)
+
+        client = await self.get_client(persona_info)
 
         response = await self.send_message(
             client = client,
-            images = message.images,
-            audios = message.audios,
-            videos = message.videos,
-            message = message.text,
+            send_messages = message,
             persona_info = persona_info,
             send_msg = send_msg
         )
@@ -217,18 +240,17 @@ class BaseChat(CommandPackage):
     async def send_message(
         self,
         client: ChatClient,
-        images: list[str] | None,
-        audios: list[str] | None,
-        videos: list[str] | None,
-        message: str | None,
+        send_messages: SendMessage,
         persona_info: PersonaInfo,
         send_msg: SendMsg
     ) -> Response[ChatResponse]:
         response: Response[ChatResponse] = await client.send_message(
-            message = message,
-            image_url = images,
-            audio_url = audios,
-            video_url = videos,
+            message = send_messages.text,
+            image_url = send_messages.images,
+            audio_url = send_messages.audios,
+            video_url = send_messages.videos,
+            file_url = send_messages.files,
+            extra_template_fields = send_messages.extra
         )
         return response
     

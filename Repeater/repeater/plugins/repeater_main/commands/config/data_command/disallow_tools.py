@@ -1,6 +1,5 @@
 import json
 from ....assist import PersonaInfo, SendMsg, Response, parse_delimited_string
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig, OperationType
 
@@ -17,6 +16,12 @@ class DisallowTools(BaseConfig):
     }
     field = "allowed_tool_calls"
     operation = OperationType.GET_AND_SET
+    description = f"""
+        Remove an allowed tool calls.
+
+        Usage:
+          /{cmd} tool_id [tool_id...]
+    """
 
     async def parse_value(
         self,
@@ -24,7 +29,7 @@ class DisallowTools(BaseConfig):
         send_msg: SendMsg,
         raw_value: list[str] | None = None
     ):
-        disable_tools = set(parse_delimited_string(persona_info.message_striped_str))
+        disable_tools = set(parse_delimited_string(persona_info.message_stripped_str))
         disabled_tools: list[str] = []
         for tool in raw_value or []:
             if tool not in disable_tools:

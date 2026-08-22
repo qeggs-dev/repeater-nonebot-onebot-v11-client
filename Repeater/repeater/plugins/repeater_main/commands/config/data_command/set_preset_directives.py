@@ -18,6 +18,13 @@ class SetPresetDirectives(BaseConfig):
         "SET_PRESET_DIRECTIVES",
     }
     field = "prompt_directives"
+    description = f"""
+    Set preset directives.
+    They are small, quick-to-use templates that can be loaded modularly.
+
+    Usage:
+      /{cmd} json
+    """
 
     class Input(BaseModel):
         preset_directives: dict[str, list[str]]
@@ -28,7 +35,7 @@ class SetPresetDirectives(BaseConfig):
         send_msg: SendMsg,
         raw_value: Any | None = None
     ) -> dict[str, list[str]] | None:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         data = json.loads(msg)
         try:
             input_data = self.Input(preset_directives=data)

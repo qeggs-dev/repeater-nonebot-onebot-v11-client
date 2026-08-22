@@ -16,6 +16,12 @@ class WriteUserProfile(BaseConfig):
         "WRITE_USER_PROFILE",
     }
     field = "user_profile"
+    description = f"""
+    Customizing user portrait settings.
+
+    Usage:
+      /{cmd} user_portrait
+    """
 
     # 字符串类型，不需要重写 parse_value
     

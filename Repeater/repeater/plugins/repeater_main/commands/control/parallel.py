@@ -21,13 +21,17 @@ class Parallel(CommandPackage):
         "PARALLEL",
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         Execute Commands Parallelly
 
         Usage:
             /{cmd}
             /cmd1_trigger cmd1_args...
-            /cmd2_trigger cmd2_args...
+            /cmd2_trigger
+              cmd2_args1
+              cmd2_args
+              ...
+            /cmd3_trigger cmd3_args...
             ...
     """
 
@@ -48,8 +52,8 @@ class Parallel(CommandPackage):
                 await send_msg.send_error(f"[{index}] Handler instance not found")
                 send_msg.break_handler()
             copyed_persona_info = persona_info.copy_with_args(args)
-            copyed_send_msg = send_msg.copy_with_component(
-                package_instance.component
+            copyed_send_msg = send_msg.copy(
+                component = package_instance.component
             )
             tasks.append(
                 asyncio.create_task(

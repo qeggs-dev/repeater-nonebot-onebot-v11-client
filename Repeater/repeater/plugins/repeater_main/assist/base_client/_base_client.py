@@ -11,8 +11,11 @@ from .client_pool import (
     ClientTimeout,
     ClientLimits
 )
+from ...client_configs import (
+    storage_configs,
+    ClientLimits as StorageClientLimits
+)
 from urllib.parse import urljoin, quote
-from ...client_configs import *
 from ..namespace import Namespace
 from ..persona_info import PersonaInfo
 from ..user_config import UserConfigs
@@ -21,9 +24,24 @@ class BaseClient:
     _httpx_clients: ClassVar[ClientPool] = ClientPool(storage_configs.client_pool_size)
     follow_redirects: ClassVar[bool] = False
     base_router: ClassVar[str | None] = None
-    timeout: ClassVar[int | float | ClientTimeout] = 5
-    limits: ClassVar[ClientLimits | None] = None
+    timeout: ClassVar[int | float | ClientTimeout | None] = 5
+    limits: ClassVar[ClientLimits | StorageClientLimits | None] = None
     encoding: ClassVar[str] = "utf-8"
+
+    @classmethod
+    def _get_limits(cls) -> ClientLimits | None:
+        if cls.limits is None:
+            if storage_configs.client_limits is None:
+                return None
+            
+            return ClientLimits(**storage_configs.client_limits.model_dump())
+
+        if isinstance(cls.limits, StorageClientLimits):
+            return ClientLimits(**cls.limits.model_dump())
+        elif isinstance(cls.limits, ClientLimits):
+            return cls.limits
+        else:
+            return None
 
     def __init__(self, persona_info: PersonaInfo, user_configs: UserConfigs, namespace: str | Namespace | None = None):
         self._persona_info = persona_info
@@ -34,7 +52,7 @@ class BaseClient:
             url = self.base_url,
             follow_redirects = self.follow_redirects,
             timeout = self.timeout,
-            limits = self.limits,
+            limits = self._get_limits(),
             encoding = self.encoding
         )
         self.client = self._httpx_clients.get_client(client_info)

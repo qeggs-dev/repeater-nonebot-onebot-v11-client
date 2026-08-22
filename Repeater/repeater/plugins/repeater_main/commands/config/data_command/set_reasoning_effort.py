@@ -16,6 +16,16 @@ class SetReasoningEffort(BaseConfig):
         "Set_Reasoning_Effort",
     }
     field = "reasoning_effort"
+    description = f"""
+    Set Reasoning Effort
+
+    Usage:
+      /{cmd} low
+      /{cmd} medium
+      /{cmd} high
+      /{cmd} xhigh
+      /{cmd} max
+    """
 
     class ReasoningEffort(StrEnum):
         LOW = "low"
@@ -30,13 +40,13 @@ class SetReasoningEffort(BaseConfig):
         send_msg: SendMsg,
         raw_value: str | None,
     )  -> str | None:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         if msg.lower() in ["null", "none"]:
             return None
         try:
             value = self.ReasoningEffort(msg)
         except ValueError:
-            send_msg.send_error(
+            await send_msg.send_error(
                 "Invalid value, please use one of the following: "
                 + ", ".join(self.ReasoningEffort.__members__.keys())
             )

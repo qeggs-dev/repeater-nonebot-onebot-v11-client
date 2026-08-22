@@ -15,6 +15,12 @@ class SendConfigFile(BaseConfig):
         "SCFGF"
     }
     operation = OperationType.GET_FILE_URL
+    description = f"""
+    Export the configuration file.
+
+    Usage:
+      /{cmd}
+    """
 
     async def parse_value(
         self,

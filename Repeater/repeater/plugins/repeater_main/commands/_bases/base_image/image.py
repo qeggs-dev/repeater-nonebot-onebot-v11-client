@@ -32,14 +32,18 @@ class GenerateImageBase(CommandPackage):
         return ImageClient(persona_info, user_configs)
     
     async def get_prompt(self, persona_info: PersonaInfo, send_msg: SendMsg) -> tuple[list[FILE_TYPES] | None, str]:
-        prompt = persona_info.message_striped_str
-        if not prompt:
-            await send_msg.send_error("Error: No prompt provided")
+        prompts: list[str] = []
 
         images: list[FILE_TYPES] = []
-        async for reply in persona_info.from_reference_chain():
+        for reply in await persona_info.from_reference_reversed_chain():
+            prompts.append(reply.message_stripped_str)
             images.extend(await self.get_images(reply))
         images.extend(await self.get_images(persona_info))
+
+        prompts.append(persona_info.message_stripped_str)
+        prompt = "\n\n".join(prompts).strip()
+        if not prompt:
+            await send_msg.send_error("Error: No prompt provided")
 
         return images or None, prompt
 
@@ -88,7 +92,7 @@ class GenerateImageBase(CommandPackage):
             style: ImageStyle | None = None,
             user: str | None = None,
             image_client: ImageClient,
-            send_msg: SendMsg) -> list[bytes]:
+            send_msg: SendMsg) -> list[str | bytes]:
         response = await image_client.generate(
             model_id = model_id,
 
@@ -112,10 +116,14 @@ class GenerateImageBase(CommandPackage):
             if data is None:
                 await send_msg.send_error_response(response)
             else:
-                gen_images: list[bytes] = []
+                gen_images: list[bytes | str] = []
                 if data.data:
                     for index, image in enumerate(data.data):
-                        if image.b64_json is not None:
+                        if image.url is not None:
+                            gen_images.append(
+                                image.url
+                            )
+                        elif image.b64_json is not None:
                             gen_images.append(
                                 base64.b64decode(image.b64_json)
                             )
@@ -135,10 +143,10 @@ class GenerateImageBase(CommandPackage):
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         image_client = await self.get_client(persona_info)
         images, prompt = await self.get_prompt(persona_info, send_msg)
-        images = await self.generate_image(
+        output_images = await self.generate_image(
             images = images,
             prompt = prompt,
             image_client = image_client,
             send_msg = send_msg
         )
-        await send_msg.send_images(*images)
+        await send_msg.send_images(*output_images)

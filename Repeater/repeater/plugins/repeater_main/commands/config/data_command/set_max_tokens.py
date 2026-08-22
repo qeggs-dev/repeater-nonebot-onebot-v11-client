@@ -16,6 +16,14 @@ class SetMaxTokens(BaseConfig):
         "SET_MAX_TOKENS",
     }
     field = "max_tokens"
+    description = f"""
+    Set the maximum generated Token length for the model.
+    If it is too small, truncation may occur,
+    preallocation can waste some end space if it is too large, causing the model context cap to appear early.
+
+    Usage:
+      /{cmd} max_tokens
+    """
 
     async def parse_value(
         self,
@@ -23,7 +31,7 @@ class SetMaxTokens(BaseConfig):
         send_msg: SendMsg,
         raw_value: int | None,
     )  -> int:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             value = int(msg)
         except ValueError:

@@ -60,7 +60,7 @@ class AsyncLoader(Generic[T_MODEL]):
             raise ValueError("Unknown mode")
 
     @staticmethod
-    async def _decode_json(file_path: str | os.PathLike) -> Any | None:
+    async def _decode_json(file_path: str | os.PathLike) -> Any:
         return await async_json_storage.load_json(file_path)
 
     @staticmethod

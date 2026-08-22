@@ -20,7 +20,7 @@ class BaseConfig(CommandPackage, Generic[T]):
             send_msg: SendMsg,
             raw_value: Any | None
         ) -> T:
-        return persona_info.message_striped_str
+        return persona_info.message_stripped_str
     
     async def parse_value_free(
             self,

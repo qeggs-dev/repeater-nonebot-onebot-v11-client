@@ -16,6 +16,12 @@ class SetModelTimeout(BaseConfig):
         "SET_MODEL_TIMEOUT",
     }
     field = "model_timeout"
+    description = f"""
+    Set the timeout for the backend HTTP connection when the model is generated.
+
+    Usage:
+      /{cmd} timeout
+    """
 
     async def parse_value(
         self,
@@ -23,7 +29,7 @@ class SetModelTimeout(BaseConfig):
         send_msg: SendMsg,
         raw_value: float | None,
     ) -> float:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             value = int(msg)
         except ValueError:

@@ -16,6 +16,12 @@ class SetTemperature(BaseConfig):
         "SET_TEMPERATURE",
     }
     field = "temperature"
+    description = f"""
+    Set the temperature of the model.
+
+    Usage:
+      /{cmd} temperature
+    """
 
     async def parse_value(
         self,
@@ -23,7 +29,7 @@ class SetTemperature(BaseConfig):
         send_msg: SendMsg,
         raw_value: float | None,
     )  -> float:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             if msg.endswith("%"):
                 msg = msg[:-1]

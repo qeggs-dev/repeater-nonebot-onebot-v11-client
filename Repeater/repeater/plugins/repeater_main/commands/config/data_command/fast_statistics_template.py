@@ -1,5 +1,4 @@
 from ....assist import PersonaInfo, SendMsg, Response
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig
 
@@ -16,6 +15,12 @@ class FastStatisticsTemplate(BaseConfig):
         "FAST_STATISTICS_TEMPLATE"
     }
     field = "request_statistics_template"
+    description = f"""
+    Set Fast Statistics Template
+
+    Usage:
+      /{cmd} template_text
+    """
     
     async def finish_message(
             self,

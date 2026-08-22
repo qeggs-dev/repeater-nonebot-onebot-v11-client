@@ -136,10 +136,10 @@ class CommandPackage(ABC, Generic[T]):
     def get_description(self) -> str:
         """Handler description"""
         
-        if self.documents is not None:
-            doc = self.documents
-        elif self.description is not None:
+        if self.description is not None:
             doc = self.description
+        elif self.documents is not None:
+            doc = self.documents
         elif self.__doc__ is not None:
             doc = self.__doc__
         else:
@@ -166,9 +166,9 @@ class CommandPackage(ABC, Generic[T]):
         If you need advice try `__pre_init__` and `__post_init__` method.
         """
         self.__pre_init__(*args, **kwargs)
-        if isinstance(self.documents, str):
-            self.documents = textwrap.dedent(
-                self.documents.expandtabs(4)
+        if isinstance(self.description, str):
+            self.description = textwrap.dedent(
+                self.description.expandtabs(4)
             )
         self._args = args
         self._kwargs = kwargs
@@ -260,6 +260,20 @@ class CommandPackage(ABC, Generic[T]):
             )
         persona_info_copy = PersonaInfo.from_horizontal(persona_info)
         return persona_info_copy, send_msg
+
+    async def enter_check(self, persona_info: PersonaInfo, send_msg: SendMsg) -> bool:
+        """
+        This method is called to check if the call is valid.
+
+        :param persona_info: PersonaInfo object
+        :param send_msg: SendMsg object
+        :return: bool
+        """
+        block = storage_configs.ignore_enter.ignore_enter_check(persona_info.group_id, persona_info.user_id)
+
+        if block:
+            return self.component in storage_configs.ignore_enter.unignore_enter_commands
+        return True
     
     async def permissions_check(self, persona_info: PersonaInfo, send_msg: SendMsg) -> bool:
         """
@@ -360,7 +374,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: SendMsg object
         """
         if isinstance(exception, BreakWithErrorMessage):
-            await send_msg.send_error(str(exception))
+            await send_msg.send_error_render(str(exception))
         elif isinstance(exception, BreakHandler):
             return SubCmdBreaked
 
@@ -385,7 +399,7 @@ class CommandPackage(ABC, Generic[T]):
             )
         else:
             logger.exception(f"Error: {exception}")
-            await send_msg.send_error(exception)
+            await send_msg.send_error_render(exception)
     
     async def on_interpreter_error(self, exception: BaseException, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """
@@ -423,7 +437,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: The send_msg object
         :return: None
         """
-        pass
+        logger.info(f"{self.component} exited")
 
     async def insufficient_access(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """
@@ -433,7 +447,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: Send message interface
         :return: None
         """
-        await send_msg.send_error("Insufficient access rights.")
+        await send_msg.send_error_render("Insufficient access rights.")
         send_msg.break_handler()
     
     async def on_blacklist(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
@@ -526,7 +540,59 @@ class CommandPackage(ABC, Generic[T]):
             )
 
     @classmethod
-    def on_duplicate_handler(cls):
+    def on_duplicate_type(cls):
+        """
+        This section is executed when the type is triggered by a duplicate type.
+
+        You can override this method and do what you need to do.
+
+        :param persona_info: The persona_info object
+        :param send_msg: The send_msg object
+        """
+        if storage_configs.loading.throw_on_duplicate.type:
+            raise ValueError(f"Handler Type {repr(cls)} is already registered")
+        else:
+            logger.warning(
+                "Handler type {handler} is already registered, this may result in overwriting.",
+                handler = repr(cls)
+            )
+
+    @classmethod
+    def on_duplicate_class_name(cls):
+        """
+        This section is executed when the class name is triggered by a duplicate class name.
+
+        You can override this method and do what you need to do.
+
+        :param persona_info: The persona_info object
+        :param send_msg: The send_msg object
+        """
+        if storage_configs.loading.throw_on_duplicate.class_name:
+            raise ValueError(f"Handler class name {cls.__name__} is already registered")
+        else:
+            logger.warning(
+                "Handler class name {class_name} is already registered, this may result in overwriting.",
+                class_name = cls.__name__
+            )
+
+    def on_duplicate_component(self):
+        """
+        This section is executed when the component is triggered by a duplicate component.
+
+        You can override this method and do what you need to do.
+
+        :param persona_info: The persona_info object
+        :param send_msg: The send_msg object
+        """
+        if storage_configs.loading.throw_on_duplicate.handler:
+            raise ValueError(f"Component {self.component} is already registered")
+        else:
+            logger.warning(
+                "Component {component} is already registered, this may result in overwriting.",
+                component = self.component
+            )
+
+    def on_duplicate_handler(self):
         """
         This section is executed when the Handler is triggered by a duplicate handler.
 
@@ -536,9 +602,28 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: The send_msg object
         """
         if storage_configs.loading.throw_on_duplicate.handler:
-            raise ValueError(f"Handler {repr(cls)} is already registered")
+            raise ValueError(f"Handler {self.component} is already registered")
         else:
             logger.warning(
                 "Handler {handler} is already registered, this may result in overwriting.",
-                handler = repr(cls)
+                handler = self.component
+            )
+
+    @classmethod
+    def on_duplicate_matcher(cls, matcher: Type[Matcher]):
+        """
+        This section is executed when the matcher is triggered by a duplicate matcher.
+
+        You can override this method and do what you need to do.
+
+        :param persona_info: The persona_info object
+        :param send_msg: The send_msg object
+        """
+        if storage_configs.loading.throw_on_duplicate.matcher:
+            raise ValueError(f"The {repr(cls)} Matcher {repr(matcher)} is re-registered.")
+        else:
+            logger.warning(
+                "The {handler} matcher {matcher} is already registered, this may result in overwriting.",
+                handler = repr(cls),
+                matcher = repr(matcher)
             )

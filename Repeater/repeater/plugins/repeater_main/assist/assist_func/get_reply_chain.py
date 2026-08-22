@@ -18,23 +18,17 @@ async def get_reply_chain(
     :param message: 消息
     """
     times: int = 0
-    try:
-        while True:
-            if times > storage_configs.max_reply_chain_length:
-                break
-            reply_messages = await get_reply_msgs(
-                bot = bot,
-                message = message
-            )
-            if len(reply_messages) >= 1:
-                event = reply_messages[0]
-                yield event
-                message = event.message
-            else:
-                break
-            times += 1
-    finally:
-        if times == 0:
-            logger.warning(
-                "Reply chain is not found"
-            )
+    while True:
+        if times > storage_configs.max_reply_chain_length:
+            break
+        reply_messages = await get_reply_msgs(
+            bot = bot,
+            message = message
+        )
+        if len(reply_messages) >= 1:
+            event = reply_messages[0]
+            yield event
+            message = event.message
+        else:
+            break
+        times += 1

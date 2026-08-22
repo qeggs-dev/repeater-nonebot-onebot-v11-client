@@ -14,7 +14,7 @@ class PublicSpaceChat(BaseChat):
         "PublicSpaceChat",
         "Public_Space_Chat"
     }
-    documents = f"""
+    description = f"""
         Send a message in public space.
         
         Usage:

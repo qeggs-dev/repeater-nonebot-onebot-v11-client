@@ -17,12 +17,20 @@ class PingProviderHost(CommandPackage):
         "PingProviderHost",
         "PING_PROVIDER_HOST",
     }
+    description = f"""
+    Initiates a ping request to the specified vendor host,
+    if this feature is required for normal use on a Linux-based server,
+    the server needs to be upgraded.
+
+    Usage:
+      /{cmd} [model_id]
+    """
     cmd_type = CmdTypes.MODEL
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
         model_info_client = ModelInfoClient(persona_info, user_configs)
-        model_id = persona_info.message_striped_str
+        model_id = persona_info.message_stripped_str
         if not model_id:
             model_id = None
 

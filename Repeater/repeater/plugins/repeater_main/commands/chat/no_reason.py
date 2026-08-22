@@ -1,6 +1,6 @@
 from ...clients import ChatClient, ChatResponse
 from ...command_register import CommandCaller
-from .._bases import BaseChat
+from .._bases import BaseChat, SendMessage
 from ...assist import PersonaInfo, SendMsg, Response
 
 @CommandCaller.register
@@ -14,7 +14,7 @@ class NoReason(BaseChat):
         "NoReason",
         "NO_REASON"
     }
-    documents = f"""
+    description = f"""
         Forces the use of non-inferential mode for text generation.
         
         Usage:
@@ -26,18 +26,16 @@ class NoReason(BaseChat):
     async def send_message(
         self,
         client: ChatClient,
-        images: list[str],
-        audios: list[str],
-        videos: list[str],
-        message: str,
+        send_messages: SendMessage,
         persona_info: PersonaInfo,
         send_msg: SendMsg
-    ) -> Response[ChatResponse] :
+    ) -> Response[ChatResponse]:
         response = await client.send_message(
-            message = message,
-            image_url = images,
-            audio_url = audios,
-            video_url = videos,
+            message = send_messages.text,
+            image_url = send_messages.images,
+            audio_url = send_messages.audios,
+            video_url = send_messages.videos,
+            file_url = send_messages.files,
             thinking = False
         )
         return response

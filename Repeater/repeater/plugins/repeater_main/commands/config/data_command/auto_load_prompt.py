@@ -1,5 +1,4 @@
 from ....assist import PersonaInfo, SendMsg, Response, str_to_bool
-from ....cmd_info import CmdTypes
 from ....command_register import CommandCaller
 from ..._bases import BaseConfig
 
@@ -16,6 +15,13 @@ class SetAutoLoadPrompt(BaseConfig):
         "SET_AUTO_LOAD_PROMPT",
     }
     field = "load_prompt"
+    description = f"""
+    Whether the process is allowed to load prompts.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,
@@ -24,7 +30,7 @@ class SetAutoLoadPrompt(BaseConfig):
         raw_value: bool | None,
     )  -> bool:
         try:
-            value = str_to_bool(persona_info.message_striped_str)
+            value = str_to_bool(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Not a valid boolean value")
         return value

@@ -16,6 +16,12 @@ class SetTopK(BaseConfig):
         "SET_TOP_K",
     }
     field = "top_k"
+    description = f"""
+    Set Top_K
+
+    Usage:
+      /{cmd} top_k
+    """
 
     async def parse_value(
         self,
@@ -23,7 +29,7 @@ class SetTopK(BaseConfig):
         send_msg: SendMsg,
         raw_value: int | None,
     )  -> int:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             value = int(msg)
         except ValueError:

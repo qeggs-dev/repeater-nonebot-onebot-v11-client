@@ -1,5 +1,5 @@
 from ...clients import ChatClient, ChatResponse
-from .._bases import BaseChat
+from .._bases import BaseChat, SendMessage
 from ...command_register import CommandCaller
 from ...assist import PersonaInfo, SendMsg, Response
 
@@ -14,7 +14,7 @@ class NPChat(BaseChat):
         "NoPromptChat",
         "NO_PROMPT_CHAT"
     }
-    documents = f"""
+    description = f"""
         Generate the task without loading the prompt.
         
         Usage:
@@ -26,18 +26,16 @@ class NPChat(BaseChat):
     async def send_message(
         self,
         client: ChatClient,
-        images: list[str],
-        audios: list[str],
-        videos: list[str],
-        message: str,
+        send_messages: SendMessage,
         persona_info: PersonaInfo,
         send_msg: SendMsg
     ) -> Response[ChatResponse]:
         response: Response[ChatResponse] = await client.send_message(
-            message = message,
-            image_url = images,
-            audio_url = audios,
-            video_url = videos,
+            message = send_messages.text,
+            image_url = send_messages.images,
+            audio_url = send_messages.audios,
+            video_url = send_messages.videos,
+            file_url = send_messages.files,
             load_prompt = False
         )
         return response

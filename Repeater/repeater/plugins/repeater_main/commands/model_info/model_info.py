@@ -17,12 +17,19 @@ class GetModelList(CommandPackage):
         "GetModelList",
         "GET_MODEL_LIST",
     }
+    description = f"""
+    Executes the model query expression immediately,
+    and return a list of results.
+
+    Usage:
+      /{cmd} expression
+    """
     cmd_type = CmdTypes.MODEL
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
         model_info_client = ModelInfoClient(persona_info, user_configs)
-        model_id = persona_info.message_striped_str
+        model_id = persona_info.message_stripped_str
 
         response = await model_info_client.get_models(model_id)
         if response.code == 200:

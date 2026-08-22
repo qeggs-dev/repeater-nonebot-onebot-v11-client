@@ -16,6 +16,12 @@ class SetCustomAge(BaseConfig):
         "SET_CUSTOM_AGE",
     }
     field = "user_age"
+    description = f"""
+    Customize the age setting in a user profile.
+
+    Usage:
+      /{cmd} age
+    """
 
     async def parse_value(
         self,
@@ -23,7 +29,7 @@ class SetCustomAge(BaseConfig):
         send_msg: SendMsg,
         raw_value: int | float | None,
     )  -> int | float:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             value = int(msg)
         except ValueError:

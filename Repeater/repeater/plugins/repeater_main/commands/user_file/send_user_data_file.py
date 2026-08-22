@@ -19,6 +19,12 @@ class SendUserDataFile(CommandPackage):
         "SEND_USER_DATA_FILE",
     }
     cmd_type = CmdTypes.USERFILE
+    description = f"""
+    Export all the active data in user space.
+
+    Usage:
+      /{cmd}
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()

@@ -9,6 +9,7 @@ from ...command_register import(
     CommandCaller,
     CommandPackage
 )
+from ._remove_cmd_prefix import remove_cmd_prefix
 
 @CommandCaller.register
 class Loop(CommandPackage):
@@ -20,14 +21,14 @@ class Loop(CommandPackage):
         "LOOP"
     }
     cmd_type = CmdTypes.CONTROL
-    documents = f"""
+    description = f"""
         loop execute command times
 
         Usage:
             /{cmd} times command args
     """
 
-    pattern = re.compile(r"^(?P<times>\d+)?\s+(?P<command>\w+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>\S+?)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = persona_info.message
@@ -43,6 +44,8 @@ class Loop(CommandPackage):
             assert isinstance(times_str, str), "times_str must be str"
             assert isinstance(command, str), "command must be str"
             assert isinstance(args_prefix, str), "args_prefix must be str"
+
+            command = remove_cmd_prefix(command)
 
             args = MessageSegment.text(args_prefix) + msg[1:]
 
@@ -70,8 +73,8 @@ class Loop(CommandPackage):
             copyed_persona_info = persona_info.copy_with_args(
                 args = args
             )
-            copyed_send_msg = send_msg.copy_with_component(
-                package_instance.component
+            copyed_send_msg = send_msg.copy(
+                component = package_instance.component
             )
             for i in range(times):
                 await CommandCaller.horizontal_call(

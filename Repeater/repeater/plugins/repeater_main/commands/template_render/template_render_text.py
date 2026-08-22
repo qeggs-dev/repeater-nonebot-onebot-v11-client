@@ -21,6 +21,12 @@ class TemplateRenderText(TemplateRender):
         "VarExpandText",
         "VAR_EXPAND_TEXT",
     }
+    description = f"""
+    Render a template and .
+
+    Usage:
+      /{cmd} template_text
+    """
     
     async def send_result(self, persona_info: PersonaInfo, send_msg: SendMsg, response: Response[None]):
         if response:

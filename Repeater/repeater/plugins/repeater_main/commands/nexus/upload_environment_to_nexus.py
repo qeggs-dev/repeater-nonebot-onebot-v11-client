@@ -4,7 +4,7 @@ from ...clients import NexusClient
 from ...assist import PersonaInfo
 
 @CommandCaller.register
-class EnvironmentUploadToNexus(UploadToNexus):
+class EnvUploadToNexus(UploadToNexus):
     cmd = "envUploadToNexus"
     aliases = {
         "eutn",

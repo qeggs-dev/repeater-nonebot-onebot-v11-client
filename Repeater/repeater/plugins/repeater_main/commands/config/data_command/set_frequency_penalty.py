@@ -16,6 +16,12 @@ class SetFrequencyPenalty(BaseConfig):
         "SET_FREQUENCY_PENALTY",
     }
     field = "frequency_penalty"
+    description = f"""
+    Set the frequency penalty.
+
+    Usage:
+      /{cmd} frequency_penalty
+    """
 
     async def parse_value(
         self,
@@ -23,7 +29,7 @@ class SetFrequencyPenalty(BaseConfig):
         send_msg: SendMsg,
         raw_value: float | None,
     )  -> float:
-        msg = persona_info.message_striped_str
+        msg = persona_info.message_stripped_str
         try:
             if msg.endswith("%"):
                 msg = msg[:-1]

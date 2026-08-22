@@ -16,6 +16,13 @@ class MakeMultimodalMessage(BaseConfig):
         "MAKE_MULTIMODAL_MESSAGE",
     }
     field = "make_multimodal_message"
+    description = f"""
+    Whether to use multimodality to build new content when passing in an image.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,
@@ -24,7 +31,7 @@ class MakeMultimodalMessage(BaseConfig):
         raw_value: bool | None,
     )  -> bool:
         try:
-            value = str_to_bool(persona_info.message_striped_str)
+            value = str_to_bool(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Not a valid boolean value")
         return value

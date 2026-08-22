@@ -16,6 +16,13 @@ class ToolCallingRemoveReasoning(BaseConfig):
         "TOOL_CALLING_REMOVE_REASONING",
     }
     field = "tool_calling_remove_reasoning"
+    description = f"""
+    Whether to remove the inference chain content when the tool invokes the loop.
+
+    Usage:
+      /{cmd} true
+      /{cmd} false
+    """
 
     async def parse_value(
         self,
@@ -24,7 +31,7 @@ class ToolCallingRemoveReasoning(BaseConfig):
         raw_value: bool | None,
     )  -> bool:
         try:
-            value = str_to_bool(persona_info.message_striped_str)
+            value = str_to_bool(persona_info.message_stripped_str)
         except ValueError:
             await send_msg.send_error("Not a valid boolean value")
         return value

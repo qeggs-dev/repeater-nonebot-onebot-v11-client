@@ -76,7 +76,7 @@ class ChatClient(BaseClient):
         cross_user_data_routing: CrossUserDataRouting | None = None,
         continue_completion: bool | None = None,
         timeout: int | float | None = None,
-        add_metadata: bool = True,
+        raw_message: bool = False,
     ) -> Response[ChatResponse]:
         """
         发送消息到AI后端
@@ -102,7 +102,7 @@ class ChatClient(BaseClient):
         :param history_msg_role_map: 历史消息角色映射
         :param cross_user_data_routing: 跨用户数据路由
         :param continue_completion: 是否继续生成
-        :param add_metadata: 是否添加元数据
+        :param raw_message: 是否直接提交原始数据
         :return: AI返回的消息
         """
         task_id = uuid.uuid4()
@@ -127,7 +127,7 @@ class ChatClient(BaseClient):
                 gender = self._persona_info.gender,
                 age = self._persona_info.age,
             ),
-            add_metadata = add_metadata,
+            add_metadata = not raw_message,
             role_name = role_name,
             temporary_prompt = temporary_prompt,
             history_messages = history_messages,

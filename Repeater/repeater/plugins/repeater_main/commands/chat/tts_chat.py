@@ -13,7 +13,7 @@ class TTSChat(BaseChat):
         "TTSChat",
         "TTS_CHAT",
     }
-    documents = f"""
+    description = f"""
         Initiates a text generation request,
         Return content to force tts output.
         

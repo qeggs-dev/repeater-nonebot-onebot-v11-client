@@ -24,6 +24,12 @@ class SendMessage(CommandPackage):
         "SEND_MESSAGE",
     }
     cmd_type = CmdTypes.SENDMSG
+    description = f"""
+    Send an arbitrary Onebot message structure.
+
+    Usage:
+      /{cmd} message_json
+    """
     superuser_permissions = True
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
@@ -32,7 +38,7 @@ class SendMessage(CommandPackage):
             return
 
         try:
-            message_body = json.loads(persona_info.message_striped_str)
+            message_body = json.loads(persona_info.message_stripped_str)
         except json.JSONDecodeError:
             await send_msg.send_error("Send_Message must enter a valid JSON")
             return

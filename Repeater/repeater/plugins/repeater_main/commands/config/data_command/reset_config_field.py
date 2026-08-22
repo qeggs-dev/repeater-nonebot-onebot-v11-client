@@ -5,7 +5,7 @@ from ..._bases import BaseConfig
 from typing import Any
 
 @CommandCaller.register
-class ResetField(BaseConfig):
+class ResetConfigField(BaseConfig):
     cmd = "resetConfigField"
     aliases = {
         "rcf",
@@ -15,6 +15,12 @@ class ResetField(BaseConfig):
         "ResetConfigField",
         "RESET_CONFIG_FIELD",
     }
+    description = f"""
+    When the configuration field name is known, leave it blank to use the default configuration.
+
+    Usage:
+      /{cmd} field_name
+    """
 
     async def parse_value_free(
             self,
@@ -22,7 +28,7 @@ class ResetField(BaseConfig):
             send_msg: SendMsg,
             raw_value: Any | None = None,
         ):
-        field = persona_info.message_striped_str
+        field = persona_info.message_stripped_str
         return field, None
     
     async def finish_message(

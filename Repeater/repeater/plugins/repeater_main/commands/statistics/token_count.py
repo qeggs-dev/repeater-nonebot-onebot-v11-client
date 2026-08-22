@@ -18,6 +18,13 @@ class TokenCount(CommandPackage):
         "TOKEN_COUNT",
     }
     cmd_type = CmdTypes.STATISTIC
+    description = f"""
+    Count tokens using request_log.
+    Warning: this is a very slow operation that can take a lot of time and resources.
+
+    Usage:
+        /{cmd}
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
