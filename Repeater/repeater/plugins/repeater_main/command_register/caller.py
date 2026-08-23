@@ -570,9 +570,30 @@ class CommandCaller:
             
             await package_instance.on_adestroy()
             matcher.destroy()
-    
+
     @staticmethod
-    def _create_matcher(package: CommandPackage) -> Type[Matcher]:
+    def _get_package_aliases(package: CommandPackage) -> set[str | tuple[str, ...]]:
+        """
+        Get the aliases of a package
+
+        :param package: The package of the Handler
+        :return: The aliases
+        """
+        aliases: set[str | tuple[str, ...]]
+        if isinstance(package.aliases, set):
+            aliases = package.aliases
+        elif package.aliases is not None:
+            aliases = set(package.aliases)
+        else:
+            aliases = set()
+        
+        if storage_configs.loading.component_is_trigger:
+            aliases.add(package.component)
+
+        return aliases
+    
+    @classmethod
+    def _create_matcher(cls, package: CommandPackage) -> Type[Matcher]:
         """
         Create a matcher for a package
 
@@ -584,7 +605,7 @@ class CommandCaller:
                 matcher = on_command(
                     cmd = package.cmd,
                     rule = package.rule,
-                    aliases = set(package.aliases) if isinstance(package.aliases, set) else None,
+                    aliases = cls._get_package_aliases(package),
                     force_whitespace = package.force_whitespace,
                     permission = package.permission,
                     handlers = package.handlers,
