@@ -5,7 +5,7 @@ from ...client_configs import storage_configs
 from typing import NoReturn
 
 @CommandCaller.register
-class SmartAt(BaseChat):
+class SmartAT(BaseChat):
     listen_type = ListenType.Message
     priority = 100
     description = """
