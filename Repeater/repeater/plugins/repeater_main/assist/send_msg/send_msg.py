@@ -730,7 +730,7 @@ class SendMsg:
     @overload
     async def send_text(
             self,
-            text: str | None = None,
+            text: str,
             reply: bool = True,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
@@ -738,14 +738,14 @@ class SendMsg:
     @overload
     async def send_text(
             self,
-            text: str | None = None,
+            text: str,
             reply: bool = True,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
     async def send_text(
             self,
-            text: str | None = None,
+            text: str,
             reply: bool = True,
             continue_handler: bool = False
         ) -> NoReturn | None:
@@ -760,7 +760,51 @@ class SendMsg:
             "Send Text"
         )
         await self._send(
-            Message(text),
+            Message(
+                MessageSegment.text(
+                    text
+                )
+            ),
+            reply=reply,
+            continue_handler = continue_handler
+        )
+    
+    @overload
+    async def send_cq_text(
+            self,
+            text: str,
+            reply: bool = True,
+            continue_handler: Literal[False] = False
+        ) -> NoReturn: ...
+    
+    @overload
+    async def send_cq_text(
+            self,
+            text: str,
+            reply: bool = True,
+            continue_handler: Literal[True] = True
+        ) -> None: ...
+    
+    async def send_cq_text(
+            self,
+            text: str,
+            reply: bool = True,
+            continue_handler: bool = False
+        ) -> NoReturn | None:
+        """
+        发送纯文本
+
+        :param text: CQ 码文本内容
+        :param reply: 是否携带引用
+        :param continue_handler: 是否继续运行当前处理流程
+        """
+        logger.info(
+            "Send CQ Text"
+        )
+        await self._send(
+            Message(
+                text
+            ),
             reply=reply,
             continue_handler = continue_handler
         )
