@@ -1,5 +1,6 @@
 from ...command_register import(
-    CommandPackage
+    CommandPackage,
+    CommandCaller
 )
 from ...assist import SendMsg
 from ...cmd_info import CmdTypes
@@ -42,7 +43,7 @@ async def see_cmds(
             
             if package.aliases:
                 text_buffer.append("  - **aliases:**")
-                for alias in package.aliases:
+                for alias in CommandCaller.get_package_aliases(package):
                     if isinstance(alias, str):
                         text_buffer.append(f"    - {alias}")
                     elif isinstance(alias, tuple):

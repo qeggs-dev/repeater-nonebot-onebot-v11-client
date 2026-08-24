@@ -1,17 +1,17 @@
 from ...assist import PersonaInfo, SendMsg, MessageSource
 from ...command_register import CommandCaller, ListenType
 from .._bases import BaseChat
-from .smart_at import SmartAt
+from .smart_at import SmartAT
 
 @CommandCaller.register
-class SmartAtCmd(BaseChat):
-    cmd = "smartAt"
+class SmartATCmd(BaseChat):
+    cmd = "smartAT"
     aliases = {
         "smat",
         "SMAT",
         "smart_at",
         "Smart_AT",
-        "SmartAt",
+        "SmartAT",
         "SMARTAT",
     }
     listen_type = ListenType.Command
@@ -31,7 +31,7 @@ class SmartAtCmd(BaseChat):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         return await CommandCaller.horizontal_call(
-            package = SmartAt,
+            package = SmartAT,
             persona_info = persona_info,
             send_msg = send_msg
         )

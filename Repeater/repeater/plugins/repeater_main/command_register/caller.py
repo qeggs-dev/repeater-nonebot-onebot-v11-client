@@ -426,7 +426,9 @@ class CommandCaller:
         components: Type[CommandPackage[Any]] = cls.components.pop(package_instance.component)
         if package_instance.aliases is not None:
             triggers = [
-                cls.triggers.pop(trigger) for trigger in package_instance.aliases
+                cls.triggers.pop(trigger)
+                for trigger in
+                cls.get_package_aliases(package_instance)
             ]
         
         matcher: Type[Matcher] = cls.matchers.pop(package)
@@ -471,12 +473,12 @@ class CommandCaller:
         if package_instance.listen_type == ListenType.Command:
             cls._reg_triggers(package_instance.cmd, package)
             if package_instance.aliases:
-                for trigger in package_instance.aliases:
+                for trigger in cls.get_package_aliases(package_instance):
                     cls._reg_triggers(trigger, package)
         
         if storage_configs.loading.recommended_class_name_is_trigger:
             if package.aliases is not None:
-                commands = set(package.aliases)
+                commands = cls.get_package_aliases(package_instance)
             else:
                 commands = set()
 
@@ -570,9 +572,30 @@ class CommandCaller:
             
             await package_instance.on_adestroy()
             matcher.destroy()
-    
+
     @staticmethod
-    def _create_matcher(package: CommandPackage) -> Type[Matcher]:
+    def get_package_aliases(package: CommandPackage) -> set[str | tuple[str, ...]]:
+        """
+        Get the aliases of a package
+
+        :param package: The package of the Handler
+        :return: The aliases
+        """
+        aliases: set[str | tuple[str, ...]]
+        if isinstance(package.aliases, set):
+            aliases = package.aliases.copy()
+        elif package.aliases is not None:
+            aliases = set(package.aliases)
+        else:
+            aliases = set()
+        
+        if storage_configs.loading.component_is_trigger:
+            aliases.add(package.component)
+
+        return aliases
+    
+    @classmethod
+    def _create_matcher(cls, package: CommandPackage) -> Type[Matcher]:
         """
         Create a matcher for a package
 
@@ -584,7 +607,7 @@ class CommandCaller:
                 matcher = on_command(
                     cmd = package.cmd,
                     rule = package.rule,
-                    aliases = set(package.aliases) if isinstance(package.aliases, set) else None,
+                    aliases = cls.get_package_aliases(package),
                     force_whitespace = package.force_whitespace,
                     permission = package.permission,
                     handlers = package.handlers,
