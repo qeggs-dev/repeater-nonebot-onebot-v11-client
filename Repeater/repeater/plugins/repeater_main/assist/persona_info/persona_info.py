@@ -23,6 +23,8 @@ from .enter_type import EnterType
 from .file_info import FileInfo
 from .cached_apis import CachedAPI
 from ..user_config import UserConfigLoader, UserConfigs
+from ..permission_checker import PermissionChecker
+from ...client_configs import storage_configs
 
 class PersonaInfo:
     """
@@ -97,7 +99,7 @@ class PersonaInfo:
             except KeyError:
                 raise ValueError("Is Group, But Group ID is Not Found")
         
-        self._superusers: set[str] = set(user for user in self._bot.config.superusers)
+        self._superusers_checker: PermissionChecker = PermissionChecker(storage_configs.permission_rule)
         self._user_config_loader = UserConfigLoader(self.namespace)
     
     @classmethod
@@ -289,9 +291,7 @@ class PersonaInfo:
         """
         当前发起请求的用户是否为超级用户
         """
-        if self._bot.config.superusers is None:
-            return False
-        return self.user_id in self.superusers
+        return self._superusers_checker.check(self.namespace)
     
     @property
     def is_self(self) -> bool:
@@ -308,11 +308,11 @@ class PersonaInfo:
         return self._self_id
     
     @property
-    def superusers(self) -> set[str]:
+    def superusers(self) -> PermissionChecker:
         """
-        超级用户集合
+        超级用户检查器
         """
-        return self._superusers.copy()
+        return self._superusers_checker.copy()
     
     @property
     def message_id(self) -> int:
