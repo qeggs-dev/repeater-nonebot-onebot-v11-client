@@ -123,7 +123,7 @@ class CommandPackage(ABC, Generic[T]):
     """Documentation delimiter"""
 
     super_permissions: bool = False
-    """Whether the Handler is super permissions."""
+    """Whether the Handler need super permissions."""
 
     send_msg: bool = True
     """Allow sending messages"""

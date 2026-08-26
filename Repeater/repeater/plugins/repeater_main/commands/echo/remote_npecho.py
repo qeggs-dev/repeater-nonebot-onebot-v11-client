@@ -28,7 +28,7 @@ class RemoteNoPromptEcho(CommandPackage):
         /{cmd} private:<user_id> <message>
         ```
     """
-    superuser_permissions = True
+    super_permissions = True
 
     pattern = re.compile(r"^(?P<mode>group|private)\s*:\s*(?P<id>\d+)\s*(?P<message>.+)$")
 

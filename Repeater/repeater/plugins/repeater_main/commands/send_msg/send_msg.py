@@ -30,7 +30,7 @@ class SendMessage(CommandPackage):
     Usage:
       /{cmd} message_json
     """
-    superuser_permissions = True
+    super_permissions = True
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         if not storage_configs.allow_send_any_message:
