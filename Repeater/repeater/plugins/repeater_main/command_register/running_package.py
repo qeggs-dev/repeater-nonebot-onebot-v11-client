@@ -1,9 +1,16 @@
 import uuid
 import asyncio
-from typing import TypeVar, Generic, Type
+from typing import (
+    TypeVar,
+    Generic,
+    Type,
+    Generator,
+    Any
+)
 from .package import CommandPackage
 from ..assist import PersonaInfo, SendMsg
 from nonebot.matcher import Matcher
+from .sub_cmd_exit import SubCmdBreaked
 from dataclasses import dataclass, field
 
 T = TypeVar("T")
@@ -20,7 +27,7 @@ class RunningPackage(Generic[T]):
     matcher: Type[Matcher] | None
     persona_info: PersonaInfo
     send_msg: SendMsg
-    task: asyncio.Task[T]
+    task: asyncio.Task[T | Any]
 
     def __hash__(self) -> int:
         return hash((type(self), self.task_id, self.task))
@@ -29,6 +36,9 @@ class RunningPackage(Generic[T]):
         if isinstance(__o, RunningPackage):
             return self.task_id == __o.task_id and self.task == __o.task
         return False
+
+    def __await__(self) -> Generator[Any, None, T | Any]:
+        yield from self.task.__await__()
     
     def cancel(self):
         self.task.cancel()

@@ -31,7 +31,7 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Message
 from .listen_type import ListenType
 from nonebot import logger
 from .running_package import RunningPackage
-from .sub_cmd_exit import SubCmdBreaked
+from .sub_cmd_exit import SubCmdBreaked, SubCmdCacelled
 
 T_Handler_Result = TypeVar("T_Handler_Result")
 
@@ -64,6 +64,20 @@ class CommandCaller:
     @classmethod
     def match_component(cls, component: str) -> Type[CommandPackage[Any]]:
         return cls.components[component]
+
+    @classmethod
+    def cancel(cls, namespace: Namespace, task: uuid.UUID | RunningPackage):
+        if isinstance(task, uuid.UUID):
+            task_id = task
+        elif isinstance(task, RunningPackage):
+            task_id = task.task_id
+        else:
+            raise TypeError("task must be uuid.UUID or RunningPackage")
+
+        if namespace in cls.running_map:
+            if task_id in cls.running_map[namespace]:
+                if task_id in cls.runnings:
+                    cls.running_map[namespace].remove(task_id)
 
     @classmethod
     def match_trigger_or_component(cls, string: str | tuple[str, ...]) -> Type[CommandPackage[Any]]:
@@ -115,7 +129,13 @@ class CommandCaller:
                 name = package.component,
             )
             persona_info ,send_msg = await package.command_enter(bot, event, args, matcher)
-            return await cls.enter_handler(package, persona_info, send_msg)
+            task_id = uuid.uuid4()
+            return await cls.run_handle(
+                task_id,
+                package,
+                persona_info,
+                send_msg
+            )
         return command_handler
     
     @classmethod
@@ -133,7 +153,13 @@ class CommandCaller:
                 name = package.component,
             )
             persona_info ,send_msg = await package.message_enter(bot, event, matcher)
-            return await cls.enter_handler(package, persona_info, send_msg)
+            task_id = uuid.uuid4()
+            return await cls.run_handle(
+                task_id,
+                package,
+                persona_info,
+                send_msg
+            )
         return message_handler
     
     @classmethod
@@ -160,18 +186,82 @@ class CommandCaller:
             namespace = namespace.namespace_str,
         )
         return result
+
+    @classmethod
+    async def run_handle(
+        cls,
+        task_id: uuid.UUID,
+        package: CommandPackage[T_Handler_Result],
+        persona_info: PersonaInfo,
+        send_msg: SendMsg,
+        created: asyncio.Future[RunningPackage[T_Handler_Result]] | None = None
+    ) -> T_Handler_Result | Any | SubCmdBreaked | None | NoReturn:
+        try:
+            task = asyncio.create_task(
+                cls.enter_handler(
+                    task_id,
+                    package,
+                    persona_info,
+                    send_msg
+                )
+            )
+            running: RunningPackage[T_Handler_Result] = RunningPackage(
+                task_id = task_id,
+                start_time = time.time_ns(),
+                start_monotonic_time = time.perf_counter_ns(),
+                package = package,
+                matcher = send_msg.matcher,
+                persona_info = persona_info,
+                send_msg = send_msg,
+                task = task
+            )
+            
+            cls.runnings[task_id] = running
+            cls.running_map.setdefault(
+                persona_info.namespace,
+                set()
+            ).add(task_id)
+        except Exception as e:
+            if created is not None:
+                created.set_exception(e)
+            raise
+
+        if created is not None:
+            created.set_result(running)
+
+        try:
+            result = await running
+            return result
+        except asyncio.CancelledError:
+            return SubCmdCacelled()
+        finally:
+            cls.runnings.pop(task_id, None)
+            if persona_info.namespace in cls.running_map:
+                user_running = cls.running_map[persona_info.namespace]
+                user_running.discard(task_id)
+                if not user_running:
+                    cls.running_map.pop(persona_info.namespace)
     
     @classmethod
-    async def enter_handler(cls, package: CommandPackage[T_Handler_Result], persona_info: PersonaInfo, send_msg: SendMsg) -> T_Handler_Result | Any | SubCmdBreaked | None | NoReturn:
+    async def enter_handler(
+        cls,
+        task_id: uuid.UUID,
+        package: CommandPackage[T_Handler_Result],
+        persona_info: PersonaInfo,
+        send_msg: SendMsg
+    ) -> T_Handler_Result | Any:
         """
         Enter the message handler.
 
+        :param task_id: The task id.
         :param package: The command package.
         :param persona_info: The persona info.
         :param send_msg: The send message function.
+        :param created: The running package created future.
         :return: The result of the message handler.
         """
-        result = await cls._enter_handler(
+        result = await cls._enter_hander(
+            task_id,
             package,
             persona_info,
             send_msg
@@ -188,10 +278,18 @@ class CommandCaller:
         return result
     
     @classmethod
-    async def _enter_handler(cls, package: CommandPackage[T_Handler_Result], persona_info: PersonaInfo, send_msg: SendMsg) -> T_Handler_Result | Any | SubCmdBreaked | Type[SubCmdBreaked] | None | NoReturn:
+    async def _enter_hander(
+        cls,
+        task_id: uuid.UUID,
+        package: CommandPackage[T_Handler_Result],
+        persona_info: PersonaInfo,
+        send_msg: SendMsg
+    ) -> T_Handler_Result | Any:
         """
         Enter the message handler.
 
+        :param task_id: The task id.
+        :param created: The running package created future.
         :param package: The command package.
         :param persona_info: The persona info.
         :param send_msg: The send message function.
@@ -199,24 +297,27 @@ class CommandCaller:
         """
         try:
             logger.info(
-                "Enter {command} from message: {message_id} ({enter_mode} Mode)",
+                "Enter {command}[{task_id}] from message: {message_id} ({enter_mode} Mode)",
                 command = package.component,
+                task_id = task_id,
                 message_id = persona_info.message_id,
                 enter_mode = persona_info.enter_type.name,
             )
 
             if not await package.enter_check(persona_info, send_msg):
                 logger.warning(
-                    "Enter check blocked: {name}",
-                    name = package.component
+                    "Enter check blocked: {name}[{task_id}]",
+                    name = package.component,
+                    task_id = task_id,
                 )
                 send_msg.break_handler()
 
             if not await package.permissions_check(persona_info, send_msg):
                 logger.warning(
-                    "Command {name} from message {message_id} has insufficient access",
+                    "Command {name}[{task_id}] from message {message_id} has insufficient access",
                     name = package.component,
                     message_id = persona_info.message_id,
+                    task_id = task_id,
                 )
                 send_msg.break_handler()
             
@@ -229,42 +330,13 @@ class CommandCaller:
             if send_msg.is_debug_mode:
                 return await package.on_debug_mode(persona_info, send_msg)
             
-            task: asyncio.Task[T_Handler_Result] = asyncio.create_task(
-                coro = package.enter_handler(
-                    persona_info = persona_info,
-                    send_msg = send_msg
-                )
-            )
-            task_id = uuid.uuid4()
-            running: RunningPackage[T_Handler_Result] = RunningPackage(
-                task_id = task_id,
-                start_time = time.time_ns(),
-                start_monotonic_time = time.perf_counter_ns(),
-                package = package,
-                matcher = send_msg.matcher,
+            return await package.enter_handler(
                 persona_info = persona_info,
-                send_msg = send_msg,
-                task = task
+                send_msg = send_msg
             )
-            cls.runnings[task_id] = running
-            cls.running_map.setdefault(
-                persona_info.namespace,
-                set()
-            ).add(task_id)
-
-            try:
-                result = await task
-                return result
-            except asyncio.CancelledError:
-                return await package.on_cancel(persona_info, send_msg)
-            finally:
-                cls.runnings.pop(task_id, None)
-                if persona_info.namespace in cls.running_map:
-                    user_running = cls.running_map[persona_info.namespace]
-                    user_running.discard(task_id)
-                    if not user_running:
-                        cls.running_map.pop(persona_info.namespace)
-            
+        
+        except asyncio.CancelledError:
+            return await package.on_cancel(persona_info, send_msg)
         except NoneBotException as e:
             return await package.on_nonebot_exception(e, persona_info, send_msg)
         except RepeaterException as e:
@@ -282,7 +354,7 @@ class CommandCaller:
         package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
         send_msg: SendMsg | None = None
-    ) -> T_Handler_Result | Any | SubCmdBreaked | None | NoReturn:
+    ) -> T_Handler_Result | Any:
         """
         Horizontal call handler
 
@@ -291,15 +363,58 @@ class CommandCaller:
         :param send_msg: SendMsg
         :return: Handler result
         """
-        if isinstance(package, type) and issubclass(package, CommandPackage):
-            package_instance: CommandPackage[T_Handler_Result] = cls.commands[package]
-        elif isinstance(package, CommandPackage):
+        if isinstance(package, CommandPackage):
             package_instance = package
+        elif isinstance(package, type) and issubclass(package, CommandPackage):
+            package_instance: CommandPackage[T_Handler_Result] = cls.commands[package]
         else:
             raise TypeError("package must be CommandPackage or subclass of CommandPackage")
         
         persona_info_copy, send_msg_copy = await package_instance.horizontal_enter(persona_info, send_msg)
-        return await cls.enter_handler(package_instance, persona_info_copy, send_msg_copy)
+        task_id = uuid.uuid4()
+        return await cls.run_handle(
+            task_id,
+            package_instance,
+            persona_info_copy,
+            send_msg_copy
+        )
+
+    @classmethod
+    async def horizontal_enter_nowait(
+        cls,
+        package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
+        persona_info: PersonaInfo,
+        send_msg: SendMsg | None = None
+    ) -> RunningPackage[T_Handler_Result]:
+        """
+        Horizontal call handler without waiting for the result
+
+        :param package: CommandPackage
+        :param persona_info: PersonaInfo
+        :param send_msg: SendMsg
+        """
+        if isinstance(package, CommandPackage):
+            package_instance = package
+        elif isinstance(package, type) and issubclass(package, CommandPackage):
+            package_instance: CommandPackage[T_Handler_Result] = cls.commands[package]
+        else:
+            raise TypeError("package must be CommandPackage or subclass of CommandPackage")
+        
+        persona_info_copy, send_msg_copy = await package_instance.horizontal_enter(persona_info, send_msg)
+        task_id = uuid.uuid4()
+        loop = asyncio.get_running_loop()
+        created: asyncio.Future[RunningPackage[T_Handler_Result]] = loop.create_future()
+        asyncio.create_task(
+            cls.run_handle(
+                task_id,
+                package_instance,
+                persona_info_copy,
+                send_msg_copy,
+                created = created
+            )
+        )
+        return await created
+
     
     @staticmethod
     async def check_acceptable_sources(package: CommandPackage[T_Handler_Result], persona_info: PersonaInfo) -> bool:

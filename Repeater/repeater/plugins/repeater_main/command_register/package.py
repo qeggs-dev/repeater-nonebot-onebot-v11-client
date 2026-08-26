@@ -45,17 +45,14 @@ from nonebot import logger
 from typing import (
     Any,
     Iterable,
-    Callable,
     Collection,
     NoReturn,
     Type,
     TypeVar,
-    Generic,
-    Awaitable
+    Generic
 )
 from .sub_cmd_exit import (
-    SubCmdBreaked,
-    SubCmdCacelled
+    SubCmdBreaked
 )
 
 T = TypeVar("T")
@@ -425,7 +422,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: The send_msg object
         """
         logger.warning(f"{self.component} cancelled")
-        return SubCmdCacelled
+        raise
     
     async def handler_exit(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """
