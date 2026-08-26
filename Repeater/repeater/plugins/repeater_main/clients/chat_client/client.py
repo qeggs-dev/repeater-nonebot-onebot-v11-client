@@ -165,7 +165,12 @@ class ChatClient(BaseClient):
         if timeout is not None:
             while True:
                 try:
-                    response = await asyncio.wait_for(task, timeout = timeout)
+                    response = await asyncio.wait_for(
+                        fut = asyncio.shield(
+                            task
+                        ),
+                        timeout = timeout
+                    )
                     break
                 except asyncio.TimeoutError:
                     buffer_response = await self.get_chat_buffer()
