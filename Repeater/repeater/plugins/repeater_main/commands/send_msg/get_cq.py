@@ -30,4 +30,8 @@ class GetCQ(CommandPackage):
     superuser_permissions = True
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
+        if not storage_configs.allow_send_any_message:
+            await send_msg.send_error("Send_Message is disabled")
+            return
+        
         await send_msg.send_text(str(persona_info.message), reply=False)
