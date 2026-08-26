@@ -526,6 +526,16 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `cancel_all`               | `cla`    | `CancelAll`               | `CONTROL`   | 4.9.2.0        | 取消所有任务                   | component or trigger                     | 取消所有匹配的在运行任务 |
 | `bypass`                   | `byp`    | `Bypass`                  | `CONTROL`   | 4.9.2.0        | 后台运行任务                   | 格式为: 命令 参数                         | 后台运行任务，不堵塞主流程 |
 
+### Variable Command
+
+| Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
+| :---                       | :---     | :---                      | :---        | :---           | :---                          | :---                                      | :---    |
+| `setVar`                   | `sv`     | `SetVar`                  | `VARIABLE`  | 4.9.2.1        | 设置变量值                     | 格式为: 变量名=变量值                      | 设置内存中的变量值，支持富媒体 |
+| `getVar`                   | `gv`     | `GetVar`                  | `VARIABLE`  | 4.9.2.1        | 获取变量值                     | 格式为: 变量名                            | 获取内存中的变量值 |
+| `removeVar`                | `rv`     | `RemoveVar`               | `VARIABLE`  | 4.9.2.1        | 删除变量                       | 格式为: 变量名                            | 删除内存中的变量 |
+| `loadVar`                  | `lv`     | `LoadVar`                 | `VARIABLE`  | 4.9.2.1        | 加载变量                       | 格式为: 变量名                            | 从用户配置中加载变量 |
+| `dumpVar`                  | `dv`     | `DumpVar`                 | `VARIABLE`  | 4.9.2.1        | 导出变量                       | 格式为: 变量名                            | 将内存中的变量导出到用户配置中 |
+
 ### Chat Command
 
 | Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
