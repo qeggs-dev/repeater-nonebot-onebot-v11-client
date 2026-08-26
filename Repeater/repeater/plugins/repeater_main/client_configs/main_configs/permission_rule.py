@@ -5,5 +5,5 @@ class PermissionRule(BaseModel):
     """
     权限规则
     """
-    super_group: str | None = None
-    super_user: str | None = None
+    group_id: str | None = None
+    user_id: str | None = None

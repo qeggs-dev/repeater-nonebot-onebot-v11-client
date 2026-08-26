@@ -33,7 +33,7 @@ class StorageConfigs(BaseModel):
     render_error_message: RenderErrorMessage = Field(default_factory = RenderErrorMessage)
     client_limits: ClientLimits = Field(default_factory = ClientLimits)
     ignore_enter: IgnoreEnter = Field(default_factory = IgnoreEnter)
-    permission_rule: list[PermissionRule] = Field(default_factory = list)
+    super_permissions: list[PermissionRule] = Field(default_factory = list)
     summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
     ciallo_content: str = "Ciallo~ (∠・ω< )⌒★"
     branch_file_size_use_abbreviation: bool = True

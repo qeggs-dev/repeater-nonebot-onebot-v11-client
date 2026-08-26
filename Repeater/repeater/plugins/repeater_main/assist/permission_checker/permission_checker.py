@@ -13,16 +13,16 @@ class PermissionChecker:
         self._rules: list[PermissionRule] = []
 
         for rule in rules:
-            if rule.super_group is not None and rule.super_user is not None:
+            if rule.group_id is not None and rule.user_id is not None:
                 super_namespace = Namespace(
-                    group_id = rule.super_group,
-                    user_id = rule.super_user
+                    group_id = rule.group_id,
+                    user_id = rule.user_id
                 )
                 self.super_namespaces.add(super_namespace)
-            elif rule.super_group is not None:
-                self.super_groups.add(rule.super_group)
-            elif rule.super_user is not None:
-                self.super_users.add(rule.super_user)
+            elif rule.group_id is not None:
+                self.super_groups.add(rule.group_id)
+            elif rule.user_id is not None:
+                self.super_users.add(rule.user_id)
             else:
                 raise ValueError("PermissionRule must have at least one of super_group or super_user")
 

@@ -99,7 +99,7 @@ class PersonaInfo:
             except KeyError:
                 raise ValueError("Is Group, But Group ID is Not Found")
         
-        self._superusers_checker: PermissionChecker = PermissionChecker(storage_configs.permission_rule)
+        self._superusers_checker: PermissionChecker = PermissionChecker(storage_configs.super_permissions)
         self._user_config_loader = UserConfigLoader(self.namespace)
     
     @classmethod
