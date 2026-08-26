@@ -62,7 +62,8 @@ class RemoteNoPromptEcho(CommandPackage):
             else:
                 message = remote_message.message
 
-            await remote_send_msg.send_any(message, reply = False)
+            await remote_send_msg.send_any(message, reply = False, continue_handler = True)
+            await send_msg.send_prompt("Send successful.")
         else:
             await send_msg.send_prompt("Invalid format, please use 'group:<id> <message>' or 'private:<id> <message>'.")
             return

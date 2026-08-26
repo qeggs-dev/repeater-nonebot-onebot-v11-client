@@ -57,12 +57,14 @@ class RemoteEcho(CommandPackage):
                 args = message,
             )
             if not remote_message:
+                await send_msg.send_prompt("Waiting for message...", continue_handler = True)
                 new_message = await CommandCaller.wait_message(persona_info.namespace)
                 message = new_message.message
             else:
                 message = remote_message.message
 
-            await remote_send_msg.send_any(message, reply = False)
+            await remote_send_msg.send_any(message, reply = False, continue_handler = True)
+            await send_msg.send_prompt("Send successful.")
         else:
             await send_msg.send_prompt("Invalid format, please use 'group:<id> <message>' or 'private:<id> <message>'.")
             return
