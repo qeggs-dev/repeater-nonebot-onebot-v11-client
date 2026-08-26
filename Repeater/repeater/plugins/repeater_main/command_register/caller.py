@@ -4,7 +4,12 @@ import time
 import uuid
 import asyncio
 from .package import CommandPackage
-from ..assist import PersonaInfo, SendMsg, Namespace
+from ..assist import (
+    PersonaInfo,
+    SendMsg,
+    Namespace,
+    Variables
+)
 from ..cmd_info import CmdTypes
 from ..client_configs import storage_configs
 from ..exceptions import *
@@ -40,6 +45,7 @@ class CommandCaller:
     components: dict[str, Type[CommandPackage[Any]]] = {}
     runnings: dict[uuid.UUID, RunningPackage] = {}
     running_map: dict[Namespace, set[uuid.UUID]] = {}
+    variables: dict[Namespace, Variables[str]] = {}
     listen_message_tasks: dict[Namespace, set[asyncio.Future[PersonaInfo]]] = {}
     listen_lock: asyncio.Lock = asyncio.Lock()
 
@@ -463,11 +469,19 @@ class CommandCaller:
             package.on_duplicate_type()
 
         if package_instance.component in cls.components:
-            package_instance.on_duplicate_component()
+            package_instance.on_duplicate_component(
+                cls.get_instance(
+                    cls.components[package_instance.component]
+                )
+            )
         cls.components[package_instance.component] = package
         
         if package.__name__ in cls.class_names:
-            package.on_duplicate_class_name()
+            package.on_duplicate_class_name(
+                cls.get_instance(
+                    cls.class_names[package.__name__]
+                )
+            )
         cls.class_names[package.__name__] = package
         
         if package_instance.listen_type == ListenType.Command:
