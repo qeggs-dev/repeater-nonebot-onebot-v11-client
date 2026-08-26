@@ -223,7 +223,7 @@ class CommandCaller:
             if not await cls.check_acceptable_sources(package, persona_info):
                 return await package.on_unacceptable_source(persona_info, send_msg)
             
-            if package.superuser_permissions and not persona_info.is_superuser:
+            if package.super_permissions and not persona_info.has_super_permissions:
                 return await package.insufficient_access(persona_info, send_msg)
             
             if send_msg.is_debug_mode:

@@ -99,7 +99,7 @@ class PersonaInfo:
             except KeyError:
                 raise ValueError("Is Group, But Group ID is Not Found")
         
-        self._superusers_checker: PermissionChecker = PermissionChecker(storage_configs.super_permissions)
+        self._super_permissions_checker: PermissionChecker = PermissionChecker(storage_configs.super_permissions)
         self._user_config_loader = UserConfigLoader(self.namespace)
     
     @classmethod
@@ -287,11 +287,11 @@ class PersonaInfo:
         return self._bot.adapter
     
     @property
-    def is_superuser(self) -> bool:
+    def has_super_permissions(self) -> bool:
         """
-        当前发起请求的用户是否为超级用户
+        当前发起请求的用户是否具有超级权限
         """
-        return self._superusers_checker.check(self.namespace)
+        return self._super_permissions_checker.check(self.namespace)
     
     @property
     def is_self(self) -> bool:
@@ -308,11 +308,11 @@ class PersonaInfo:
         return self._self_id
     
     @property
-    def superusers(self) -> PermissionChecker:
+    def super_permissions(self) -> PermissionChecker:
         """
-        超级用户检查器
+        超级权限检查器
         """
-        return self._superusers_checker.copy()
+        return self._super_permissions_checker.copy()
     
     @property
     def message_id(self) -> int:

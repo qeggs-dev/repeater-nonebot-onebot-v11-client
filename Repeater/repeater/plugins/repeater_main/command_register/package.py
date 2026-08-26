@@ -122,8 +122,8 @@ class CommandPackage(ABC, Generic[T]):
     docs_delimiter: str = "\n"
     """Documentation delimiter"""
 
-    superuser_permissions: bool = False
-    """Whether the Handler is superuser permissions."""
+    super_permissions: bool = False
+    """Whether the Handler is super permissions."""
 
     send_msg: bool = True
     """Allow sending messages"""
