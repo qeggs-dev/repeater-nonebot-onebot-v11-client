@@ -19,12 +19,10 @@ class PermissionChecker:
                     user_id = rule.user_id
                 )
                 self.super_namespaces.add(super_namespace)
-            elif rule.group_id is not None:
-                self.super_groups.add(rule.group_id)
             elif rule.user_id is not None:
                 self.super_users.add(rule.user_id)
-            else:
-                raise ValueError("PermissionRule must have at least one of super_group or super_user")
+            elif rule.group_id is not None:
+                self.super_groups.add(rule.group_id)
 
             self._rules.append(rule)
 
