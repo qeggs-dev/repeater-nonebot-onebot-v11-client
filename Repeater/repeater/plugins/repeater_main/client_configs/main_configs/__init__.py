@@ -9,6 +9,7 @@ from .hello_content import (
 from .ignore_enter import IgnoreEnter
 from .limit_speed_per_minute import LimitSpeedPerMinute
 from .loading import LoadingConfigs
+from .permission_rule import PermissionRule
 from .platform_interface import PlatformInterface
 from .render_error_message import RenderErrorMessage
 from .server_api_timeout import ServerAPITimeout
@@ -27,6 +28,7 @@ __all__ = [
     "IgnoreEnter",
     "LimitSpeedPerMinute",
     "LoadingConfigs",
+    "PermissionRule",
     "PlatformInterface",
     "RenderErrorMessage",
     "ServerAPITimeout",
