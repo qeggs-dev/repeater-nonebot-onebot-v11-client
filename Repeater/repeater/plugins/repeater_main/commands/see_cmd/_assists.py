@@ -2,7 +2,7 @@ from ...command_register import(
     CommandPackage,
     CommandCaller
 )
-from ...assist import SendMsg
+from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from typing import Iterable, NoReturn, Generator
 
@@ -15,6 +15,7 @@ def all_splited_commands(cmd: str, delimiters: Iterable[str]) -> Generator[tuple
 async def see_cmds(
         commands: dict[CmdTypes, list[CommandPackage]],
         delimiters: set[str],
+        persona_info: PersonaInfo,
         send_msg: SendMsg
     ) -> NoReturn:
     text_buffers: list[str] = []
@@ -26,6 +27,10 @@ async def see_cmds(
             text_buffer.append(f"**{package.component}**")
             text_buffer.append(f"**type**: `{cmd_type.value}`")
             text_buffer.append(f"**Superuser permissions required**: `{package.superuser_permissions}`")
+            if package.superuser_permissions:
+                text_buffer.append(f"**Do you have access to the command**: `{persona_info.is_superuser}`")
+            else:
+                text_buffer.append(f"**Do you have access to the command**: `True`")
             if package.description:
                 text_buffer.append("")
                 text_buffer.append(package.get_description().replace("\n", "\n> "))
