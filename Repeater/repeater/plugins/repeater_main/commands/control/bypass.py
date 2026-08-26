@@ -61,12 +61,10 @@ class Bypass(CommandPackage):
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
-            asyncio.create_task(
-                CommandCaller.horizontal_call(
-                    package_instance,
-                    copyed_persona_info,
-                    copyed_send_msg
-                )
+            await CommandCaller.horizontal_enter_nowait(
+                package_instance,
+                copyed_persona_info,
+                copyed_send_msg
             )
         else:
             await send_msg.send_error("Invalid command format")
