@@ -390,6 +390,28 @@ main_api.json
         // 是否单独开启在线检查
         "allow_online_check": true
     },
+
+    // 权限配置设置
+    // 一些特殊功能可能会需要用到 super_permissions
+    // 在此处配置权限设置
+    "super_permissions": [
+
+        // 只填写 group_id 可以表示在给定群聊内所有用户在给定群聊中持有权限
+        {
+            "group_id": "1234567890"
+        },
+
+        // 只填写 user_id 可以表示给定用户在所有群聊与私聊中均持有权限
+        {
+            "user_id": "1234567890"
+        },
+
+        // 同时填写 group_id 和 user_id 可以表示该用户仅在给定群聊内持有权限
+        {
+            "group_id": "1234567890",
+            "user_id": "1234567890"
+        },
+    ],
     
     // 平台接口配置
     "platform_interface": {
@@ -400,7 +422,7 @@ main_api.json
         "cache_size": 1000,
     
         // 接口缓存超时时间
-        "cache_timeout": 60,
+        "cache_timeout": 60
     },
 
     // 生成图片所参考的文件的解析类型
@@ -437,7 +459,7 @@ main_api.json
 
     // 默认的用户 ID 行为许可
     "default_behavioral_act": {
-        "allowed_cmd_types": "ALL",
+        "allowed_cmd_types": "ALL"
     },
 }
 ```
@@ -504,8 +526,8 @@ PS：该配置文件是专门用于对接ChatTTS的
 | :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
 | `echo`                     | `echo`   | `Echo`                    | `ECHO`      | 4.0 Beta       | 重复消息                       | 要重复消息内容                             | 重复消息内容，包括特殊消息段，如果输入不跟内容，复读机会等待下一条消息 |
 | `noPromptEcho`             | `npecho` | `NoPromptEcho`            | `ECHO`      | 4.3.16.0       | 无额外反应的 Echo              | 任何内容                                   | 与 `echo` 命令相同，但不在未找到参数时显示等待提示词 |
-| `remoteEcho`               | `recho`  | `RemoteEcho`              | `ECHO`      | 4.9.1.0        | 远程 Echo                     | (group|private):id 要重复消息内容           | 与 echo 相同，但可以指定发送目标，**需要 superuser 权限** |
-| `remoteNoPromptEcho`       | `rnpecho`| `RemoteNoPromptEcho`      | `ECHO`      | 4.9.1.0        | 远程无额外反应的 Echo          | (group|private):id 任何内容                | 与 npecho 相同，但可以指定发送目标，**需要 superuser 权限** |
+| `remoteEcho`               | `recho`  | `RemoteEcho`              | `ECHO`      | 4.9.1.0        | 远程 Echo                     | (group|private):id 要重复消息内容           | 与 echo 相同，但可以指定发送目标，**需要 super_permissions** |
+| `remoteNoPromptEcho`       | `rnpecho`| `RemoteNoPromptEcho`      | `ECHO`      | 4.9.1.0        | 远程无额外反应的 Echo          | (group|private):id 任何内容                | 与 npecho 相同，但可以指定发送目标，**需要 super_permissions** |
 | `removeReply`              | `rr`     | `RemoveReply`             | `ECHO`      | 4.9.1.0        | 移除回复消息                   | 消息内容                                   | 移除传入消息内容的回复消息 |
 
 ### Control Command
@@ -799,7 +821,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
 | `#` or `/`                 | `anot`   | `Annotation`              | `RESERVED`  | 4.3.9.3        | 注释，不会执行任何操作          | 无                                        | 不执行任何操作，直接忽略内容，由于命令前缀的存在，触发需要 `/#` 或 `//` |
 
-### Send Msg Command (Superuser Only)
+### Send Msg Command (Super Permissions Only)
 
 | Command                    | Abridge  | Full Name                 | Type        | Joined Version | Description                   | Parameter Description                     | Remarks |
 | :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
