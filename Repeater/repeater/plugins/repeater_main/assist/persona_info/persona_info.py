@@ -550,6 +550,27 @@ class PersonaInfo:
         命令参数字符串
         """
         return self.args.extract_plain_text()
+
+    @property
+    def message_cqcode(self) -> str:
+        """
+        消息字符串（CQ码）
+        """
+        return str(self.message)
+
+    @property
+    def event_message_cqcode(self) -> str:
+        """
+        消息事件字符串（CQ码）
+        """
+        return str(self.event_message)
+
+    @property
+    def args_cqcode(self) -> str:
+        """
+        命令参数字符串（CQ码）
+        """
+        return str(self.args)
     
     @property
     def reply(self) -> MessageSegment:
@@ -793,3 +814,12 @@ class PersonaInfo:
             bot = self._cached_api,
             message_id = message_id if message_id is not None else self.message_id
         )
+
+    def make_message(self, message: str | Iterable[MessageSegment] | MessageSegment | None = None) -> Message:
+        """
+        生成消息
+
+        :param message: 消息内容
+        :return: 消息
+        """
+        return Message(message)
