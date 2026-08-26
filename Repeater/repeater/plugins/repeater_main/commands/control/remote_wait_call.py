@@ -28,6 +28,7 @@ class RemoteWaitCall(CommandPackage):
         Usage:
             /{cmd} times command
     """
+    super_permissions = True
 
     pattern = re.compile(r"^(?P<mode>group|private)\s*:\s*(?P<id>\d+)\s*(?P<times>\d*)\s*(?P<command>\S+?)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
