@@ -51,7 +51,7 @@ class Execute(CommandPackage):
             try:
                 package_instance = CommandCaller.get_instance(package)
             except KeyError as e:
-                await send_msg.send_error(f"Command instance {package.component} not found: {e}")
+                await send_msg.send_error(f"Command {components} instance not found: {e}")
                 return
 
             copyed_persona_info = persona_info.copy_with_args(
