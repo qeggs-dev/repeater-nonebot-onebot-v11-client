@@ -81,7 +81,7 @@ class TimeoutAndCancel(CommandPackage):
                     asyncio.shield(
                         running.task
                     ),
-                    timeout = 60
+                    timeout = timeout
                 )
                 return result
             except asyncio.TimeoutError:
