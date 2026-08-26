@@ -2,7 +2,7 @@ import asyncio
 
 from typing import Any, Type
 from nonebot.adapters.onebot.v11 import Message
-from ...assist import PersonaInfo, SendMsg
+from ...assist import PersonaInfo, SendMsg, Variables
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
@@ -10,6 +10,7 @@ from ...command_register import(
 )
 from ._parse_input import parse_input
 from ._split_by_indent import split_by_indent
+from ._fill_var import fill_var
 
 @CommandCaller.register
 class Parallel(CommandPackage):
@@ -43,6 +44,8 @@ class Parallel(CommandPackage):
             await send_msg.send_error(f"Invalid Input Format: {e}")
         except KeyError as e:
             await send_msg.send_error(f"Unknown Command: {e}")
+
+        user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         
         tasks: list[asyncio.Task[Any]] = []
         for index, (package, args) in enumerate(command_call):
@@ -59,7 +62,7 @@ class Parallel(CommandPackage):
                 asyncio.create_task(
                     CommandCaller.horizontal_call(
                         package_instance,
-                        persona_info = copyed_persona_info,
+                        persona_info = fill_var(copyed_persona_info, user_variables),
                         send_msg = copyed_send_msg
                     )
                 )
