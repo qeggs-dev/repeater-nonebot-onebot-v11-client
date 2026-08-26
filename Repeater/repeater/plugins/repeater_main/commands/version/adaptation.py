@@ -18,6 +18,12 @@ class AdaptationInfo(CommandPackage):
         "Adaptation_Info",
         "AdaptationInfo",
         "ADAPTATION_INFO",
+
+        "ver",
+        "VER",
+        "version",
+        "Version",
+        "VERSION",
     }
     cmd_type = CmdTypes.VERSION
     description = f"""
