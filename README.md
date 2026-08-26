@@ -552,6 +552,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `execute`                  | `e`      | `Execute`                 | `CONTROL`   | 4.9.1.0        | 使用 components 调用命令        | 格式为: components 参数                  | 当只知道 components 但不知道其 trigger 时，可以使用这种方法调用 |
 | `cancel_all`               | `cla`    | `CancelAll`               | `CONTROL`   | 4.9.2.0        | 取消所有任务                   | component or trigger                     | 取消所有匹配的在运行任务 |
 | `bypass`                   | `byp`    | `Bypass`                  | `CONTROL`   | 4.9.2.0        | 后台运行任务                   | 格式为: 命令 参数                         | 后台运行任务，不堵塞主流程 |
+| `silence`                  | `sil`    | `Silence`                 | `CONTROL`   | 4.9.2.1        | 静默执行任务                   | 格式为: 命令 参数                         | 静默执行任务，不输出内容 |
 
 ### Variable Command
 
