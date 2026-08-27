@@ -21,7 +21,8 @@ from typing import (
     Awaitable,
     TypeVar,
     Union,
-    NoReturn
+    NoReturn,
+    Generator
 )
 from nonebot import on_command, on_message
 from nonebot import get_driver
@@ -639,32 +640,31 @@ class CommandCaller:
         cls.triggers[trigger] = package
     
     @classmethod
+    def registed_info_table(cls) -> Generator[str, None, None]:
+        """
+        Get registed info table
+        """
+        total = len(cls.commands)
+        yield f"Registed {total} commands"
+        
+        if total > 0:
+            yield "Repeater:"
+            for cmd_type, packages in cls.types.items():
+                yield f"  {cmd_type}({len(packages) / total:.2%})"
+                for package in packages:
+                    package_instance = cls.commands[package]
+                    yield f"    {package_instance.component}"
+
+    @classmethod
     def log_registed_info(cls) -> None:
         """
         Log registed info
         """
-        total = len(cls.commands)
-        logger.info(
-            "Registed {count} commands",
-            count = total
-        )
-        
-        if total > 0:
+        for info in cls.registed_info_table():
             logger.info(
-                "Repeater:"
+                "{info}",
+                info = info
             )
-            for cmd_type, packages in cls.types.items():
-                logger.info(
-                    "  {cmd_type}({ratio:.2%})",
-                    cmd_type = cmd_type,
-                    ratio = len(packages) / total
-                )
-                for package in packages:
-                    package_instance = cls.commands[package]
-                    logger.info(
-                        "    {name}",
-                        name = package_instance.component,
-                    )
     
     @classmethod
     def destroy(cls, package: Type[CommandPackage[T_Handler_Result]]) -> None:
