@@ -555,7 +555,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `silence`                  | `sil`    | `Silence`                 | `CONTROL`   | 4.9.2.1        | 静默执行任务                   | 格式为: 命令 参数                         | 静默执行任务，不输出内容 |
 | `timeout`                  | `t`      | `Timeout`                 | `CONTROL`   | 4.9.2.1        | 设置任务超时时间               | 格式为: 时间(秒): 命令 参数                | 设置任务超时时间，超时后任务在后台继续运行 |
 | `timeoutAndCancel`         | `tac`    | `TimeoutAndCancel`        | `CONTROL`   | 4.9.2.1        | 设置任务超时时间并在超时后取消  | 格式为: 时间(秒): 命令 参数                | 设置任务超时时间，超时后自动取消任务 |
-| `remoteWaitCall`           | `rwc`    | `RemoteWaitCall`          | `CONTROL`   | 4.9.2.1        | 远程等待调用                   | 格式为: Namespace 命令 参数              | 远程等待调用，等待目标 Namespace 提供消息后执行命令 |
+| `remoteWaitCall`           | `rwc`    | `RemoteWaitCall`          | `CONTROL`   | 4.9.2.1        | 远程等待调用                   | 格式为: Namespace 命令 参数              | 跨群或私聊等待一条消息，等待目标 Namespace 提供消息后执行命令 |
 
 ### Variable Command
 
