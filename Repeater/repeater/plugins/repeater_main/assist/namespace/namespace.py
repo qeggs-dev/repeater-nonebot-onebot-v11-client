@@ -1,7 +1,11 @@
+import re
 import hashlib
 from pydantic import BaseModel, ConfigDict
 from ...client_configs import storage_configs
 from .message_source import MessageSource
+
+group_pattern = re.compile(r"^Group_(?P<group_id>[0-9]+)_(?P<user_id>[0-9]+)$")
+private_pattern = re.compile(r"^Private_(?P<user_id>[0-9]+)$")
 
 class Namespace(BaseModel):
     """
@@ -15,6 +19,25 @@ class Namespace(BaseModel):
     mode: MessageSource = MessageSource.GROUP
     group_id: str | None = None
     user_id: str = ""
+
+    @classmethod
+    def from_str(cls, string: str) -> "Namespace":
+        match_result = group_pattern.match(string)
+        if match_result is not None:
+            return cls(
+                mode = MessageSource.GROUP,
+                group_id = match_result.group("group_id"),
+                user_id = match_result.group("user_id")
+            )
+
+        match_result = private_pattern.match(string)
+        if match_result is not None:
+            return cls(
+                mode = MessageSource.PRIVATE,
+                user_id = match_result.group("user_id")
+            )
+
+        raise ValueError(f"Invalid namespace string: {string}")
 
     @property
     def _namespace(self) -> str:
