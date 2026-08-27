@@ -87,5 +87,6 @@ class TimeoutAndCancel(CommandPackage):
             except asyncio.TimeoutError:
                 await send_msg.send_prompt(f"Command \"{package_instance.component}\" timeout", continue_handler = True)
                 running.cancel()
+                send_msg.break_handler()
         else:
             await send_msg.send_error("Invalid command format")
