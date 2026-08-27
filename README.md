@@ -813,6 +813,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `cmdType`                  | `ct`     | `CmdType`                 | `SEE_CMD`   | 4.6.5.0        | 列出命令类型下的所有命令        | 命令类型                                   | 列出命令类型下的所有命令 |
 | `help`                     | `h`      | `Help`                    | `SEE_CMD`   | 4.9.1.0        | 显示帮助信息                   | 无                                        | 提供兼容生态习惯的入口，引导用户学习内容 |
 | `seeComponents`            | `scmp`   | `SeeComponents`           | `SEE_CMD`   | 4.9.1.0        | 通过 component 显式命令详细信息 | 命令 component                            | 显示指定 component 的详细帮助信息 |
+| `registedInfoTable`        | `rit`    | `RegistedInfoTable`       | `SEE_CMD`   | 4.9.2.1        | 显示注册信息表                 | 无                                        | 显示命令注册信息表 |
 
 ### Version Command
 
