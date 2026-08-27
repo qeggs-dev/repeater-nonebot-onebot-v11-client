@@ -58,7 +58,7 @@ class Bypass(CommandPackage):
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
-            await CommandCaller.horizontal_enter_nowait(
+            await CommandCaller.horizontal_enter_wait_created(
                 package_instance,
                 copyed_persona_info,
                 copyed_send_msg
