@@ -52,7 +52,8 @@ from typing import (
     Generic
 )
 from .sub_cmd_exit import (
-    SubCmdBreaked
+    SubCmdBreaked,
+    SubCmdCacelled
 )
 
 T = TypeVar("T")
@@ -422,7 +423,7 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: The send_msg object
         """
         logger.warning(f"{self.component} cancelled")
-        raise
+        return SubCmdCacelled
     
     async def handler_exit(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """
