@@ -382,14 +382,14 @@ class CommandCaller:
         )
 
     @classmethod
-    async def horizontal_enter_nowait(
+    async def horizontal_enter_wait_created(
         cls,
         package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
         send_msg: SendMsg | None = None
     ) -> RunningPackage[T_Handler_Result]:
         """
-        Horizontal call handler without waiting for the result
+        Horizontal call handler and waiting for the running package to created.
 
         :param package: CommandPackage
         :param persona_info: PersonaInfo
