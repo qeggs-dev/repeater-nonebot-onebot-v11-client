@@ -2,7 +2,7 @@ import re
 import asyncio
 
 from typing import Any, Type
-from ...assist import PersonaInfo, SendMsg
+from ...assist import PersonaInfo, SendMsg, Namespace
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
@@ -26,23 +26,22 @@ class RemoteWaitCall(CommandPackage):
         Wait for last remote input to be called.
 
         Usage:
-            /{cmd} times command
+            /{cmd} namespace times command args
     """
     super_permissions = True
 
-    pattern = re.compile(r"^(?P<mode>group|private)\s*:\s*(?P<id>\d+)\s*(?P<times>\d*)\s*(?P<command>\S+?)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<namespace>[a-zA-Z0-9_]+)\s*(?P<times>\d*)\s*(?P<command>\S+?)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg) -> None:
-        msg = persona_info.message_stripped_str
+        msg = persona_info.message_cqcode
         matched = self.pattern.match(msg)
         if matched:
-            mode = matched.group("mode")
-            id = matched.group("id")
+            namespace_str = matched.group("namespace")
             times_str = matched.group("times")
             command = matched.group("command")
+            args = matched.group("args")
 
-            assert isinstance(mode, str), "mode must be str"
-            assert isinstance(id, str), "id must be str"
+            assert isinstance(namespace_str, str), "mode must be str"
             assert isinstance(times_str, str), "times_str must be str"
             assert isinstance(command, str), "command must be str"
 
@@ -55,6 +54,11 @@ class RemoteWaitCall(CommandPackage):
             
             if times < 1:
                 await send_msg.send_error("Times must be greater than 0")
+                return
+            try:
+                namespace = Namespace.from_str(namespace_str)
+            except ValueError:
+                await send_msg.send_error("Invalid namespace")
                 return
 
             try:
@@ -72,8 +76,14 @@ class RemoteWaitCall(CommandPackage):
             result: PersonaInfo = persona_info
             for i in range(times):
                 result = await CommandCaller.wait_message(
-                    persona_info.namespace
+                    namespace
                 )
+
+            if args:
+                persona_info.make_message(args.replace("{message}", result.message_cqcode))
+            else:
+                persona_info.make_message(result.message_cqcode)
+            
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
