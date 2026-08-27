@@ -1175,6 +1175,7 @@ class SendMsg:
                     document_bottom_comment = document_bottom_comment,
                     style = storage_configs.render_error_message.style,
                     html_template = storage_configs.render_error_message.html_template
+                    title = storage_configs.render_error_message.title
                 )
                 message.append(image)
             except TextRenderException as e:
@@ -1522,6 +1523,7 @@ class SendMsg:
         style: str | None = None,
         image_expiry_time: int | None = None,
         html_template: str | None = None,
+        title: str | None = None,
         document_bottom_comment: str | None = None,
         width: int | None = None,
         height: int | None = None,
@@ -1544,6 +1546,7 @@ class SendMsg:
                 style = style,
                 image_expiry_time = image_expiry_time,
                 html_template = html_template,
+                title = title,
                 document_bottom_comment = document_bottom_comment,
                 width = width,
                 height = height,
@@ -1560,6 +1563,7 @@ class SendMsg:
         style: str | None = None,
         image_expiry_time: int | None = None,
         html_template: str | None = None,
+        title: str | None = None,
         document_bottom_comment: str | None = None,
         width: int | None = None,
         height: int | None = None,
@@ -1575,6 +1579,7 @@ class SendMsg:
         :param style: 渲染样式
         :param image_expiry_time: 图片过期时间
         :param html_template: HTML 模板
+        :param title: 文档标题
         :param document_bottom_comment: 文档底部注释
         :param width: 图片宽度
         :param height: 图片高度
@@ -1599,6 +1604,7 @@ class SendMsg:
                 style = style,
                 image_expiry_time = image_expiry_time,
                 html_template = html_template,
+                title = title,
                 document_bottom_comment = document_bottom_comment,
                 width = width,
                 height = height,
