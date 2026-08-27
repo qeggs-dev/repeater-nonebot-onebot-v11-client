@@ -22,7 +22,7 @@ class Bypass(CommandPackage):
         and quits immediately.
 
         Usage:
-            /{cmd} component args
+            /{cmd} command [args]
     """
 
     pattern = re.compile(r"^(?P<components_or_trigger>[/\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)

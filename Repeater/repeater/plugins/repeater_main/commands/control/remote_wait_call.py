@@ -26,7 +26,7 @@ class RemoteWaitCall(CommandPackage):
         Wait for last remote input to be called.
 
         Usage:
-            /{cmd} namespace times command args
+            /{cmd} namespace times command [args]
     """
     super_permissions = True
 

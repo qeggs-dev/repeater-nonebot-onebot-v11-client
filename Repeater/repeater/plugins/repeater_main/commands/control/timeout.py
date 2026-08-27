@@ -22,7 +22,7 @@ class Timeout(CommandPackage):
         Executes a command with timeout.
 
         Usage:
-            /{cmd} timeout: command args
+            /{cmd} timeout: command [args]
     """
 
     pattern = re.compile(r"^(?P<timeout>[\d\.]+)\s*:\s*(?P<command>[/\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
