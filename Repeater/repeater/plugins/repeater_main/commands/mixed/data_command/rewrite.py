@@ -18,8 +18,13 @@ class Rewrite(BaseChat):
         "REWRITE",
     }
     cmd_type = CmdTypes.MIXED
-    description = """
-        Withdraw and send with new content.
+    description = f"""
+    Withdraw and send with new content.
+
+    Usage:
+    ```
+    /{cmd} message
+    ```
     """
 
     async def send_message(

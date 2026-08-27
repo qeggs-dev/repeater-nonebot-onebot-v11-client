@@ -23,7 +23,9 @@ class SendUserDataFile(CommandPackage):
     Export all the active data in user space.
 
     Usage:
-      /{cmd}
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

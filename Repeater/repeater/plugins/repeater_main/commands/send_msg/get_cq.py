@@ -25,7 +25,9 @@ class GetCQ(CommandPackage):
     Get CQ Message
 
     Usage:
-      /{cmd} message
+    ```
+    /{cmd} message
+    ```
     """
     super_permissions = True
 

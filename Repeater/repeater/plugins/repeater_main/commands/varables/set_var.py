@@ -25,8 +25,10 @@ class SetVar(CommandPackage):
     description = f"""
     Set a variable.
 
-    Usagge:
-      /{cmd} <var_name>=<var_value>
+    Usage:
+    ```
+    /{cmd} <var_name>=<var_value>
+    ```
     """
 
     pattern = re.compile(r"^\s*(?P<name>[\w\d_]+)\s*=\s*(?P<value>.+)\s*$")

@@ -22,6 +22,15 @@ class GeneratePrompt(CommandPackage):
         "GENERATE_PROMPT",
     }
     cmd_type = CmdTypes.MIXED
+    description = f"""
+    Let Ai generate a complete set of prompts based on the user's description,
+    and automatically set to the custom prompt for the current user.
+
+    Usage:
+    ```
+    /generatePrompt <description>
+    ```
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         message = persona_info.message_stripped_str

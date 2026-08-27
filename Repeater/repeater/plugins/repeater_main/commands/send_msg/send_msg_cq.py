@@ -23,7 +23,9 @@ class SendMessageCQ(CommandPackage):
     Send an arbitrary Onebot cq message.
 
     Usage:
-      /{cmd} cq_message
+    ```
+    /{cmd} cq_message
+    ```
     """
     super_permissions = True
 

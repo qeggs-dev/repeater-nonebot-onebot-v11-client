@@ -28,7 +28,9 @@ class SendMessage(CommandPackage):
     Send an arbitrary Onebot message structure.
 
     Usage:
-      /{cmd} message_json
+    ```
+    /{cmd} message_json
+    ```
     """
     super_permissions = True
 

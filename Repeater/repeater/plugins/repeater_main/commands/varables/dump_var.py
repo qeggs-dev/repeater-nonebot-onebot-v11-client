@@ -25,8 +25,10 @@ class DumpVar(CommandPackage):
     description = f"""
     Dump variables to user configs.
 
-    Usagge:
-      /{cmd}
+    Usage:
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

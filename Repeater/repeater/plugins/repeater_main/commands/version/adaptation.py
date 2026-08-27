@@ -30,7 +30,9 @@ class AdaptationInfo(CommandPackage):
     Get the adaptation information.
 
     Usage:
-      /{cmd}
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

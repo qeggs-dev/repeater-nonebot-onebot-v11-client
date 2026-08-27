@@ -25,7 +25,9 @@ class TemplateRenderImage(TemplateRender):
     Render a template and render the result to image.
 
     Usage:
-      /{cmd} template_text
+    ```
+    /{cmd} template_text
+    ```
     """
     
     async def send_result(self, persona_info: PersonaInfo, send_msg: SendMsg, response: Response[None]):

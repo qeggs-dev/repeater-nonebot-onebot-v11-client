@@ -25,8 +25,10 @@ class LoadVar(CommandPackage):
     description = f"""
     Load variables from user configs.
 
-    Usagge:
-      /{cmd}
+    Usage:
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

@@ -23,7 +23,9 @@ class TokenCount(CommandPackage):
     Warning: this is a very slow operation that can take a lot of time and resources.
 
     Usage:
-        /{cmd}
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

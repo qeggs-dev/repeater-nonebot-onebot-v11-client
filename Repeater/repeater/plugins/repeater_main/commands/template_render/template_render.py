@@ -31,7 +31,9 @@ class TemplateRender(CommandPackage):
     Render a template.
 
     Usage:
-      /{cmd} template_text
+    ```
+    /{cmd} template_text
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

@@ -22,7 +22,9 @@ class GetModelList(CommandPackage):
     and return a list of results.
 
     Usage:
-      /{cmd} expression
+    ```
+    /{cmd} expression
+    ```
     """
     cmd_type = CmdTypes.MODEL
 

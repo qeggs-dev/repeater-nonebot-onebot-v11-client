@@ -25,8 +25,10 @@ class RemoveVar(CommandPackage):
     description = f"""
     Remove a variable.
 
-    Usagge:
-      /{cmd} <var_name>
+    Usage:
+    ```
+    /{cmd} <var_name>
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
