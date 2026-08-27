@@ -32,10 +32,16 @@ class Cascade(CommandPackage):
         if there is no way to pass the previous line, the result is printed directly.
 
         Usage:
-            /{cmd}
-            /cmd1_trigger cmd1_args...
-            /cmd2_trigger cmd2_args...
-            ...
+        ```
+        /{cmd}
+        /cmd1_trigger cmd1_args...
+        /cmd2_trigger
+          cmd2_args1
+          cmd2_args2
+          ...
+        /cmd3_trigger
+        ...
+        ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

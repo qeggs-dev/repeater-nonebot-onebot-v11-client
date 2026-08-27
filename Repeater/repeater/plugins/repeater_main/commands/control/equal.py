@@ -23,13 +23,15 @@ class Equal(CommandPackage):
     If one is not equal or there are no messages, serial is called to execute the section after "false:"
 
     Usage: 
-        /{cmd}
-        message1
-        message2
-        true:
-          ...
-        false:
-          ...
+    ```
+    /{cmd}
+    message1
+    message2
+    true:
+      ...
+    false:
+      ...
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

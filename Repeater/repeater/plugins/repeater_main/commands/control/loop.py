@@ -25,7 +25,9 @@ class Loop(CommandPackage):
         loop execute command times
 
         Usage:
-            /{cmd} times command [args]
+        ```
+        /{cmd} times command [args]
+        ```
     """
 
     pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)

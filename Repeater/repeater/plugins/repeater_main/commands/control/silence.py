@@ -21,7 +21,9 @@ class Silence(CommandPackage):
         Executes a command, but discards its output.
 
         Usage:
-            /{cmd} command [args]
+        ```
+        /{cmd} command [args]
+        ```
     """
 
     pattern = re.compile(r"^(?P<command>[/\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)

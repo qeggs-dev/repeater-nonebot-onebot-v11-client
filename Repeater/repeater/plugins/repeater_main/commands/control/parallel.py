@@ -26,14 +26,17 @@ class Parallel(CommandPackage):
         Execute Commands Parallelly
 
         Usage:
-            /{cmd}
-            /cmd1_trigger cmd1_args...
-            /cmd2_trigger
-              cmd2_args1
-              cmd2_args
-              ...
-            /cmd3_trigger cmd3_args...
+        
+        ```
+        /{cmd}
+        /cmd1_trigger cmd1_args...
+        /cmd2_trigger
+            cmd2_args1
+            cmd2_args
             ...
+        /cmd3_trigger cmd3_args...
+        ...
+        ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

@@ -22,7 +22,9 @@ class TaskList(CommandPackage):
     Show all tasks.
 
     Usage: 
-        /{cmd}
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

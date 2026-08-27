@@ -21,7 +21,9 @@ class Execute(CommandPackage):
         Pull Up the command invocation through component when only the component of the command are known.
 
         Usage:
-            /{cmd} component [args]
+        ```
+        /{cmd} component [args] 
+        ```
     """
 
     pattern = re.compile(r"^(?P<components>[\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)

@@ -19,7 +19,9 @@ class Poke(CommandPackage):
     Send a poke message to the user.
 
     Usage: 
-        /{cmd} @member
+    ```
+    /{cmd} @member
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
