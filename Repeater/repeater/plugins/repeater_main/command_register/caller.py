@@ -124,6 +124,7 @@ class CommandCaller:
         :return: The command handler.
         """
         async def command_handler(bot: Bot, event: MessageEvent, args: Message = CommandArg()) -> T_Handler_Result | Any | SubCmdBreaked | None | NoReturn:
+            nonlocal package, matcher
             logger.info(
                 "Run command handler: {name}",
                 name = package.component,
@@ -148,6 +149,7 @@ class CommandCaller:
         :return: The message handler.
         """
         async def message_handler(bot: Bot, event: MessageEvent) -> T_Handler_Result | Any | SubCmdBreaked | None | NoReturn:
+            nonlocal package, matcher
             logger.info(
                 "Run message handler: {name}",
                 name = package.component,
@@ -232,8 +234,6 @@ class CommandCaller:
         try:
             result = await running
             return result
-        except asyncio.CancelledError:
-            return SubCmdCacelled()
         finally:
             cls.runnings.pop(task_id, None)
             if persona_info.namespace in cls.running_map:
@@ -271,7 +271,9 @@ class CommandCaller:
                 result = result()
         
         logger.info(
-            "Handler return: {result}({type})",
+            "Handler {handler}[{task_id}] return: {result}({type})",
+            handler = package.component,
+            task_id = task_id,
             result = repr(result),
             type = type(result).__name__,
         )
@@ -482,22 +484,21 @@ class CommandCaller:
         package.on_before_instantiate()
         package_instance = package()
         package_instance.__time_for_registed__ = time.time_ns()
-        matcher = package_instance.on_matcher_registered(
-            cls._create_matcher(package_instance)
-        )
             
         match package_instance.listen_type:
             case ListenType.Command:
+                matcher = cls._create_command_matcher(package_instance)
                 if storage_configs.log_registed_handler_name:
                     logger.info(
-                        "Register command: {name}",
+                        "Register Command Handler: {name}",
                         name = package_instance.component
                     )
                 handler = cls.get_command_handler(package_instance, matcher)
             case ListenType.Message:
+                matcher = cls._create_message_matcher(package_instance)
                 if storage_configs.log_registed_handler_name:
                     logger.info(
-                        "Register command: {name}",
+                        "Register Message Handler: {name}",
                         name = package_instance.component
                     )
                 handler = cls.get_message_handler(package_instance, matcher)
@@ -724,42 +725,53 @@ class CommandCaller:
         return aliases
     
     @classmethod
-    def _create_matcher(cls, package: CommandPackage) -> Type[Matcher]:
+    def _create_command_matcher(cls, package: CommandPackage) -> Type[Matcher]:
         """
         Create a matcher for a package
 
         :param package: The package of the Handler
         :return: The matcher
         """
-        match package.listen_type:
-            case ListenType.Command:
-                matcher = on_command(
-                    cmd = package.cmd,
-                    rule = package.rule,
-                    aliases = cls.get_package_aliases(package),
-                    force_whitespace = package.force_whitespace,
-                    permission = package.permission,
-                    handlers = package.handlers,
-                    temp = package.temp,
-                    expire_time = package.expire_time,
-                    priority = package.priority,
-                    block = package.block,
-                    state = package.state,
-                )
-            case ListenType.Message:
-                matcher = on_message(
-                    rule = package.rule,
-                    permission = package.permission,
-                    handlers = package.handlers,
-                    temp = package.temp,
-                    expire_time = package.expire_time,
-                    priority = package.priority,
-                    block = package.block,
-                    state = package.state,
-                )
-            case _:
-                raise ValueError(f"Unknown listen type: {package.listen_type}")
-        return matcher
+        if package.listen_type == ListenType.Command:
+            matcher = on_command(
+                cmd = package.cmd,
+                rule = package.rule,
+                aliases = cls.get_package_aliases(package),
+                force_whitespace = package.force_whitespace,
+                permission = package.permission,
+                handlers = package.handlers,
+                temp = package.temp,
+                expire_time = package.expire_time,
+                priority = package.priority,
+                block = package.block,
+                state = package.state,
+            )
+            return matcher
+        else:
+            raise ValueError(f"Unknown listen type: {package.listen_type}")
+    
+    @classmethod
+    def _create_message_matcher(cls, package: CommandPackage) -> Type[Matcher]:
+        """
+        Create a matcher for a package
+
+        :param package: The package of the Handler
+        :return: The matcher
+        """
+        if package.listen_type == ListenType.Message:
+            matcher = on_message(
+                rule = package.rule,
+                permission = package.permission,
+                handlers = package.handlers,
+                temp = package.temp,
+                expire_time = package.expire_time,
+                priority = package.priority,
+                block = package.block,
+                state = package.state,
+            )
+            return matcher
+        else:
+            raise ValueError(f"Unknown listen type: {package.listen_type}")
     
     @classmethod
     async def report_message(cls, persona_info: PersonaInfo, send_msg: SendMsg):
