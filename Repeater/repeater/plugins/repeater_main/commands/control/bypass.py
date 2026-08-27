@@ -25,7 +25,7 @@ class Bypass(CommandPackage):
             /{cmd} command [args]
     """
 
-    pattern = re.compile(r"^(?P<components_or_trigger>[/\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<components_or_trigger>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = str(persona_info.message)
