@@ -68,7 +68,7 @@ class Cascade(CommandPackage):
             if info:
                 if "{message}" in str(info.message):
                     info = info.copy_with_args(
-                        Message(
+                        persona_info.make_message(
                             str(info.message).replace(
                                 "{message}",
                                 str(last_result.message)

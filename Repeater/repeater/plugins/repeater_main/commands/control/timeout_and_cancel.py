@@ -1,8 +1,6 @@
 import re
 import asyncio
 
-from typing import Any, Type
-from nonebot.adapters.onebot.v11 import Message
 from ...assist import PersonaInfo, SendMsg, SendingTarget
 from ...cmd_info import CmdTypes
 from ...command_register import(
@@ -49,7 +47,7 @@ class TimeoutAndCancel(CommandPackage):
             except ValueError:
                 await send_msg.send_error("Invalid timeout format")
 
-            args = Message(args_prefix)
+            args = persona_info.make_message(args_prefix)
 
             try:
                 package = CommandCaller.match_trigger_or_component(command)

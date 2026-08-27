@@ -1,8 +1,5 @@
 import re
-import asyncio
 
-from typing import Any, Type
-from nonebot.adapters.onebot.v11 import Message
 from ...assist import PersonaInfo, SendMsg, SendingTarget
 from ...cmd_info import CmdTypes
 from ...command_register import(
@@ -40,7 +37,7 @@ class Silence(CommandPackage):
             assert isinstance(command, str), "command must be str"
             assert isinstance(args_prefix, str), "args_prefix must be str"
 
-            args = Message(args_prefix)
+            args = persona_info.make_message(args_prefix)
 
             try:
                 package = CommandCaller.match_trigger_or_component(command)

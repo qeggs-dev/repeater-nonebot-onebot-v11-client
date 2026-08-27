@@ -1,6 +1,6 @@
 import json
 
-from nonebot.adapters.onebot.v11 import Message, MessageSegment
+from nonebot.adapters.onebot.v11 import MessageSegment
 from pydantic import ValidationError
 
 from ...assist import PersonaInfo, SendMsg
@@ -54,7 +54,7 @@ class SendMessage(CommandPackage):
                 await send_msg.send_error("Please enter the correct content format.")
                 return
 
-            message = Message(message_body)
+            message = persona_info.make_message(message_body)
         except ValidationError as e:
             errors = e.errors()
             text_buffer: list[str] = []

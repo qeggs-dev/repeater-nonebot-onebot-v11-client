@@ -1,8 +1,5 @@
 import re
-import asyncio
 
-from typing import Any, Type
-from nonebot.adapters.onebot.v11 import Message
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from ...command_register import(
@@ -41,7 +38,7 @@ class Bypass(CommandPackage):
             assert isinstance(components_or_trigger, str), "components must be str"
             assert isinstance(args_prefix, str), "args_prefix must be str"
 
-            args = Message(args_prefix)
+            args = persona_info.make_message(args_prefix)
 
             try:
                 package = CommandCaller.match_trigger_or_component(components_or_trigger)

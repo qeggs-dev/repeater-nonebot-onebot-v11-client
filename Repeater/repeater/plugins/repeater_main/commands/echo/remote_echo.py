@@ -3,7 +3,6 @@ from ...command_register import(
     CommandCaller,
     CommandPackage
 )
-from nonebot.adapters.onebot.v11 import Message
 from ...cmd_info import CmdTypes
 from ...assist import PersonaInfo, SendMsg, SendingTarget
 
@@ -38,7 +37,7 @@ class RemoteEcho(CommandPackage):
             mode = match.group("mode")
             id = match.group("id")
             message_str = match.group("message")
-            message = Message(message_str)
+            message = persona_info.make_message(message_str)
             match mode:
                 case "group":
                     remote_send_msg = send_msg.copy(
