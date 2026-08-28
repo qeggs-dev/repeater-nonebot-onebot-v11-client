@@ -1541,7 +1541,7 @@ class SendMsg:
                     )
                 elif segment.type == "image":
                     texts.append(
-                        f"[Image]({segment.data['file']})"
+                        f"![{segment.data['file']}]({segment.data['url']})"
                     )
         else:
             raise TypeError("message must be str or Message")
