@@ -19,8 +19,10 @@ class TokenCalculatorText(TokenCalculator):
     Count tokens using tokenizer.
 
     Usage:
-        (reply a tokenizer file)
-        /{cmd} text
+    (reply a tokenizer file)
+    ```
+    /{cmd} text
+    ```
     """
 
     async def output(

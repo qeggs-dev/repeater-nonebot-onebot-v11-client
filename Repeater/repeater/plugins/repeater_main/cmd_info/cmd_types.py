@@ -24,6 +24,7 @@ class CmdTypes(Enum):
     VERSION = "VERSION"
     SEQUENCE = "SEQUENCE"
     CONTROL = "CONTROL"
+    VARIABLE = "VARIABLE"
     LICENSES = "LICENSES"
     NEXUS = "NEXUS"
     STATUS = "STATUS"

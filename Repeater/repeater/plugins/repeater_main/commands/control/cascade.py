@@ -1,6 +1,11 @@
 from typing import Any, Type
 from nonebot.adapters.onebot.v11 import Message
-from ...assist import PersonaInfo, SendMsg, SendingTarget
+from ...assist import (
+    PersonaInfo,
+    SendMsg,
+    SendingTarget,
+    Variables
+)
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
@@ -8,6 +13,7 @@ from ...command_register import(
 )
 from ._parse_input import parse_input
 from ._split_by_indent import split_by_indent
+from ._fill_var import fill_var
 
 @CommandCaller.register
 class Cascade(CommandPackage):
@@ -26,10 +32,16 @@ class Cascade(CommandPackage):
         if there is no way to pass the previous line, the result is printed directly.
 
         Usage:
-            /{cmd}
-            /cmd1_trigger cmd1_args...
-            /cmd2_trigger cmd2_args...
-            ...
+        ```
+        /{cmd}
+        /cmd1_trigger cmd1_args...
+        /cmd2_trigger
+          cmd2_args1
+          cmd2_args2
+          ...
+        /cmd3_trigger
+        ...
+        ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
@@ -52,6 +64,7 @@ class Cascade(CommandPackage):
                 send_msg.break_handler()
         
         last_result: PersonaInfo = persona_info.copy_with_args(Message())
+        user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         for index, (package_instance, info) in enumerate(tasks):
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
@@ -61,7 +74,7 @@ class Cascade(CommandPackage):
             if info:
                 if "{message}" in str(info.message):
                     info = info.copy_with_args(
-                        Message(
+                        persona_info.make_message(
                             str(info.message).replace(
                                 "{message}",
                                 str(last_result.message)
@@ -78,7 +91,7 @@ class Cascade(CommandPackage):
             
             await CommandCaller.horizontal_call(
                 package_instance,
-                info,
+                fill_var(info, user_variables),
                 copyed_send_msg
             )
             

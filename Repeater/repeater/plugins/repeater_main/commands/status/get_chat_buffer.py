@@ -23,7 +23,9 @@ class GetChatBuffer(CommandPackage):
     Get the chat buffer of the current chat session.
 
     Usage:
-      /{cmd} task_id
+    ```
+    /{cmd} task_id
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

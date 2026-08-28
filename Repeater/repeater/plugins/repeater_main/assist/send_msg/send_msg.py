@@ -730,7 +730,7 @@ class SendMsg:
     @overload
     async def send_text(
             self,
-            text: str | None = None,
+            text: str,
             reply: bool = True,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
@@ -738,14 +738,14 @@ class SendMsg:
     @overload
     async def send_text(
             self,
-            text: str | None = None,
+            text: str,
             reply: bool = True,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
     async def send_text(
             self,
-            text: str | None = None,
+            text: str,
             reply: bool = True,
             continue_handler: bool = False
         ) -> NoReturn | None:
@@ -760,7 +760,51 @@ class SendMsg:
             "Send Text"
         )
         await self._send(
-            Message(text),
+            Message(
+                MessageSegment.text(
+                    text
+                )
+            ),
+            reply=reply,
+            continue_handler = continue_handler
+        )
+    
+    @overload
+    async def send_cq_text(
+            self,
+            text: str,
+            reply: bool = True,
+            continue_handler: Literal[False] = False
+        ) -> NoReturn: ...
+    
+    @overload
+    async def send_cq_text(
+            self,
+            text: str,
+            reply: bool = True,
+            continue_handler: Literal[True] = True
+        ) -> None: ...
+    
+    async def send_cq_text(
+            self,
+            text: str,
+            reply: bool = True,
+            continue_handler: bool = False
+        ) -> NoReturn | None:
+        """
+        发送纯文本
+
+        :param text: CQ 码文本内容
+        :param reply: 是否携带引用
+        :param continue_handler: 是否继续运行当前处理流程
+        """
+        logger.info(
+            "Send CQ Text"
+        )
+        await self._send(
+            Message(
+                text
+            ),
             reply=reply,
             continue_handler = continue_handler
         )
@@ -1130,7 +1174,8 @@ class SendMsg:
                     text,
                     document_bottom_comment = document_bottom_comment,
                     style = storage_configs.render_error_message.style,
-                    html_template = storage_configs.render_error_message.html_template
+                    html_template = storage_configs.render_error_message.html_template,
+                    title = storage_configs.render_error_message.title
                 )
                 message.append(image)
             except TextRenderException as e:
@@ -1478,6 +1523,7 @@ class SendMsg:
         style: str | None = None,
         image_expiry_time: int | None = None,
         html_template: str | None = None,
+        title: str | None = None,
         document_bottom_comment: str | None = None,
         width: int | None = None,
         height: int | None = None,
@@ -1500,6 +1546,7 @@ class SendMsg:
                 style = style,
                 image_expiry_time = image_expiry_time,
                 html_template = html_template,
+                title = title,
                 document_bottom_comment = document_bottom_comment,
                 width = width,
                 height = height,
@@ -1516,6 +1563,7 @@ class SendMsg:
         style: str | None = None,
         image_expiry_time: int | None = None,
         html_template: str | None = None,
+        title: str | None = None,
         document_bottom_comment: str | None = None,
         width: int | None = None,
         height: int | None = None,
@@ -1531,6 +1579,7 @@ class SendMsg:
         :param style: 渲染样式
         :param image_expiry_time: 图片过期时间
         :param html_template: HTML 模板
+        :param title: 文档标题
         :param document_bottom_comment: 文档底部注释
         :param width: 图片宽度
         :param height: 图片高度
@@ -1555,6 +1604,7 @@ class SendMsg:
                 style = style,
                 image_expiry_time = image_expiry_time,
                 html_template = html_template,
+                title = title,
                 document_bottom_comment = document_bottom_comment,
                 width = width,
                 height = height,

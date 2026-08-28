@@ -1,6 +1,6 @@
-from typing import Any, Type, Coroutine
+from typing import Any, Type
 from nonebot.adapters.onebot.v11 import Message
-from ...assist import PersonaInfo, SendMsg
+from ...assist import PersonaInfo, SendMsg, Variables
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
@@ -8,6 +8,7 @@ from ...command_register import(
 )
 from ._parse_input import parse_input
 from ._split_by_indent import split_by_indent
+from ._fill_var import fill_var
 
 @CommandCaller.register
 class Serial(CommandPackage):
@@ -23,14 +24,16 @@ class Serial(CommandPackage):
         Execute Commands Serially
 
         Usage:
-            /{cmd}
-            /cmd1_trigger cmd1_args...
-            /cmd2_trigger
-              cmd2_args1
-              cmd2_args
-              ...
-            /cmd3_trigger cmd3_args...
+        ```
+        /{cmd}
+        /cmd1_trigger cmd1_args...
+        /cmd2_trigger
+            cmd2_args1
+            cmd2_args
             ...
+        /cmd3_trigger cmd3_args...
+        ...
+        ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
@@ -60,12 +63,13 @@ class Serial(CommandPackage):
                     copyed_send_msg
                 )
             )
-        
+
+        user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         results = []
         for package, info, send_msg in tasks:
             result = await CommandCaller.horizontal_call(
                 package,
-                info,
+                fill_var(info, user_variables),
                 send_msg
             )
             results.append(result)

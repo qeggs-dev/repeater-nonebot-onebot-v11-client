@@ -22,7 +22,9 @@ class GetRequirementList(CommandPackage):
     Gets a list of requirements.
 
     Usage:
-      /{cmd}
+    ```
+    /{cmd}
+    ```
     """
     cmd_type = CmdTypes.LICENSES
 

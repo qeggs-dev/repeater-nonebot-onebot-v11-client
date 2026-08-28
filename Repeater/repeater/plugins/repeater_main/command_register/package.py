@@ -45,13 +45,11 @@ from nonebot import logger
 from typing import (
     Any,
     Iterable,
-    Callable,
     Collection,
     NoReturn,
     Type,
     TypeVar,
-    Generic,
-    Awaitable
+    Generic
 )
 from .sub_cmd_exit import (
     SubCmdBreaked,
@@ -122,8 +120,8 @@ class CommandPackage(ABC, Generic[T]):
     docs_delimiter: str = "\n"
     """Documentation delimiter"""
 
-    superuser_permissions: bool = False
-    """Whether the Handler is superuser permissions."""
+    super_permissions: bool = False
+    """Whether the Handler need super permissions."""
 
     send_msg: bool = True
     """Allow sending messages"""
@@ -558,7 +556,7 @@ class CommandPackage(ABC, Generic[T]):
             )
 
     @classmethod
-    def on_duplicate_class_name(cls):
+    def on_duplicate_class_name(cls, other: "CommandPackage[Any]"):
         """
         This section is executed when the class name is triggered by a duplicate class name.
 
@@ -568,14 +566,14 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: The send_msg object
         """
         if storage_configs.loading.throw_on_duplicate.class_name:
-            raise ValueError(f"Handler class name {cls.__name__} is already registered")
+            raise ValueError(f"Handler class name {cls.__name__} and {other.component} is already registered")
         else:
             logger.warning(
                 "Handler class name {class_name} is already registered, this may result in overwriting.",
                 class_name = cls.__name__
             )
 
-    def on_duplicate_component(self):
+    def on_duplicate_component(self, other: "CommandPackage[Any]"):
         """
         This section is executed when the component is triggered by a duplicate component.
 
@@ -585,11 +583,12 @@ class CommandPackage(ABC, Generic[T]):
         :param send_msg: The send_msg object
         """
         if storage_configs.loading.throw_on_duplicate.handler:
-            raise ValueError(f"Component {self.component} is already registered")
+            raise ValueError(f"Component {self.component} and {other.component} is already registered")
         else:
             logger.warning(
-                "Component {component} is already registered, this may result in overwriting.",
-                component = self.component
+                "Component {component} and {other_component} is already registered, this may result in overwriting.",
+                component = self.component,
+                other_component = other.component
             )
 
     def on_duplicate_handler(self):
@@ -605,7 +604,7 @@ class CommandPackage(ABC, Generic[T]):
             raise ValueError(f"Handler {self.component} is already registered")
         else:
             logger.warning(
-                "Handler {handler} is already registered, this may result in overwriting.",
+                "Handler {handler} and {other_handler} is already registered, this may result in overwriting.",
                 handler = self.component
             )
 

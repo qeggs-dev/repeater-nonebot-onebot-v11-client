@@ -23,7 +23,9 @@ class PingProviderHost(CommandPackage):
     the server needs to be upgraded.
 
     Usage:
-      /{cmd} [model_id]
+    ```
+    /{cmd} [model_id]
+    ```
     """
     cmd_type = CmdTypes.MODEL
 

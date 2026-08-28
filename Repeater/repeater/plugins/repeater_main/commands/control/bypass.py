@@ -1,8 +1,5 @@
 import re
-import asyncio
 
-from typing import Any, Type
-from nonebot.adapters.onebot.v11 import Message
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from ...command_register import(
@@ -25,10 +22,12 @@ class Bypass(CommandPackage):
         and quits immediately.
 
         Usage:
-            /{cmd} component args
+        ```
+        /{cmd} command [args]
+        ```
     """
 
-    pattern = re.compile(r"^(?P<components_or_trigger>[/\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<components_or_trigger>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = str(persona_info.message)
@@ -41,7 +40,7 @@ class Bypass(CommandPackage):
             assert isinstance(components_or_trigger, str), "components must be str"
             assert isinstance(args_prefix, str), "args_prefix must be str"
 
-            args = Message(args_prefix)
+            args = persona_info.make_message(args_prefix)
 
             try:
                 package = CommandCaller.match_trigger_or_component(components_or_trigger)
@@ -61,12 +60,10 @@ class Bypass(CommandPackage):
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
-            asyncio.create_task(
-                CommandCaller.horizontal_call(
-                    package_instance,
-                    copyed_persona_info,
-                    copyed_send_msg
-                )
+            await CommandCaller.horizontal_enter_wait_created(
+                package_instance,
+                copyed_persona_info,
+                copyed_send_msg
             )
         else:
             await send_msg.send_error("Invalid command format")

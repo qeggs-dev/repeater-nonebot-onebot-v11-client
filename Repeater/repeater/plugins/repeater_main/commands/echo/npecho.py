@@ -22,7 +22,9 @@ class NPEcho(CommandPackage):
     If not arguments, echo the last message.
 
     Usage:
-      /{cmd} [message]
+    ```
+    /{cmd} [message]
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

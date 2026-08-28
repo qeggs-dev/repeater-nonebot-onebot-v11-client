@@ -5,6 +5,7 @@ class RenderRequest(BaseModel):
     style: str | None = None
     image_expiry_time: int | None = None
     html_template: str | None = None
+    title: str | None = None
     document_bottom_comment: str | None = None
     width: int | None = None
     height: int | None = None

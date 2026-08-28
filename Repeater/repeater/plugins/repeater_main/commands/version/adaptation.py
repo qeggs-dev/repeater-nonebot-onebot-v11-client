@@ -18,13 +18,21 @@ class AdaptationInfo(CommandPackage):
         "Adaptation_Info",
         "AdaptationInfo",
         "ADAPTATION_INFO",
+
+        "ver",
+        "VER",
+        "version",
+        "Version",
+        "VERSION",
     }
     cmd_type = CmdTypes.VERSION
     description = f"""
     Get the adaptation information.
 
     Usage:
-      /{cmd}
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

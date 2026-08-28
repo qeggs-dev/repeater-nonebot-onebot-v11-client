@@ -1,8 +1,5 @@
 import re
-import asyncio
 
-from typing import Any, Type
-from nonebot.adapters.onebot.v11 import Message
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from ...command_register import(
@@ -24,7 +21,9 @@ class Execute(CommandPackage):
         Pull Up the command invocation through component when only the component of the command are known.
 
         Usage:
-            /{cmd} component args
+        ```
+        /{cmd} component [args] 
+        ```
     """
 
     pattern = re.compile(r"^(?P<components>[\w\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
@@ -40,7 +39,7 @@ class Execute(CommandPackage):
             assert isinstance(components, str), "components must be str"
             assert isinstance(args_prefix, str), "args_prefix must be str"
 
-            args = Message(args_prefix)
+            args = persona_info.make_message(args_prefix)
 
             try:
                 package = CommandCaller.match_component(components)
@@ -51,7 +50,7 @@ class Execute(CommandPackage):
             try:
                 package_instance = CommandCaller.get_instance(package)
             except KeyError as e:
-                await send_msg.send_error(f"Command instance {package.component} not found: {e}")
+                await send_msg.send_error(f"Command {components} instance not found: {e}")
                 return
 
             copyed_persona_info = persona_info.copy_with_args(

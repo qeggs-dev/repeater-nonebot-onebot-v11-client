@@ -1,7 +1,6 @@
 from .at_with_name import at_with_name
 from .get_first_mentioned_user import get_first_mentioned_user
 from .image_to_text import image_to_text
-from .get_images_url import get_images_url
 from .get_reply_msgs import get_reply_msgs
 from .get_forward_msgs import get_forward_msgs
 from .get_message_event import get_message_event
@@ -22,7 +21,6 @@ __all__ = [
     "at_with_name",
     "get_first_mentioned_user",
     "image_to_text",
-    "get_images_url",
     "get_reply_msgs",
     "get_forward_msgs",
     "get_message_event",

@@ -23,7 +23,9 @@ class GetServerLicenses(CommandPackage):
     Get an open source license for the backend.
 
     Usage:
-      /{cmd}
+    ```
+    /{cmd}
+    ```
     """
     cmd_type = CmdTypes.LICENSES 
 

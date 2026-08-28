@@ -23,8 +23,11 @@ class MessageWithdrawn(CommandPackage):
         Withdrawn a droid's own message.
 
         Usage:
-            > Reply to a message with
-            /{cmd}
+        > Reply to a message with
+
+        ```
+        /{cmd}
+        ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

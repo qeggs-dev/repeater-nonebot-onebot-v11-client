@@ -24,7 +24,9 @@ class GetCoreTaskStatus(CommandPackage):
     Gets the status of the current LLM Text Content Generation Task.
 
     Usage:
-      /{cmd}
+    ```
+    /{cmd}
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

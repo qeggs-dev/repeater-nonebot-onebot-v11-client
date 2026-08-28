@@ -23,7 +23,9 @@ class GetRequirementLicenses(CommandPackage):
     Obtain an open source license for the requirements.
 
     Usage:
-      /{cmd} <requirement_name>
+    ```
+    /{cmd} <requirement_name>
+    ```
     """
     cmd_type = CmdTypes.LICENSES
 

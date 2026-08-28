@@ -25,29 +25,25 @@ class Loop(CommandPackage):
         loop execute command times
 
         Usage:
-            /{cmd} times command args
+        ```
+        /{cmd} times command [args]
+        ```
     """
 
-    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>\S+?)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        msg = persona_info.message
-        first_segment = msg[0]
-        if first_segment.type != "text":
-            await send_msg.send_error("Please input a text message.")
-        matched = self.pattern.match(first_segment.data["text"])
+        matched = self.pattern.match(persona_info.message_cqcode)
         if matched:
             times_str = matched.group("times")
             command = matched.group("command")
-            args_prefix = matched.group("args")
+            args_str = matched.group("args")
 
             assert isinstance(times_str, str), "times_str must be str"
             assert isinstance(command, str), "command must be str"
-            assert isinstance(args_prefix, str), "args_prefix must be str"
+            assert isinstance(args_str, str), "args_str must be str"
 
-            command = remove_cmd_prefix(command)
-
-            args = MessageSegment.text(args_prefix) + msg[1:]
+            args = persona_info.make_message(args_str)
 
             if not times_str:
                 times = 1
@@ -59,7 +55,7 @@ class Loop(CommandPackage):
                 return
 
             try:
-                package = CommandCaller.match_trigger(command)
+                package = CommandCaller.match_trigger_or_component(command)
             except KeyError:
                 await send_msg.send_error(f"Command {command} not found")
                 return

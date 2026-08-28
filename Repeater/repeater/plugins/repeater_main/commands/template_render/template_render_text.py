@@ -25,7 +25,9 @@ class TemplateRenderText(TemplateRender):
     Render a template and .
 
     Usage:
-      /{cmd} template_text
+    ```
+    /{cmd} template_text
+    ```
     """
     
     async def send_result(self, persona_info: PersonaInfo, send_msg: SendMsg, response: Response[None]):

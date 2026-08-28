@@ -24,7 +24,9 @@ class GenerateImageWithSize(GenerateImageBase):
     The size of the image can be specified by using the format "widthxheight".
 
     Usage:
-        /{cmd} (x)x(y) prompt
+    ```
+    /{cmd} (x)x(y) prompt
+    ```
     """
 
     pattern = re.compile(r"^(?P<size>\d+?x\d+)\s*?(?P<prompt>.*)$", re.DOTALL)

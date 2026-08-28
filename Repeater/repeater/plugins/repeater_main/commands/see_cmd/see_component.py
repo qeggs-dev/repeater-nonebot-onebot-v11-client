@@ -54,5 +54,6 @@ class SeeComponent(CommandPackage):
         await see_cmds(
             delimiters = delimiters,
             commands = commands,
+            persona_info = persona_info,
             send_msg = send_msg
         )

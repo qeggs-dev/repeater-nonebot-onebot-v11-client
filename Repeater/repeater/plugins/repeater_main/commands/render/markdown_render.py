@@ -18,6 +18,14 @@ class MarkdownRender(CommandPackage):
         "MARKDOWN_RENDER",
     }
     cmd_type = CmdTypes.RENDER
+    description = f"""
+    Render markdown text to image.
+
+    Usage:
+    ```
+    /{cmd} text
+    ```
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         await send_msg.send_render(persona_info.message_stripped_str)

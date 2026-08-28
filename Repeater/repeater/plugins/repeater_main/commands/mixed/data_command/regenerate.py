@@ -23,6 +23,14 @@ class Regenerate(BaseChat):
     }
     cmd_type = CmdTypes.MIXED
     empty_exit: bool = False
+    description = f"""
+    Recall the previous message and resend it.
+
+    Usage:
+    ```
+    /{cmd}
+    ```
+    """
     
     async def send_message(
         self,

@@ -25,7 +25,9 @@ class RandomFortune(CommandPackage):
         Randomly generate daily fortunes.
 
         Usage:
-          /{cmd} [@someone]...
+        ```
+        /{cmd} [@someone]...
+        ```
     """
 
     @staticmethod

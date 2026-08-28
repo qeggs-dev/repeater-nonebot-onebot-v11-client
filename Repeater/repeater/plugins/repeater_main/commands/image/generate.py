@@ -20,5 +20,7 @@ class GenerateImage(GenerateImageBase):
     When there is a reference, the picture in the reference message will be loaded first.
 
     Usage:
-        /{cmd} prompt
+    ```
+    /{cmd} prompt 
+    ```
     """

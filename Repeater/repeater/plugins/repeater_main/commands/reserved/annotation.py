@@ -19,9 +19,11 @@ class Annotation(CommandPackage):
     description = """
     Null command, which can be used for comments.
 
-    Usagge:
-      /#
-      //
+    Usage:
+    ```
+    /#
+    //
+    ```
     """
     empty_handler = True
 

@@ -27,7 +27,9 @@ class GetNamespace(CommandPackage):
     Get namespace of the group or user.
 
     Usage:
-      /{cmd}
+    ```
+    /{cmd}
+    ```
     """
     cmd_type = CmdTypes.NAMESPACE
 

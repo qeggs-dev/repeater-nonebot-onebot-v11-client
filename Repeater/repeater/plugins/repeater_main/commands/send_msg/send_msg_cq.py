@@ -1,5 +1,3 @@
-from nonebot.adapters.onebot.v11 import Message
-
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from ...command_register import(
@@ -25,15 +23,17 @@ class SendMessageCQ(CommandPackage):
     Send an arbitrary Onebot cq message.
 
     Usage:
-      /{cmd} cq_message
+    ```
+    /{cmd} cq_message
+    ```
     """
-    superuser_permissions = True
+    super_permissions = True
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         if not storage_configs.allow_send_any_message:
             await send_msg.send_error("Send_Message is disabled")
             return
 
-        message = Message(persona_info.message_stripped_str)
+        message = persona_info.make_message(persona_info.message_stripped_str)
 
         await send_msg.send_any(message, reply=False)

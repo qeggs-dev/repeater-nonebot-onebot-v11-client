@@ -26,10 +26,12 @@ class WaitCall(CommandPackage):
         Wait for last input to be called.
 
         Usage:
-            /{cmd} times command
+        ```
+        /{cmd} times command [args]
+        ```
     """
 
-    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>\S+?)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>[/\w_\.]+)\s(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg) -> None:
         msg = persona_info.message_stripped_str
@@ -37,11 +39,11 @@ class WaitCall(CommandPackage):
         if matched:
             times_str = matched.group("times")
             command = matched.group("command")
+            args_str = matched.group("args")
 
             assert isinstance(times_str, str), "times_str must be str"
             assert isinstance(command, str), "command must be str"
-
-            command = remove_cmd_prefix(command)
+            assert isinstance(args_str, str), "args must be str"
 
             if not times_str:
                 times = 1
@@ -53,7 +55,7 @@ class WaitCall(CommandPackage):
                 return
 
             try:
-                package = CommandCaller.match_trigger(command)
+                package = CommandCaller.match_trigger_or_component(command)
             except KeyError:
                 await send_msg.send_error(f"Command {command} not found")
                 return
@@ -69,12 +71,20 @@ class WaitCall(CommandPackage):
                 result = await CommandCaller.wait_message(
                     persona_info.namespace
                 )
+
+            if args_str.strip():
+                args = persona_info.make_message(args_str.replace("{message}", result.message_cqcode))
+            else:
+                args = persona_info.make_message(result.message_cqcode)
+
+            info = result.copy_with_args(args)
+            
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
             await CommandCaller.horizontal_call(
                 package_instance,
-                result,
+                info,
                 copyed_send_msg
             )
         else:

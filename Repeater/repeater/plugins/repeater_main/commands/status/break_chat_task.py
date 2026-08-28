@@ -22,7 +22,9 @@ class BreakChatTask(CommandPackage):
     Break a chat task.
 
     Usage:
-      /{cmd} [task_id]
+    ```
+    /{cmd} [task_id]
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

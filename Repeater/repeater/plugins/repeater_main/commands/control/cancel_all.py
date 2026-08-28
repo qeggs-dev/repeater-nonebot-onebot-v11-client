@@ -22,7 +22,9 @@ class CancelAll(CommandPackage):
     Cancel all tasks where component or trigger match.
 
     Usage: 
-        /{cmd} component
+    ```
+    /{cmd} component
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):

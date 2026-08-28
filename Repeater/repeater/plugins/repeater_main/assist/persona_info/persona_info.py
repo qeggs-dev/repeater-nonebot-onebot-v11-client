@@ -11,7 +11,6 @@ from nonebot.internal.adapter.bot import Bot
 from ..assist_func import (
     at_with_name,
     image_to_text,
-    get_images_url,
     get_reply_msgs,
     get_forward_msgs,
     get_message_event,
@@ -23,6 +22,8 @@ from .enter_type import EnterType
 from .file_info import FileInfo
 from .cached_apis import CachedAPI
 from ..user_config import UserConfigLoader, UserConfigs
+from ..permission_checker import PermissionChecker
+from ...client_configs import storage_configs
 
 class PersonaInfo:
     """
@@ -97,7 +98,7 @@ class PersonaInfo:
             except KeyError:
                 raise ValueError("Is Group, But Group ID is Not Found")
         
-        self._superusers: set[str] = set(user for user in self._bot.config.superusers)
+        self._super_permissions_checker: PermissionChecker = PermissionChecker(storage_configs.super_permissions)
         self._user_config_loader = UserConfigLoader(self.namespace)
     
     @classmethod
@@ -285,13 +286,11 @@ class PersonaInfo:
         return self._bot.adapter
     
     @property
-    def is_superuser(self) -> bool:
+    def has_super_permissions(self) -> bool:
         """
-        当前发起请求的用户是否为超级用户
+        当前发起请求的用户是否具有超级权限
         """
-        if self._bot.config.superusers is None:
-            return False
-        return self.user_id in self.superusers
+        return self._super_permissions_checker.check(self.namespace)
     
     @property
     def is_self(self) -> bool:
@@ -308,11 +307,11 @@ class PersonaInfo:
         return self._self_id
     
     @property
-    def superusers(self) -> set[str]:
+    def super_permissions(self) -> PermissionChecker:
         """
-        超级用户集合
+        超级权限检查器
         """
-        return self._superusers.copy()
+        return self._super_permissions_checker.copy()
     
     @property
     def message_id(self) -> int:
@@ -550,6 +549,27 @@ class PersonaInfo:
         命令参数字符串
         """
         return self.args.extract_plain_text()
+
+    @property
+    def message_cqcode(self) -> str:
+        """
+        消息字符串（CQ码）
+        """
+        return str(self.message)
+
+    @property
+    def event_message_cqcode(self) -> str:
+        """
+        消息事件字符串（CQ码）
+        """
+        return str(self.event_message)
+
+    @property
+    def args_cqcode(self) -> str:
+        """
+        命令参数字符串（CQ码）
+        """
+        return str(self.args)
     
     @property
     def reply(self) -> MessageSegment:
@@ -626,10 +646,11 @@ class PersonaInfo:
         :param base64: 是否返回 base64 编码的图片
         :return: 图片的 URL 列表
         """
-        return await get_images_url(
-            self.message,
-            base64 = base64
-        )
+        urls: list[str] = []
+        for msg in self.message:
+            if msg.type == "image":
+                urls.append(msg.data["url"])
+        return urls
     
     def get_video_url(self) -> list[str]:
         """
@@ -793,3 +814,12 @@ class PersonaInfo:
             bot = self._cached_api,
             message_id = message_id if message_id is not None else self.message_id
         )
+
+    def make_message(self, message: str | Iterable[MessageSegment] | MessageSegment | None = None) -> Message:
+        """
+        生成消息
+
+        :param message: 消息内容
+        :return: 消息
+        """
+        return Message(message)

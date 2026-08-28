@@ -20,7 +20,9 @@ class Cancel(CommandPackage):
     Cancel a task.
 
     Usage: 
-        /{cmd} task_id
+    ```
+    /{cmd} task_id
+    ```
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
