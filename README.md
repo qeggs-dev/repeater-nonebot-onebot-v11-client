@@ -279,9 +279,6 @@ main_api.json
         // 图片渲染 API 超时
         "render": 600.0
     },
-
-    // 在用户输入图片的时候，是否将其下载为 Base64 以防止链接失效
-    "use_base64_image_url": false,
     
     // 伪装选项，可能会有一定的反风控效果
     "camouflage": {
@@ -304,9 +301,6 @@ main_api.json
             "poke": 6
         }
     },
-
-    // 下载图片的超时时间
-    "download_image_timeout": 600.0,
 
     // 是否使用缩写来显示分支文件大小
     "branch_file_size_use_abbreviation": true,
