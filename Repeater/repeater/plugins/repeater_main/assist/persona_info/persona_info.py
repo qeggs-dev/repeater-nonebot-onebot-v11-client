@@ -11,7 +11,6 @@ from nonebot.internal.adapter.bot import Bot
 from ..assist_func import (
     at_with_name,
     image_to_text,
-    get_images_url,
     get_reply_msgs,
     get_forward_msgs,
     get_message_event,
@@ -647,10 +646,11 @@ class PersonaInfo:
         :param base64: 是否返回 base64 编码的图片
         :return: 图片的 URL 列表
         """
-        return await get_images_url(
-            self.message,
-            base64 = base64
-        )
+        urls: list[str] = []
+        for msg in self.message:
+            if msg.type == "image":
+                urls.append(msg.data["url"])
+        return urls
     
     def get_video_url(self) -> list[str]:
         """

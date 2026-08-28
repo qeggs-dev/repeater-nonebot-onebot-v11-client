@@ -9,9 +9,6 @@ from .http_transport import (
     HTTPTransport,
     http_transport
 )
-from .image_downloader import (
-    ImageDownloader,
-)
 
 __all__ = [
     "HTTPCode",
