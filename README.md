@@ -853,9 +853,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 
 PS：`CHAT` 类型命令大部分都做到了支持视觉输入
 默认命令已支持全模态输入
-为了速度和减少本机网络开销，复读机会直接使用QQ传递的临时URL
-你可以在配置中改用 Base64 编码的 URL
-(这只对图片数据有效)
+为了速度和减少本机网络开销，复读机会直接使用 QQ 传递的临时 URL
 但想要 Repeater Server 不忽略附加数据需要主动设置 `NewRequestsTextOnly` 为 `false`
 或是找管理员关闭 Repeater Server 的自动拦截
 
