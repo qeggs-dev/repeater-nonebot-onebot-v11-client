@@ -812,7 +812,7 @@ class SendMsg:
     @overload
     async def send_mixed_render(
             self,
-            text_to_render: str,
+            text_to_render: str | Message,
             prefix_text: str | None = None,
             suffix_text: str | None = None,
             prompt_mode: bool = True,
@@ -824,7 +824,7 @@ class SendMsg:
     @overload
     async def send_mixed_render(
             self,
-            text_to_render: str,
+            text_to_render: str | Message,
             prefix_text: str | None = None,
             suffix_text: str | None = None,
             prompt_mode: bool = True,
@@ -835,7 +835,7 @@ class SendMsg:
     
     async def send_mixed_render(
             self,
-            text_to_render: str,
+            text_to_render: str | Message,
             prefix_text: str | None = None,
             suffix_text: str | None = None,
             prompt_mode: bool = True,
@@ -920,24 +920,14 @@ class SendMsg:
         )
         tasks: list[asyncio.Task[MessageSegment]] = []
         for msg in messages:
-            if isinstance(msg, str):
-                tasks.append(
-                    asyncio.create_task(
-                        self.render_text_to_msg_segment(
-                            msg,
-                            document_bottom_comment = document_bottom_comment
-                        )
+            tasks.append(
+                asyncio.create_task(
+                    self.render_text_to_msg_segment(
+                        msg,
+                        document_bottom_comment = document_bottom_comment
                     )
                 )
-            elif isinstance(msg, Message):
-                tasks.append(
-                    asyncio.create_task(
-                        self.render_text_to_msg_segment(
-                            msg.extract_plain_text(),
-                            document_bottom_comment = document_bottom_comment
-                        )
-                    )
-                )
+            )
         
         results = await asyncio.gather(*tasks)
         message = Message(results)
@@ -951,7 +941,7 @@ class SendMsg:
     @overload
     async def send_render_prompt(
             self,
-            text: str,
+            text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[False] = False
@@ -960,7 +950,7 @@ class SendMsg:
     @overload
     async def send_render_prompt(
             self,
-            text: str,
+            text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[True] = True
@@ -968,7 +958,7 @@ class SendMsg:
     
     async def send_render_prompt(
             self,
-            text: str,
+            text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: bool = False
@@ -1002,7 +992,7 @@ class SendMsg:
     @overload
     async def send_render(
             self,
-            text: str,
+            text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[True] = True
@@ -1011,7 +1001,7 @@ class SendMsg:
     @overload
     async def send_render(
             self,
-            text: str,
+            text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: Literal[False] = False
@@ -1019,7 +1009,7 @@ class SendMsg:
     
     async def send_render(
             self,
-            text: str,
+            text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
             continue_handler: bool = False
@@ -1519,7 +1509,7 @@ class SendMsg:
     
     async def render_text_to_msg_segment(
         self,
-        text: str,
+        message: str | Message,
         style: str | None = None,
         image_expiry_time: int | None = None,
         html_template: str | None = None,
@@ -1540,9 +1530,25 @@ class SendMsg:
         :param document_bottom_comment: 文档底部注释
         :return: 渲染后的消息段
         """
+        texts: list[str] = []
+        if isinstance(message, str):
+            texts.append(message)
+        elif isinstance(message, Message):
+            for segment in message:
+                if segment.type == "text":
+                    texts.append(
+                        segment.data["text"]
+                    )
+                elif segment.type == "image":
+                    texts.append(
+                        f"[Image]({segment.data['file']})"
+                    )
+        else:
+            raise TypeError("message must be str or Message")
+        
         return MessageSegment.image(
             await self.render_text(
-                text = text,
+                text = "".join(texts),
                 style = style,
                 image_expiry_time = image_expiry_time,
                 html_template = html_template,
