@@ -26,9 +26,7 @@ class StorageConfigs(BaseModel):
     client_pool_size: int = Field(default=10, ge=1)
     usage_group_context: bool = False
     server_api_timeout:ServerAPITimeout = Field(default_factory = ServerAPITimeout)
-    use_base64_image_url: bool = False
     camouflage: Camouflage = Field(default_factory = Camouflage)
-    download_image_timeout: float = 600.0
     generate_image_file_type: GenerateImageFileType = GenerateImageFileType.URL
     render_error_message: RenderErrorMessage = Field(default_factory = RenderErrorMessage)
     client_limits: ClientLimits = Field(default_factory = ClientLimits)

@@ -1174,7 +1174,7 @@ class SendMsg:
                     text,
                     document_bottom_comment = document_bottom_comment,
                     style = storage_configs.render_error_message.style,
-                    html_template = storage_configs.render_error_message.html_template
+                    html_template = storage_configs.render_error_message.html_template,
                     title = storage_configs.render_error_message.title
                 )
                 message.append(image)
