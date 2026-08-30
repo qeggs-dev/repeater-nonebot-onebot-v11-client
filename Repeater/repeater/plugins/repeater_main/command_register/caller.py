@@ -32,7 +32,7 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Message
 from .listen_type import ListenType
 from nonebot import logger
 from .running_package import RunningPackage
-from .sub_cmd_exit import SubCmdBreaked, SubCmdCacelled
+from .sub_cmd_exit import SubCmdBreaked, SubCmdExit
 
 T_Handler_Result = TypeVar("T_Handler_Result")
 
@@ -270,12 +270,18 @@ class CommandCaller:
         if isinstance(result, type):
             if issubclass(result, SubCmdBreaked):
                 result = result()
+
+        if isinstance(result, SubCmdExit):
+            result_code = result.code
+        else:
+            result_code = 0
         
         logger.info(
-            "Handler {handler}[{task_id}] return: {result}({type})",
+            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}",
             handler = package.component,
             task_id = task_id,
             result = repr(result),
+            code = result_code,
             type = type(result).__name__,
         )
         return result
