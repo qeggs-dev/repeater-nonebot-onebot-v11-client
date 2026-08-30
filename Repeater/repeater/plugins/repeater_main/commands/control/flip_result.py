@@ -10,18 +10,18 @@ from ...command_register import(
 
 @CommandCaller.register
 class ReverseResult(CommandPackage):
-    cmd = "reverseResult"
+    cmd = "flipResult"
     aliases = {
-        "rr",
-        "RR",
-        "reverse_result",
-        "Reverse_Result",
-        "ReverseResult",
-        "REVERSE_RESULT",
+        "fr",
+        "FR",
+        "flip_result",
+        "Flip_Result",
+        "FlipResult",
+        "FLIP_RESULT",
     }
     cmd_type = CmdTypes.CONTROL
     description = f"""
-    Reverse the results of the execution
+    Flip the results of the execution
     Returns 1 when the execution result is 0
     Returns 0 if the execution result is not 0
 
