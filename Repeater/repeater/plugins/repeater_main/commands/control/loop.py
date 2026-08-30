@@ -21,8 +21,10 @@ class Loop(CommandPackage):
     }
     cmd_type = CmdTypes.CONTROL
     description = f"""
-        loop execute command times
-        When Times is not filled in, it loops until subsequent commands fail.
+    Executes a command in a loop
+    When Times is unpopulated, it runs in a loop until the loop body command succeeds, similar to the while loop.
+    When Times is filled, it must be executed several times, whether it ends normally or not, like a for loop.
+    When Times is preceded by square brackets, it loops until the command body succeeds or the maximum number of times specified is reached.
 
         Usage:
         ```
@@ -30,7 +32,7 @@ class Loop(CommandPackage):
         ```
     """
 
-    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<times>\d* | \[\d\])\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         matched = self.pattern.match(persona_info.message_cqcode)
@@ -47,8 +49,13 @@ class Loop(CommandPackage):
 
             if not times_str:
                 times = None
+                max_times = None
+            elif times_str.startswith("[") and times_str.endswith("]"):
+                times = None
+                max_times = int(times_str[1:-1])
             else:
                 times = int(times_str)
+                max_times = times
             
                 if times < 1:
                     await send_msg.send_error("times must be greater than 0")
@@ -73,6 +80,7 @@ class Loop(CommandPackage):
                 component = package_instance.component
             )
             if times is None:
+                times_count: int = 0
                 while True:
                     result = await CommandCaller.horizontal_call(
                         package_instance,
@@ -83,6 +91,11 @@ class Loop(CommandPackage):
                     if isinstance(result, SubCmdBreaked):
                         if result.code == 0:
                             break
+
+                    if max_times is not None and times_count >= max_times:
+                        break
+
+                    times_count += 1
             else:
                 for i in range(times):
                     await CommandCaller.horizontal_call(
