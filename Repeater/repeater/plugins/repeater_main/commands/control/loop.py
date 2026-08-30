@@ -1,13 +1,12 @@
 import re
 import asyncio
 
-from typing import Any, Type
-from nonebot.adapters.onebot.v11 import MessageSegment
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
-    CommandPackage
+    CommandPackage,
+    SubCmdBreaked,
 )
 from ._remove_cmd_prefix import remove_cmd_prefix
 
@@ -23,10 +22,11 @@ class Loop(CommandPackage):
     cmd_type = CmdTypes.CONTROL
     description = f"""
         loop execute command times
+        When Times is not filled in, it loops until subsequent commands fail.
 
         Usage:
         ```
-        /{cmd} times command [args]
+        /{cmd} [times] command [args]
         ```
     """
 
@@ -46,13 +46,13 @@ class Loop(CommandPackage):
             args = persona_info.make_message(args_str)
 
             if not times_str:
-                times = 1
+                times = None
             else:
                 times = int(times_str)
             
-            if times < 1:
-                await send_msg.send_error("times must be greater than 0")
-                return
+                if times < 1:
+                    await send_msg.send_error("times must be greater than 0")
+                    return
 
             try:
                 package = CommandCaller.match_trigger_or_component(command)
@@ -72,11 +72,23 @@ class Loop(CommandPackage):
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
-            for i in range(times):
-                await CommandCaller.horizontal_call(
-                    package_instance,
-                    copyed_persona_info,
-                    copyed_send_msg
-                )
+            if times is None:
+                while True:
+                    result = await CommandCaller.horizontal_call(
+                        package_instance,
+                        copyed_persona_info,
+                        copyed_send_msg
+                    )
+
+                    if isinstance(result, SubCmdBreaked):
+                        if result.code != 0:
+                            break
+            else:
+                for i in range(times):
+                    await CommandCaller.horizontal_call(
+                        package_instance,
+                        copyed_persona_info,
+                        copyed_send_msg
+                    )
         else:
             await send_msg.send_error("Invalid command format")

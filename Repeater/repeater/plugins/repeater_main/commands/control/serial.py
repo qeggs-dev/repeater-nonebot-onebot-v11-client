@@ -4,7 +4,8 @@ from ...assist import PersonaInfo, SendMsg, Variables
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
-    CommandPackage
+    CommandPackage,
+    SubCmdBreaked,
 )
 from ._parse_input import parse_input
 from ._split_by_indent import split_by_indent
@@ -66,6 +67,7 @@ class Serial(CommandPackage):
 
         user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         results = []
+        last_code: int | None = None
         for package, info, send_msg in tasks:
             result = await CommandCaller.horizontal_call(
                 package,
@@ -73,3 +75,13 @@ class Serial(CommandPackage):
                 send_msg
             )
             results.append(result)
+
+            if isinstance(result, SubCmdBreaked):
+                last_code = result.code
+            else:
+                last_code = None
+
+        if last_code is not None:
+            send_msg.break_handler(last_code)
+        else:
+            send_msg.break_handler()
