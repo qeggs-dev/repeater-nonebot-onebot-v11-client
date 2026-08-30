@@ -13,12 +13,18 @@ def fill_var(info: PersonaInfo, vars: Variables) -> PersonaInfo:
         var_name = match_group.group(1)
         return vars.get(var_name, "")
 
+    messages: list[str] = info.message_cqcode.splitlines()
+    new_messages: list[str] = []
+    for line in messages:
+        if not line.startswith(" "):
+            new_line = pattern.sub(_fill_var, line)
+            new_messages.append(new_line)
+        else:
+            new_messages.append(line)
+
     copyed_info = info.copy_with_args(
         info.make_message(
-            pattern.sub(
-                _fill_var,
-                info.message_cqcode
-            )
+            message = "\n".join(new_messages)
         )
     )
     return copyed_info
