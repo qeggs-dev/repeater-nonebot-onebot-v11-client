@@ -81,7 +81,7 @@ class Loop(CommandPackage):
                     )
 
                     if isinstance(result, SubCmdBreaked):
-                        if result.code != 0:
+                        if result.code == 0:
                             break
             else:
                 for i in range(times):
