@@ -8,7 +8,7 @@ from ...command_register import(
     CommandPackage,
     SubCmdBreaked,
 )
-from ._remove_cmd_prefix import remove_cmd_prefix
+from ...logger import logger
 
 @CommandCaller.register
 class Loop(CommandPackage):
@@ -21,18 +21,20 @@ class Loop(CommandPackage):
     }
     cmd_type = CmdTypes.CONTROL
     description = f"""
-    Executes a command in a loop
-    When Times is unpopulated, it runs in a loop until the loop body command succeeds, similar to the while loop.
-    When Times is filled, it must be executed several times, whether it ends normally or not, like a for loop.
-    When Times is preceded by square brackets, it loops until the command body succeeds or the maximum number of times specified is reached.
+    Execute a command in a loop
+    When Times is not populated, it runs in a loop until the loop body command succeeds, similar to the while loop.
+    When Times is filled, it must be executed multiple Times, whether it ends properly or not, like a for loop.
+    When Times is preceded by an asterisk, it loops until the loop body command succeeds or the specified maximum number of Times is reached.
 
         Usage:
         ```
-        /{cmd} [times] command [args]
+        /{cmd} times command [args]
+        /{cmd} *times command [args]
+        /{cmd} command [args]
         ```
     """
 
-    pattern = re.compile(r"^(?P<times>\d* | \[\d\])\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<times>\*?\d*)\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         matched = self.pattern.match(persona_info.message_cqcode)
@@ -47,19 +49,23 @@ class Loop(CommandPackage):
 
             args = persona_info.make_message(args_str)
 
-            if not times_str:
-                times = None
-                max_times = None
-            elif times_str.startswith("[") and times_str.endswith("]"):
-                times = None
-                max_times = int(times_str[1:-1])
-            else:
-                times = int(times_str)
-                max_times = times
-            
-                if times < 1:
-                    await send_msg.send_error("times must be greater than 0")
-                    return
+            try:
+                if not times_str:
+                    times = None
+                    max_times = None
+                elif times_str.startswith("*"):
+                    times = None
+                    max_times = int(times_str.removeprefix("*"))
+                else:
+                    times = int(times_str)
+                    max_times = times
+                
+                    if times < 1:
+                        await send_msg.send_error("times must be greater than 0")
+                        return
+            except ValueError:
+                await send_msg.send_error("times must be int or [int]")
+                return
 
             try:
                 package = CommandCaller.match_trigger_or_component(command)
@@ -82,6 +88,10 @@ class Loop(CommandPackage):
             if times is None:
                 times_count: int = 0
                 while True:
+                    logger.info(
+                        "Looping command times: {times_count}",
+                        times_count = times_count + 1
+                    )
                     result = await CommandCaller.horizontal_call(
                         package_instance,
                         copyed_persona_info,
@@ -92,12 +102,15 @@ class Loop(CommandPackage):
                         if result.code == 0:
                             break
 
+                    times_count += 1
                     if max_times is not None and times_count >= max_times:
                         break
-
-                    times_count += 1
             else:
                 for i in range(times):
+                    logger.info(
+                        "Looping command times: {times_count}",
+                        times_count = i + 1
+                    )
                     await CommandCaller.horizontal_call(
                         package_instance,
                         copyed_persona_info,
