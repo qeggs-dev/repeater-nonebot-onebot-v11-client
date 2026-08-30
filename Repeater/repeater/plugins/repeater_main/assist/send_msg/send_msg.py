@@ -5,7 +5,7 @@ from io import BytesIO
 from croniter import croniter
 from datetime import datetime
 from pathlib import Path
-from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment, Message
+from nonebot.adapters.onebot.v11 import MessageSegment, Message
 from nonebot.internal.matcher.matcher import Matcher
 from nonebot.exception import FinishedException, ActionFailed
 
@@ -27,7 +27,6 @@ from typing import (
     Any,
     Callable,
     NoReturn,
-    Coroutine,
     TypeVar,
     Type,
     Literal,
@@ -154,6 +153,7 @@ class SendMsg:
             self,
             message: str | Message,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
     
@@ -162,6 +162,7 @@ class SendMsg:
             self,
             message: str | Message,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
@@ -169,6 +170,7 @@ class SendMsg:
             self,
             message: str | Message,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False,
         ) -> None | NoReturn:
         """
@@ -177,6 +179,7 @@ class SendMsg:
         return await self.send_prompt(
             prompt = message,
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler,
         )
     
@@ -263,6 +266,7 @@ class SendMsg:
     async def send_debug_mode(
             self,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
 
@@ -270,18 +274,21 @@ class SendMsg:
     async def send_debug_mode(
             self,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
     async def send_debug_mode(
             self,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False,
         ) -> NoReturn | None:
         """
         用于调试模式的信息打印
 
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -292,6 +299,7 @@ class SendMsg:
                 f"[{self._component}|{self._persona_info.namespace}|{self._persona_info.nickname}]: {self._persona_info.message}"
             ),
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler,
         )
     
@@ -301,6 +309,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: str | None = None,
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
 
@@ -310,6 +319,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: str | None = None,
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
@@ -318,6 +328,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: str | None = None,
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: bool = False,
         ) -> NoReturn | None:
         """
@@ -326,6 +337,7 @@ class SendMsg:
         :param response: 响应体
         :param message: 消息内容，不提供时使用响应体的文本内容
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -336,17 +348,23 @@ class SendMsg:
             code = response.code
         )
         if response.code != 200:
+            if break_code is None:
+                break_code = 1
             await self.send_error_response(
                 response = response,
                 message = message,
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler,
             )
         else:
+            if break_code is None:
+                break_code = 0
             await self.send_response(
                 response = response,
                 message = message,
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler,
             )
     
@@ -356,6 +374,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: str | None = None,
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
 
@@ -365,6 +384,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: str | None = None,
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
@@ -373,6 +393,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: str | None = None,
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: bool = False,
         ) -> NoReturn | None:
             """
@@ -381,6 +402,7 @@ class SendMsg:
             :param response: 响应对象
             :param message: 自定义消息文本或解析处理函数
             :param reply: 是否携带引用
+            :param break_code: 返回码
             :param continue_handler: 是否继续运行当前处理流程
             """
             logger.info(
@@ -388,7 +410,10 @@ class SendMsg:
             )
             await self.send_error_render(
                 response if message is None else message,
-                get_error_response = True
+                get_error_response = True,
+                reply = reply,
+                break_code = break_code,
+                continue_handler = continue_handler
             )
             
     @overload
@@ -397,6 +422,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
 
@@ -406,6 +432,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
@@ -414,6 +441,7 @@ class SendMsg:
             response: Response[T_RESPONSE],
             message: Callable[[Response[T_RESPONSE]], str] | str | None = None,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False,
         ) -> NoReturn | None:
         """
@@ -422,6 +450,7 @@ class SendMsg:
         :param response: 响应对象
         :param message: 自定义消息文本或解析处理函数
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -439,6 +468,7 @@ class SendMsg:
             http_status = response.code,
             message = message,
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler,
         )
     
@@ -448,6 +478,7 @@ class SendMsg:
             http_status: int,
             message: str | None = None,
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
 
@@ -457,6 +488,7 @@ class SendMsg:
             http_status: int,
             message: str | None = None,
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
@@ -465,6 +497,7 @@ class SendMsg:
             http_status: int,
             message: str | None = None,
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: bool = False,
         ) -> NoReturn | None:
         """
@@ -473,17 +506,26 @@ class SendMsg:
         :param http_status: HTTP 状态码
         :param message: 消息文本
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
-            "Send Response"
+            "Send HTTP Status"
         )
+
+        if break_code is None:
+            if http_status == 200:
+                break_code = 0
+            else:
+                break_code = 1
+
         await self.send_prompt(
             (
                 f"{message}\n"
                 f"HTTP Code: {http_status}({HTTPCode(code=http_status)})"
             ),
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -492,6 +534,7 @@ class SendMsg:
             self,
             *responses: Response[T_RESPONSE] | tuple[Response[T_RESPONSE], str],
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -500,6 +543,7 @@ class SendMsg:
             self,
             *responses: Response[T_RESPONSE] | tuple[Response[T_RESPONSE], str],
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -507,6 +551,7 @@ class SendMsg:
             self,
             *responses: Response[T_RESPONSE] | tuple[Response[T_RESPONSE], str],
             reply: bool = True,
+            break_code: int | None = None,
             continue_handler: bool = False,
         ) -> NoReturn | None:
         """
@@ -514,6 +559,7 @@ class SendMsg:
 
         :param responses: 响应对象
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -534,13 +580,18 @@ class SendMsg:
                 raise TypeError(f"Unsupported type: {type(response)}")
         
         if failed == 0:
+            if break_code is None:
+                break_code = 0
             text_buffer.append("All requests are successful.")
         else:
+            if break_code is None:
+                break_code = 1
             text_buffer.append(f"{failed} requests failed.")
         
         await self.send_prompt(
             "\n".join(text_buffer),
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -548,6 +599,7 @@ class SendMsg:
     async def send_hello(
             self,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
     
@@ -555,18 +607,21 @@ class SendMsg:
     async def send_hello(
             self,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
     async def send_hello(
             self,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False,
         ) -> NoReturn | None:
         """
         发送欢迎信息
 
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -576,6 +631,7 @@ class SendMsg:
         await self.send_text(
             hello_content,
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -594,6 +650,7 @@ class SendMsg:
             self,
             prompt: Message | str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
 
@@ -602,6 +659,7 @@ class SendMsg:
             self,
             prompt: Message | str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
@@ -609,6 +667,7 @@ class SendMsg:
             self,
             prompt: Message | str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -616,6 +675,7 @@ class SendMsg:
 
         :param prompt: 提示信息
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -627,12 +687,14 @@ class SendMsg:
                     self.prompt_prefix,
                 ).extend(prompt),
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
         elif isinstance(prompt, str):
             await self._send(
                 self.prompt_prefix + prompt,
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
         else:
@@ -643,6 +705,7 @@ class SendMsg:
             self,
             error: str | BaseException,
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: Literal[False] = False,
         ) -> NoReturn: ...
 
@@ -651,6 +714,7 @@ class SendMsg:
             self,
             error: str | BaseException,
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: Literal[True] = True,
         ) -> None: ...
     
@@ -658,6 +722,7 @@ class SendMsg:
             self,
             error: str | BaseException,
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -665,6 +730,7 @@ class SendMsg:
 
         :param error: 错误信息
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -676,6 +742,7 @@ class SendMsg:
                     f"{error.__class__.__name__}: {error}"
                 ),
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
         else:
@@ -684,6 +751,7 @@ class SendMsg:
                     f"Error: {error}"
                 ),
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
     
@@ -692,6 +760,7 @@ class SendMsg:
             self,
             warning: str,
             reply: bool = True,
+            break_code: int = 2,
             continue_handler: Literal[True] = True
         ) -> None: ...
 
@@ -700,6 +769,7 @@ class SendMsg:
             self,
             warning: str,
             reply: bool = True,
+            break_code: int = 2,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -707,6 +777,7 @@ class SendMsg:
             self,
             warning: str,
             reply: bool = True,
+            break_code: int = 2,
             continue_handler: bool = True
         ) -> NoReturn | None:
         """
@@ -714,6 +785,7 @@ class SendMsg:
 
         :param warning: 警告信息
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -724,6 +796,7 @@ class SendMsg:
                 f"Warning: {warning}"
             ),
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -732,6 +805,7 @@ class SendMsg:
             self,
             text: str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -740,6 +814,7 @@ class SendMsg:
             self,
             text: str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -747,6 +822,7 @@ class SendMsg:
             self,
             text: str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -754,6 +830,7 @@ class SendMsg:
 
         :param text: 文本内容
         :param reply: 是否携带引用
+        :param break_code: 返回码
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -765,7 +842,8 @@ class SendMsg:
                     text
                 )
             ),
-            reply=reply,
+            reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -774,6 +852,7 @@ class SendMsg:
             self,
             text: str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -782,6 +861,7 @@ class SendMsg:
             self,
             text: str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -789,6 +869,7 @@ class SendMsg:
             self,
             text: str,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -805,7 +886,8 @@ class SendMsg:
             Message(
                 text
             ),
-            reply=reply,
+            reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -818,6 +900,7 @@ class SendMsg:
             prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -830,6 +913,7 @@ class SendMsg:
             prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -841,6 +925,7 @@ class SendMsg:
             prompt_mode: bool = True,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -878,7 +963,8 @@ class SendMsg:
         else:
             await self._send(
                 message,
-                reply=reply,
+                reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
     
@@ -888,6 +974,7 @@ class SendMsg:
             messages: Iterable[str | Message],
             document_bottom_comment: str = "",
             reply: bool = False,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
 
@@ -897,6 +984,7 @@ class SendMsg:
             messages: Iterable[str | Message],
             document_bottom_comment: str = "",
             reply: bool = False,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -905,6 +993,7 @@ class SendMsg:
             messages: Iterable[str | Message],
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -935,6 +1024,7 @@ class SendMsg:
         await self._send(
             message,
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -944,6 +1034,7 @@ class SendMsg:
             text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -953,6 +1044,7 @@ class SendMsg:
             text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -961,6 +1053,7 @@ class SendMsg:
             text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -985,7 +1078,8 @@ class SendMsg:
                     image
                 ]
             ),
-            reply=reply,
+            reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -995,6 +1089,7 @@ class SendMsg:
             text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1004,6 +1099,7 @@ class SendMsg:
             text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -1012,6 +1108,7 @@ class SendMsg:
             text: str | Message,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1031,7 +1128,8 @@ class SendMsg:
         )
         await self._send(
             Message(image),
-            reply=reply,
+            reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -1041,6 +1139,7 @@ class SendMsg:
             text: str,
             send_error_message: bool = True,
             reply: bool = False,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
 
@@ -1050,6 +1149,7 @@ class SendMsg:
             text: str,
             send_error_message: bool = True,
             reply: bool = False,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1058,6 +1158,7 @@ class SendMsg:
             text: str,
             send_error_message: bool = True,
             reply: bool = False,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1078,6 +1179,7 @@ class SendMsg:
                 await self._send(
                     message = MessageSegment.record(data.audio_files[0].url),
                     reply = reply,
+                    break_code = break_code,
                     continue_handler = continue_handler
                 )
         elif send_error_message:
@@ -1093,6 +1195,7 @@ class SendMsg:
             get_error_response: bool = False,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
 
@@ -1104,6 +1207,7 @@ class SendMsg:
             get_error_response: bool = False,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: Literal[True] = True
         ) -> None: ...
 
@@ -1114,6 +1218,7 @@ class SendMsg:
             get_error_response: bool = False,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 1,
             continue_handler: bool = False
         ) -> None | NoReturn:
         """
@@ -1180,6 +1285,7 @@ class SendMsg:
         await self.send_prompt(
             message,
             reply = reply,
+            break_code = break_code,
             continue_handler = continue_handler
         )
     
@@ -1190,6 +1296,7 @@ class SendMsg:
             threshold: float = 1.0,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -1200,6 +1307,7 @@ class SendMsg:
             threshold: float = 1.0,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1209,6 +1317,7 @@ class SendMsg:
             threshold: float = 1.0,
             document_bottom_comment: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1218,6 +1327,7 @@ class SendMsg:
         :param threshold: 长度阈值
         :param document_bottom_comment: 文档底部注释
         :param reply: 是否回复
+        :param break_code: 返回码
         :param continue_handler: 是否继续处理流程
         """
         logger.info(
@@ -1235,12 +1345,14 @@ class SendMsg:
                 text,
                 document_bottom_comment = document_bottom_comment,
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
         else:
             await self.send_text(
                 text,
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
     
@@ -1251,6 +1363,7 @@ class SendMsg:
             threshold: float = 1.0,
             document_bottom_comments: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -1261,6 +1374,7 @@ class SendMsg:
             threshold: float = 1.0,
             document_bottom_comments: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1270,6 +1384,7 @@ class SendMsg:
             threshold: float = 1.0,
             document_bottom_comments: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1279,6 +1394,7 @@ class SendMsg:
         :param threshold: 长度阈值
         :param document_bottom_comment: 文档底部注释
         :param reply: 是否回复
+        :param break_code: 返回码
         :param continue_handler: 是否继续处理
         """
         logger.info(
@@ -1297,12 +1413,14 @@ class SendMsg:
                 document_bottom_comment = document_bottom_comments,
                 reply = reply,
                 prompt_mode = True,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
         else:
             await self.send_prompt(
                 text,
                 reply = reply,
+                break_code = break_code,
                 continue_handler = continue_handler
             )
     
@@ -1331,6 +1449,7 @@ class SendMsg:
             reasoning_content: str | None = None,
             content: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -1340,6 +1459,7 @@ class SendMsg:
             reasoning_content: str | None = None,
             content: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1348,6 +1468,7 @@ class SendMsg:
             reasoning_content: str | None = None,
             content: str = "",
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1356,6 +1477,7 @@ class SendMsg:
         :param reasoning_content: 推理内容
         :param content: 文本内容
         :param reply: 是否回复
+        :param break_code: 返回码
         :param continue_handler: 是否继续处理
         """
         logger.info(
@@ -1400,6 +1522,7 @@ class SendMsg:
         await self._send(
             message,
             reply=reply,
+            break_code=break_code,
             continue_handler = continue_handler
         )
     
@@ -1408,6 +1531,7 @@ class SendMsg:
             self,
             *images: str | bytes | BytesIO | Path,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -1416,6 +1540,7 @@ class SendMsg:
             self,
             *images: str | bytes | BytesIO | Path,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1423,6 +1548,7 @@ class SendMsg:
             self,
             *images: str | bytes | BytesIO | Path,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1430,6 +1556,7 @@ class SendMsg:
 
         :param images: 图片
         :param reply: 是否回复
+        :param break_code: 返回码
         :param continue_handler: 是否继续处理
         """
         logger.info(
@@ -1444,6 +1571,7 @@ class SendMsg:
         await self._send(
             message,
             reply=reply,
+            break_code=break_code,
             continue_handler = continue_handler
         )
     
@@ -1452,6 +1580,7 @@ class SendMsg:
             self,
             message: str | Message | MessageSegment,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
 
@@ -1460,6 +1589,7 @@ class SendMsg:
             self,
             message: str | Message | MessageSegment,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1467,6 +1597,7 @@ class SendMsg:
             self,
             message: str | Message | MessageSegment,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1474,6 +1605,7 @@ class SendMsg:
 
         :param message: 消息对象
         :param reply: 是否携带引用
+        :param break_code: 返回值
         :param continue_handler: 是否继续运行当前处理流程
         """
         logger.info(
@@ -1482,6 +1614,7 @@ class SendMsg:
         await self._send(
             message,
             reply=reply,
+            break_code=break_code,
             continue_handler = continue_handler
         )
     
@@ -1492,11 +1625,11 @@ class SendMsg:
         :raise: FinishedException
         """
         logger.info(
-            "Break handler"
+            "Handler finished"
         )
         raise FinishedException
     
-    def break_handler(self) -> NoReturn:
+    def break_handler(self, code: int = 0) -> NoReturn:
         """
         跳出当前处理函数
 
@@ -1505,7 +1638,7 @@ class SendMsg:
         logger.info(
             "Break handler"
         )
-        raise BreakHandler
+        raise BreakHandler(code)
     
     async def render_text_to_msg_segment(
         self,
@@ -1524,12 +1657,24 @@ class SendMsg:
     ) -> MessageSegment:
         """
         渲染文本
-
-        :param text: 渲染文本内容
-        :param direct_output: 是否直接输出
+        :param message: 渲染内容
+        :param style: 渲染样式
+        :param image_expiry_time: 图片过期时间
+        :param html_template: HTML 模板
+        :param title: 文档标题
         :param document_bottom_comment: 文档底部注释
-        :return: 渲染后的消息段
+        :param width: 图片宽度
+        :param height: 图片高度
+        :param direct_output: 是否直接输出
+        :param no_pre_labels: 是否不添加标签
+        :param no_escape: 是否不转义
+        :param quality: 图片质量
+        :return: 渲染图片的 MessageSegment
         """
+        logger.info(
+            "Render Text to Msg Segment"
+        )
+
         texts: list[str] = []
         if isinstance(message, str):
             texts.append(message)
@@ -1639,6 +1784,7 @@ class SendMsg:
             self,
             message: str | Message | MessageSegment,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[False] = False
         ) -> NoReturn: ...
     
@@ -1647,6 +1793,7 @@ class SendMsg:
             self,
             message: str | Message | MessageSegment,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: Literal[True] = True
         ) -> None: ...
     
@@ -1654,6 +1801,7 @@ class SendMsg:
             self,
             message: str | Message | MessageSegment,
             reply: bool = True,
+            break_code: int = 0,
             continue_handler: bool = False
         ) -> NoReturn | None:
         """
@@ -1679,7 +1827,7 @@ class SendMsg:
             )
             raise
         if not continue_handler:
-            self.break_handler()
+            self.break_handler(break_code)
     
     async def _send_to_target(
         self,
@@ -1863,7 +2011,13 @@ class SendMsg:
             logger.error(f"Failed to upload file: {e}")
             await self.send_error("Failed to upload file.")
     
-    async def send_file(self, url: str, file_name: str) -> None:
+    async def send_file(
+            self,
+            url: str,
+            file_name: str,
+            break_code: int = 0,
+            continue_handler: bool = False
+        ) -> None:
         """
         发送文件
 
@@ -1876,8 +2030,16 @@ class SendMsg:
                 file_name = file_name
             ),
         )
+        if continue_handler:
+            raise BreakHandler(break_code)
     
-    async def _send_poke(self, group_id: str | None = None, user_id: str | None = None) -> None:
+    async def _send_poke(
+            self,
+            group_id: str | None = None,
+            user_id: str | None = None,
+            break_code: int = 0,
+            continue_handler: bool = False
+        ) -> None:
         """
         发送戳一戳
         """
@@ -1894,8 +2056,14 @@ class SendMsg:
                 )
             case _:
                 await self.send_error("Unsupported message source.")
+        if continue_handler:
+            raise BreakHandler(break_code)
     
-    async def send_poke(self, group_id: str | None = None, user_id: str | None = None) -> None:
+    async def send_poke(
+            self,
+            group_id: str | None = None,
+            user_id: str | None = None
+        ) -> None:
         """
         发送戳一戳
         """
