@@ -154,8 +154,8 @@ class PersonaInfo:
         """
         return self.__class__(
             bot = self.bot,
-            event = self.event,
-            args = self.args
+            event = self.event.model_copy(),
+            args = self.args.copy()
         )
     
     def __eq__(self, other: object) -> bool:
@@ -173,8 +173,8 @@ class PersonaInfo:
         """
         return self.__class__(
             bot = self.bot,
-            event = self.event,
-            args = args if args is not None else self.args
+            event = self.event.model_copy(),
+            args = args if args is not None else self.args.copy()
         )
     
     async def from_message_event(self, event: MessageEvent | None) -> PersonaInfo:

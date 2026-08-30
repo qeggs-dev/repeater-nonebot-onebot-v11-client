@@ -122,7 +122,7 @@ class SendMsg:
             send_target: SendingTarget | None = None,
         ) -> "SendMsg":
         component = component if component is not None else self._component
-        persona_info = persona_info if persona_info is not None else self._persona_info
+        persona_info = persona_info if persona_info is not None else self._persona_info.copy()
         matcher = matcher if matcher is not None else self._matcher
         send_target = send_target if send_target is not None else self.sending_target
         target_group = target_group if target_group is not None else self._target_group
