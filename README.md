@@ -537,7 +537,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `serial`                   | `ser`    | `Serial`                  | `CONTROL`   | 4.8.0.0        | 串行执行命令                   | 每行一个命令，可嵌套                        | 每行一个命令，串行执行，支持转义字符与变量表达式 |
 | `parallel`                 | `par`    | `Parallel`                | `CONTROL`   | 4.8.0.0        | 并行执行命令                   | 每行一个命令，可嵌套                        | 每行一个命令，并行执行，支持转义字符与变量表达式（注意：提交 Task 是串行的，任务调度在 Async 体系下，所以并不存在真正意义上同一时间内的并行调度） |
 | `waitCall`                 | `wc`     | `WaitCall`                | `CONTROL`   | 4.8.0.0        | 等待用户输入消息后执行          | 格式为: 命令 参数                          | 等待一条当前会话的消息，并执行指定的命令 |
-| `loop`                     | `l`      | `Loop`                    | `CONTROL`   | 4.8.0.0        | 循环执行命令                   | 格式为: 循环次数 命令 参数                  | 循环次数必须为一个有效数字且大于 0，默认为 1 |
+| `loop`                     | `l`      | `Loop`                    | `CONTROL`   | 4.8.0.0        | 循环执行命令                   | 格式为: 循环次数 命令 参数                  | 循环次数不填时，重复执行直到命令返回 0 值结束 |
 | `messageWithdrawn`         | `mw`     | `MessageWithdrawn`        | `CONTROL`   | 4.8.0.0        | 撤回机器人消息                 | 引用一个该机器人的消息                      | 撤回机器人发送的消息 |
 | `poke`                     | `poke`   | `Poke`                    | `CONTROL`   | 4.8.3.2        | 戳一戳                        | @戳一戳的对象                              | 不填写参数时目标为自己 |
 | `cancel`                   | `cl`     | `Cancel`                  | `CONTROL`   | 4.8.3.2        | 取消一个命令                   | 任务 ID                                   | 取消一个命令 |
@@ -551,6 +551,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `timeoutAndCancel`         | `tac`    | `TimeoutAndCancel`        | `CONTROL`   | 4.9.2.1        | 设置任务超时时间并在超时后取消  | 格式为: 时间(秒): 命令 参数                | 设置任务超时时间，超时后自动取消任务 |
 | `remoteWaitCall`           | `rwc`    | `RemoteWaitCall`          | `CONTROL`   | 4.9.2.1        | 远程等待调用                   | 格式为: Namespace 命令 参数              | 跨群或私聊等待一条消息，等待目标 Namespace 提供消息后执行命令 |
 | `equal`                    | `eq`     | `Equal`                   | `CONTROL`   | 4.9.2.1        | 等于判断                       | 每行一个消息，可以添加标签                | 所有消息在去掉收尾空格后都相等时，顺序执行 `true:` 标签，否则执行 `false:` 标签；标签必须独占一行，且允许不填，则表示空内容 |
+| `flipResult`               | `fr`     | `FlipResult`              | `CONTROL`   | 4.9.3.0        | 反转结果                       | 无                                       | 当命令执行结果为 0 时返回 1，否则返回 0 |
 
 ### Variable Command
 
