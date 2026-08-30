@@ -74,15 +74,24 @@ class Cascade(CommandPackage):
 
             # 如果当前命令无参数且有上一步结果，使用上一步结果
             if info:
-                if "{message}" in str(info.message):
-                    info = info.copy_with_args(
-                        persona_info.make_message(
-                            str(info.message).replace(
+                messages: list[str] = str(info.message).splitlines()
+                new_messages: list[str] = []
+                for message in messages:
+                    if not message.startswith(" "):
+                        new_messages.append(
+                            message.replace(
                                 "{message}",
                                 str(last_result.message)
                             )
                         )
+                    else:
+                        new_messages.append(message)
+                
+                info = info.copy_with_args(
+                    persona_info.make_message(
+                        "\n".join(new_messages)
                     )
+                )
             elif not info and last_result:
                 info = last_result
             elif index != 0:
