@@ -1,13 +1,15 @@
 class SubCmdExit:
-    _instance: "SubCmdExit | None" = None
+    def __init__(self, code: int = 0):
+        self.code: int = code
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls, *args, **kwargs)
-        return cls._instance
-    
+    def __int__(self):
+        return self.code
+
+    def __str__(self):
+        return str(self.code)
+
     def __repr__(self):
-        return f"<{self.__class__.__name__}: {id(self)}>"
+        return f"{self.__class__.__name__}({self.code})"
 
 class SubCmdBreaked(SubCmdExit):
     pass
