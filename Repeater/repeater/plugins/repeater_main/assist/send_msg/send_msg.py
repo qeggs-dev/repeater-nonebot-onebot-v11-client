@@ -1240,19 +1240,19 @@ class SendMsg:
             elif isinstance(error, Message):
                 texts.append(error.extract_plain_text())
             elif isinstance(error, Exception):
-                texts.append(f"{error.__class__.__name__}: {error}")
+                texts.append(f"Source Exception: {error.__class__.__name__}\nException Message: {str(error)}")
             elif isinstance(error, Response):
                 if get_error_response:
                     error_response = error.get_error()
                     if error_response is not None:
-                        message = f"{error_response.error_message}\n{error_response.source_exception}: {error_response.exception_message}"
+                        message = f"Error Message: {error_response.error_message}\nSource Exception: {error_response.source_exception}\nException Message: {error_response.exception_message}"
                     elif error.text:
                         message = error.text
                     else:
                         message = f"[Error Info Is Invalid]"
                     texts.append(message)
                 else:
-                    texts.append(f"{error.code}({HTTPCode(error.code).message}): {error.text}")
+                    texts.append(f"HTTP Code: {error.code}{HTTPCode(error.code).message})\nException Message: {error.text}")
 
         text = "\n".join(texts)
         length_score = self.text_length_score(text)
