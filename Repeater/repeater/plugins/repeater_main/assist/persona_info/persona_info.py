@@ -639,7 +639,7 @@ class PersonaInfo:
         """
         return self.message.extract_plain_text()
     
-    async def get_images_url(self, base64: bool | None = None) -> list[str]:
+    def get_images_url(self) -> list[str]:
         """
         获取消息内的图片消息段
 
