@@ -55,21 +55,21 @@ class GenerateImageBase(CommandPackage):
                     UrlFile(
                         url = image_url
                     )
-                    for image_url in await persona_info.get_images_url()
+                    for image_url in persona_info.get_images_url()
                 )
             case GenerateImageFileType.PATH:
                 images.extend(
                     PathFile(
                         path = image_url,
                     )
-                    for image_url in await persona_info.get_images_url()
+                    for image_url in persona_info.get_images_url()
                 )
             case GenerateImageFileType.BASE64:
                 images.extend(
                     Base64File(
                         data = image_url,
                     )
-                    for image_url in await persona_info.get_images_url()
+                    for image_url in persona_info.get_images_url()
                 )
         return images
     
