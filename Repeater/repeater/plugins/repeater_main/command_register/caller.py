@@ -328,57 +328,60 @@ class CommandCaller:
         :return: The result of the message handler.
         """
         try:
-            logger.info(
-                "Enter {command}[{task_id}] from message: {message_id} ({enter_mode} Mode)",
-                command = package.component,
-                task_id = task_id,
-                message_id = persona_info.message_id,
-                enter_mode = persona_info.enter_type.name,
-            )
-
-            if not await package.enter_check(persona_info, send_msg):
-                logger.warning(
-                    "Enter check blocked: {name}[{task_id}]",
-                    name = package.component,
+            try:
+                logger.info(
+                    "Enter {command}[{task_id}] from message: {message_id} ({enter_mode} Mode)",
+                    command = package.component,
                     task_id = task_id,
-                )
-                send_msg.break_handler()
-
-            if not await package.permissions_check(persona_info, send_msg):
-                logger.warning(
-                    "Command {name}[{task_id}] from message {message_id} has insufficient access",
-                    name = package.component,
                     message_id = persona_info.message_id,
-                    task_id = task_id,
+                    enter_mode = persona_info.enter_type.name,
                 )
-                send_msg.break_handler()
+
+                if not await package.enter_check(persona_info, send_msg):
+                    logger.warning(
+                        "Enter check blocked: {name}[{task_id}]",
+                        name = package.component,
+                        task_id = task_id,
+                    )
+                    send_msg.break_handler()
+
+                if not await package.permissions_check(persona_info, send_msg):
+                    logger.warning(
+                        "Command {name}[{task_id}] from message {message_id} has insufficient access",
+                        name = package.component,
+                        message_id = persona_info.message_id,
+                        task_id = task_id,
+                    )
+                    send_msg.break_handler()
+                
+                if not await cls.check_acceptable_sources(package, persona_info):
+                    return await package.on_unacceptable_source(persona_info, send_msg)
+                
+                if package.super_permissions and not persona_info.has_super_permissions:
+                    return await package.insufficient_access(persona_info, send_msg)
+                
+                if send_msg.is_debug_mode:
+                    return await package.on_debug_mode(persona_info, send_msg)
+                
+                return await package.enter_handler(
+                    persona_info = persona_info,
+                    send_msg = send_msg
+                )
             
-            if not await cls.check_acceptable_sources(package, persona_info):
-                return await package.on_unacceptable_source(persona_info, send_msg)
-            
-            if package.super_permissions and not persona_info.has_super_permissions:
-                return await package.insufficient_access(persona_info, send_msg)
-            
-            if send_msg.is_debug_mode:
-                return await package.on_debug_mode(persona_info, send_msg)
-            
-            return await package.enter_handler(
-                persona_info = persona_info,
-                send_msg = send_msg
-            )
-        
-        except asyncio.CancelledError:
-            return await package.on_cancel(persona_info, send_msg)
-        except NoneBotException as e:
-            return await package.on_nonebot_exception(e, persona_info, send_msg)
-        except RepeaterException as e:
-            return await package.on_repeater_exception(e, persona_info, send_msg)
-        except Exception as e:
-            return await package.on_error(e, persona_info, send_msg)
-        except BaseException as e:
-            return await package.on_interpreter_error(e, persona_info, send_msg)
-        finally:
-            await package.handler_exit(persona_info, send_msg)
+            except asyncio.CancelledError:
+                return await package.on_cancel(persona_info, send_msg)
+            except NoneBotException as e:
+                return await package.on_nonebot_exception(e, persona_info, send_msg)
+            except RepeaterException as e:
+                return await package.on_repeater_exception(e, persona_info, send_msg)
+            except Exception as e:
+                return await package.on_error(e, persona_info, send_msg)
+            except BaseException as e:
+                return await package.on_interpreter_error(e, persona_info, send_msg)
+            finally:
+                await package.handler_exit(persona_info, send_msg)
+        except BreakHandler as e:
+            return SubCmdBreaked(e.code)
     
     @classmethod
     async def horizontal_call(
@@ -543,7 +546,7 @@ class CommandCaller:
         package_instance: CommandPackage[T_Handler_Result],
         matcher: Type[Matcher],
         handler: Union[
-        # Command Handler
+            # Command Handler
             Callable[
                 [Bot, MessageEvent, Message],
                 Awaitable[T_Handler_Result | Any | SubCmdBreaked | None]
