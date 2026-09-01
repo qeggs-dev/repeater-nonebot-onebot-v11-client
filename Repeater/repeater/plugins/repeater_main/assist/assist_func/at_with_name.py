@@ -6,7 +6,7 @@ user_cache = LRUCache(maxsize=1000)
 
 async def at_with_name(bot: Bot, event: MessageEvent) -> Message:
     """
-    处理@消息，将@的QQ号替换为昵称
+    处理@消息，将@的ID替换为昵称
 
     :param bot: Bot对象
     :param event: MessageEvent对象

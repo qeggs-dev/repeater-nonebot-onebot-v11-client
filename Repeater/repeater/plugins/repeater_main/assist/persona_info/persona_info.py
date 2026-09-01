@@ -588,7 +588,7 @@ class PersonaInfo:
     @property
     def noself_at_list(self) -> list[str]:
         """
-        消息中提及的 QQ 号列表（不包括自己）
+        消息中提及的 user_id 列表（不包括自己）
         """
         at_list: list[str] = []
         if self._message_event is None:
@@ -604,7 +604,7 @@ class PersonaInfo:
     @property
     def at_list(self) -> list[str]:
         """
-        消息中提及的 QQ 号列表
+        消息中提及的 user_id 列表
         """
         at_list: list[str] = []
         if self._message_event is None:
@@ -616,7 +616,7 @@ class PersonaInfo:
     
     async def handle_at_with_name(self) -> Message:
         """
-        处理@消息，将@的QQ号替换为昵称
+        处理@消息，将@的 user_id 替换为昵称
         """
         return await at_with_name(self._cached_api, self._message_event)
     

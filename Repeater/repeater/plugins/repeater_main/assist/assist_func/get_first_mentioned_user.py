@@ -5,11 +5,11 @@ user_cache = {}  # 缓存用户昵称
 
 def get_first_mentioned_user(event: MessageEvent) -> Optional[str]:
     """
-    获取消息中第一个@的QQ号
+    获取消息中第一个@的 ID
 
     :param event: 消息事件对象
     """
-    # 获取机器人自己的QQ号
+    # 获取机器人自己的 ID
     bot_id = str(event.self_id)
     
     # 遍历消息中的所有@消息段
