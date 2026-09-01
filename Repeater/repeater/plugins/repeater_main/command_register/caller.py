@@ -183,12 +183,35 @@ class CommandCaller:
                 future = repr(future),
             )
             cls.listen_message_tasks.setdefault(namespace, set()).add(future)
+
         result = await future
-        logger.info(
-            "{namespace} Message Wait Finished",
-            namespace = namespace.namespace_str,
-        )
         return result
+
+    @classmethod
+    async def cancel_wait_message(cls, namespace: Namespace) -> bool:
+        """
+        Cancel the wait message.
+
+        :param package: The command package.
+        :param task: The task.
+        :return: None
+        """
+        async with cls.listen_lock:
+            logger.info(
+                "Cancel Wait {namespace} Message Task",
+                namespace = namespace.namespace_str,
+            )
+            if namespace in cls.listen_message_tasks:
+                for future in cls.listen_message_tasks[namespace]:
+                    future.cancel()
+                del cls.listen_message_tasks[namespace]
+                logger.info(
+                    "Cancel Wait {namespace} Message Task Success",
+                    namespace = namespace.namespace_str,
+                )
+                return True
+
+        return False
 
     @classmethod
     async def run_handle(
@@ -790,4 +813,8 @@ class CommandCaller:
                 futures: set[Future[PersonaInfo]] = cls.listen_message_tasks.pop(namespace)
                 for future in futures:
                     future.set_result(persona_info)
+            logger.info(
+                "{namespace} Message Wait Finished",
+                namespace = namespace.namespace_str,
+            )
                 
