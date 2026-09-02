@@ -8,7 +8,7 @@ from ....clients import PromptClient
 
 
 @CommandCaller.register
-class SendPromptFile(CommandPackage):
+class SendRenderPromptFile(CommandPackage):
     cmd = "sendRenderPromptFile"
     aliases = {
         "srpf",
