@@ -1815,10 +1815,8 @@ class SendMsg:
         if reply:
             send_msg = self._persona_info.reply + send_msg
         try:
-            await self.message_speed_limiter.submit(
-                task = self._send_to_target(
-                    message = send_msg
-                )
+            await self._send_to_target(
+                message = send_msg
             )
         except Exception as error:
             logger.error(
@@ -1856,21 +1854,25 @@ class SendMsg:
                     "Send to matcher: \n{message}",
                     message = message
                 )
-                await self._send_to_matcher(
-                    message,
-                    *args,
-                    **kwargs
+                await self.message_speed_limiter.submit(
+                    task = self._send_to_matcher(
+                        message,
+                        *args,
+                        **kwargs
+                    )
                 )
             case SendingTarget.API:
                 logger.info(
                     "Send to api: \n{message}",
                     message = message
                 )
-                await self._send_to_api(
-                    message,
-                    *args,
-                    **kwargs
-                )
+                await self.message_speed_limiter.submit(
+                    task = self._send_to_api(
+                        message,
+                        *args,
+                        **kwargs
+                    )
+                )    
             case SendingTarget.NULL:
                 logger.info(
                     "Send to null: \n{message}",
