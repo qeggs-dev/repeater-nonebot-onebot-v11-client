@@ -154,6 +154,7 @@ class PersonaInfo:
             bot: Bot | None = None,
             event: MessageEvent | None = None,
             args: Message | None = None,
+            copyargs: bool = True,
             copydata: bool = False,
             deepcopy: bool = False
         ) -> PersonaInfo:
@@ -163,6 +164,7 @@ class PersonaInfo:
         :param bot: 机器人实例
         :param event: 消息事件
         :param args: 消息
+        :param copyargs: 复制 args (如果设置为 `True`，则 `args` 为 `None` 时继承当前 args)
         :param copydata: 复制数据
         :param deepcopy: 是否深拷贝复制数据 (需要 `copydata` 为 `True`)
         """
@@ -171,21 +173,21 @@ class PersonaInfo:
                 bot = self.bot
             if event is None:
                 event = self.event
-            if args is None:
+            if copyargs and args is None:
                 args = self._args
         elif deepcopy:
             if bot is None:
                 bot = copy.deepcopy(self.bot)
             if event is None:
                 event = copy.deepcopy(self.event)
-            if args is None:
+            if copyargs and args is None:
                 args = copy.deepcopy(self._args)
         else:
             if bot is None:
                 bot = self.bot
             if event is None:
                 event = self.event.model_copy()
-            if args is None and self._args is not None:
+            if copyargs and args is None and self._args is not None:
                 args = self._args.copy()
         
         
