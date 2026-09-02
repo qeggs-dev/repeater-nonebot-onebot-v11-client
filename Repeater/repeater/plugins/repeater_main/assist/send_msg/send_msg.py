@@ -51,6 +51,104 @@ logger = base_logger.bind(module = "SendMsg")
 T_RESPONSE = TypeVar("T_RESPONSE")
 
 class SendMsg:
+    r"""
+    Repeater 统一消息发送处理对象
+
+    
+    Usage:
+
+        >>> send_msg = SendMsg(
+        ...     component = self.component,
+        ...     persona_info = PersonaInfo(
+        ...         bot = bot,
+        ...         event = event,
+        ...         args = args
+        ...     ),
+        ...     matcher = matcher
+        ... )
+        ...
+        >>> # 发送提示信息
+        >>> await send_msg.send_prompt(
+        ...     message
+        ...     continue_handler = True # 使用 continue_handler 保证不中断流程
+        ... )
+        >>> # 解析一个响应对象，并发送结果
+        >>> await send_msg.send_response(
+        ...     message
+        ...     continue_handler = True
+        ... )
+        >>> # 发送错误信息
+        >>> await send_msg.send_error(
+        ...     message # 此处也可以填写异常对象
+        ...     continue_handler = True
+        ... )
+        >>> # 先尝试将错误信息渲染为图片，如果失败再使用文本发送
+        >>> await send_msg.send_error_render(
+        ...     message, # 此处也可以填写异常对象
+        ...     continue_handler = True
+        ... )
+        >>> # 像 matcher.send() 一样发送消息
+        >>> await send_msg.send_any(
+        ...     message,
+        ...     reply = False, # SendMsg 默认会让消息添加 reply 消息段，可用这种方法将其移除
+        ...     continue_handler = True
+        ... )
+        >>> # 发送一个文件
+        >>> await send_msg.send_file(
+        ...     file_path,
+        ...     continue_handler = True
+        ... )
+        >>> # 发送一个戳一戳
+        >>> await send_msg.send_poke(
+        ...     continue_handler = True
+        ... )
+        >>> 
+        >>> # 复制一个输出为 Buffer 的 SendMsg
+        >>> copyed_send_msg = send_msg.copy(
+        ...     continue_handler = True
+        ... )
+        >>> # 发送一个消息到缓冲区
+        >>> await copyed_send_msg.send_prompt(
+        ...     "Test", # 此处也可以填写字符串
+        ...     continue_handler = True
+        ... )
+        >>> # 从缓冲区读取内容
+        >>> text_buffer: list[str] = []
+        >>> while copyed_send_msg.buffer.qsize() > 0:
+        ...     text = await copyed_send_msg.buffer.get()
+        ...     text_buffer.append(text)
+        >>> # 发送一个消息
+        >>> await send_msg.send_prompt(
+        ...     "\n".join(text_buffer),
+        ...     continue_handler = True
+        ... )
+        >>> 
+        >>> # 复制并设置目标为 群聊 1234567890
+        >>> copyed_send_msg = send_msg.copy(
+        ...     continue_handler = True,
+        ...     target_group = "1234567890",
+        ...     send_target = SendingTarget.API # 只有设置成 API 才能绕过 Matcher 发送消息
+        ... )
+        >>> # 发送一个消息到群聊 1234567890
+        >>> await copyed_send_msg.send_prompt(
+        ...     "Test", # 此处也可以填写字符串
+        ...     continue_handler = True
+        ... )
+        >>> 
+        >>> # 复制并设置目标为 用户 1234567890
+        >>> copyed_send_msg = send_msg.copy(
+        ...     continue_handler = True,
+        ...     target_user = "1234567890",
+        ...     send_target = SendingTarget.API # 也是只有设置成 API 才能绕过 Matcher 发送消息
+        ... )
+        >>> # 发送一个消息到用户 1234567890
+        >>> await copyed_send_msg.send_prompt(
+        ...     "Test", # 此处也可以填写字符串
+        ...     continue_handler = True
+        ... )
+        >>> # 手动退出当前层级 Handler (不终止上层)
+        >>> send_msg.break_handler(0) # 可以填写返回值告诉上层自己是否是正常结束
+    """
     message_speed_limiter: ClassVar[SpeedLimiter] = SpeedLimiter(
         storage_configs.camouflage.limit_speed_per_minute.send_msg
     )
