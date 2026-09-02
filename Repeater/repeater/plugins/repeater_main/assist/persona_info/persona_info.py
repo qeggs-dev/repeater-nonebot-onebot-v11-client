@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import aiofiles
 
 from nonebot import get_bots
@@ -27,7 +28,7 @@ from ...client_configs import storage_configs
 
 class PersonaInfo:
     """
-    Repeater 统一 Input 处理对象
+    Repeater 统一输入处理对象
 
     Usage:
     
@@ -148,14 +149,50 @@ class PersonaInfo:
         persona_info._enter_type = EnterType.Horizontal
         return persona_info
     
-    def copy(self) -> PersonaInfo:
+    def copy(
+            self,
+            bot: Bot | None = None,
+            event: MessageEvent | None = None,
+            args: Message | None = None,
+            copydata: bool = False,
+            deepcopy: bool = False
+        ) -> PersonaInfo:
         """
-        复制一份
+        复制一个 PersonaInfo 对象
+
+        :param bot: 机器人实例
+        :param event: 消息事件
+        :param args: 消息
+        :param copydata: 复制数据
+        :param deepcopy: 是否深拷贝复制数据 (需要 `copydata` 为 `True`)
         """
+        if not copydata:
+            if bot is None:
+                bot = self.bot
+            if event is None:
+                event = self.event
+            if args is None:
+                args = self._args
+        elif deepcopy:
+            if bot is None:
+                bot = copy.deepcopy(self.bot)
+            if event is None:
+                event = copy.deepcopy(self.event)
+            if args is None:
+                args = copy.deepcopy(self._args)
+        else:
+            if bot is None:
+                bot = self.bot
+            if event is None:
+                event = self.event.model_copy()
+            if args is None and self._args is not None:
+                args = self._args.copy()
+        
+        
         return self.__class__(
-            bot = self.bot,
-            event = self.event.model_copy(),
-            args = self.args.copy()
+            bot = bot,
+            event = event,
+            args = args
         )
     
     def __eq__(self, other: object) -> bool:
@@ -167,61 +204,77 @@ class PersonaInfo:
             )
         return False
     
-    def copy_with_args(self, args: Message | str | None = None) -> PersonaInfo:
-        """
-        复制一份，并自定义 args
-        """
-        return self.__class__(
-            bot = self.bot,
-            event = self.event.model_copy(),
-            args = args if args is not None else self.args.copy()
-        )
-    
-    async def from_message_event(self, event: MessageEvent | None) -> PersonaInfo:
+    async def from_message_event(
+            self,
+            event: MessageEvent | None,
+            copydata: bool = False,
+            deepcopy: bool = False
+        ) -> PersonaInfo:
         """
         从 MessageEvent 构建 PersonaInfo
         """
         if event is None:
             event = await self.get_message_event()
-        cls = type(self)
-        instance = cls(
-            bot = self.bot,
-            event = event,
-            args = self.args,
+        instance = self.copy(
+            copydata = copydata,
+            deepcopy = deepcopy
         )
         instance._enter_type = self._enter_type
         return instance
 
-    async def from_reference_reversed_chain(self, break_chain: Callable[[PersonaInfo], bool] = lambda _: False) -> list[PersonaInfo]:
+    async def from_reply_reversed_chain(
+            self,
+            max_depth: int | None = None,
+            break_chain: Callable[[PersonaInfo], bool] = lambda _: False,
+            copydata: bool = False,
+            deepcopy: bool = False
+        ) -> list[PersonaInfo]:
         """
         从引用链构建 PersonaInfo 实例，且反向
 
         注：解析时，它会默认消息段中只有一个 reply 消息段，
         如果有存在多个，则使用第一个
+
+        :param max_depth: 最大迭代深度
+        :param break_chain: 断开链的回调函数
+        :param copydata: 是否复制数据
+        :param deepcopy: 是否深拷贝数据
         """
         reference_chain: list[PersonaInfo] = []
-        async for persona_info in self.from_reference_chain():
+        async for persona_info in self.from_reply_chain(
+            max_depth = max_depth,
+            copydata = copydata,
+            deepcopy = deepcopy
+        ):
             if break_chain(persona_info):
                 break
             reference_chain.append(persona_info)
         return reference_chain[::-1]
     
-    async def from_reference_chain(self) -> AsyncGenerator[PersonaInfo, None]:
+    async def from_reply_chain(
+            self,
+            max_depth: int | None = None,
+            copydata: bool = False,
+            deepcopy: bool = False
+        ) -> AsyncGenerator[PersonaInfo, None]:
         """
         从引用链构建 PersonaInfo 实例
 
         注：解析时，它会默认消息段中只有一个 reply 消息段，
         如果有存在多个，则使用第一个
+
+        :param copydata: 是否复制数据
+        :param deepcopy: 是否深拷贝数据
         """
-        cls = type(self)
-        async for event in self.get_reply_chain():
-            persona_info = cls(
-                bot = self.bot,
-                event = event
+        async for event in self.get_reply_chain(max_depth):
+            instance = self.copy(
+                event = event,
+                copydata = copydata,
+                deepcopy = deepcopy
             )
-            yield persona_info
+            yield instance
     
-    async def from_reference(self) -> PersonaInfo | None:
+    async def from_reply(self) -> PersonaInfo | None:
         """
         从回复引用构建 PersonaInfo 实例
 
@@ -242,22 +295,6 @@ class PersonaInfo:
             event = reply_event
         )
         return persona_info
-    
-    def namespace_from_this_group(self, user_id: str) -> Namespace:
-        """
-        基于当前群组信息，构建指定 user_id 的 Namespace 实例
-        """
-        if self._source == MessageSource.GROUP:
-            return Namespace(
-                mode = MessageSource.GROUP,
-                group_id = self._group_id,
-                user_id = user_id
-            )
-        else:
-            return Namespace(
-                mode = MessageSource.PRIVATE,
-                user_id = user_id
-            )
     
     @property
     def enter_type(self) -> EnterType:
@@ -448,6 +485,22 @@ class PersonaInfo:
         当前用户所在命名空间字符串（私聊）
         """
         return self.private_namespace.namespace_str
+    
+    def this_group_namespace(self, user_id: str) -> Namespace:
+        """
+        基于当前群组信息，构建指定 user_id 的 Namespace 实例
+        """
+        if self._source == MessageSource.GROUP:
+            return Namespace(
+                mode = MessageSource.GROUP,
+                group_id = self._group_id,
+                user_id = user_id
+            )
+        else:
+            return Namespace(
+                mode = MessageSource.PRIVATE,
+                user_id = user_id
+            )
 
     def group_namespace(self, group_id: str | None = None) -> Namespace:
         """
@@ -553,21 +606,21 @@ class PersonaInfo:
     @property
     def message_cqcode(self) -> str:
         """
-        消息字符串（CQ码）
+        消息字符串 (CQ码)
         """
         return str(self.message)
 
     @property
     def event_message_cqcode(self) -> str:
         """
-        消息事件字符串（CQ码）
+        消息事件字符串 (CQ码)
         """
         return str(self.event_message)
 
     @property
     def args_cqcode(self) -> str:
         """
-        命令参数字符串（CQ码）
+        命令参数字符串 (CQ码)
         """
         return str(self.args)
     
@@ -750,7 +803,7 @@ class PersonaInfo:
         async with aiofiles.open(file_info.file, "r", encoding = encoding) as f:
             return await f.read()
     
-    async def get_reply_chain(self) -> AsyncGenerator[MessageEvent, None]:
+    async def get_reply_chain(self, max_depth: int | None = None) -> AsyncGenerator[MessageEvent, None]:
         """
         获取回复链
 
@@ -758,14 +811,18 @@ class PersonaInfo:
         如果有存在多个，则使用第一个
         """
 
+        if max_depth is None:
+            max_depth = storage_configs.max_reply_chain_length
+
         # 经过框架处理的 Event 中可能并未包含 reply 消息段
         # 需要重新获取原始 Event
         event = await self.get_message_event()
         message: Message = event.message
 
         chain = get_reply_chain(
-            self._cached_api,
-            message
+            bot = self._cached_api,
+            message = message,
+            max_depth = max_depth
         )
         async for msg in chain:
             yield msg
