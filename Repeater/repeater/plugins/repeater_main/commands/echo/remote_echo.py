@@ -52,7 +52,7 @@ class RemoteEcho(CommandPackage):
                 case _:
                     await send_msg.send_prompt("Invalid mode, only 'group' or 'private' is allowed.")
                     send_msg.break_handler()
-            remote_message = persona_info.copy_with_args(
+            remote_message = persona_info.copy(
                 args = message,
             )
             if not remote_message:

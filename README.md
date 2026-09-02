@@ -148,7 +148,7 @@ main_api.json
 ```json
 {
     // Text Length Score 配置
-    "text_length_score_config":{
+    "text_length_score_configs":{
 
         // 最大长度阈值
         "max_lines": 5,
@@ -341,6 +341,11 @@ main_api.json
     // 默认使用的 Repeater Server
     "default_backend": "repeater",
 
+    // Client Pool 的大小
+    // 数量越多，缓存出现的概率越小
+    // 但会增加内存消耗
+    "client_pool_size": 10,
+
     // 是否将用户ID哈希化
     "hash_user_id": false,
 
@@ -355,10 +360,6 @@ main_api.json
     // 将其设置为 null 可以忽略超时检查
     "model_first_chunk_timeout": 90.0,
 
-    // 解析消息中的文本文件时
-    // 使用的编码
-    "text_file_encoding": "utf-8",
-    
     // 是否在注册时打印 Handler 名称
     // 默认为 true
     "log_registed_handler_name": true,
@@ -368,6 +369,21 @@ main_api.json
 
     // 在计算模型 Token 时，会显示多少个最常用的 Token
     "tokenizer_most_frequent_tokens": 5,
+
+    // 分析引用链时
+    // 最大的引用链长度
+    // 超过该长度后，即使仍然符合要求也不会继续分析
+    // 默认为 5
+    // 设置为 null 则不限制
+    "max_reply_chain_length": 5,
+
+    // 限制读取文本文件并展开时
+    // 允许读取的最大文件大小
+    "max_text_file_size": null,
+
+    // 解析消息中的文本文件时
+    // 使用的编码
+    "text_file_encoding": "utf-8",
 
     // 入口忽略配置
     "ignore_enter": {
@@ -535,9 +551,9 @@ PS：该配置文件是专门用于对接ChatTTS的
 | :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
 | `sleep`                    | `s`      | `Sleep`                   | `CONTROL`   | 4.8.0.0        | 休眠                          | 休眠时间（秒）                             | 休眠时间必须为一个有效数字且大于 0 |
 | `serial`                   | `ser`    | `Serial`                  | `CONTROL`   | 4.8.0.0        | 串行执行命令                   | 每行一个命令，可嵌套                        | 每行一个命令，串行执行，支持转义字符与变量表达式 |
-| `parallel`                 | `par`    | `Parallel`                | `CONTROL`   | 4.8.0.0        | 并行执行命令                   | 每行一个命令，可嵌套                        | 每行一个命令，并行执行，支持转义字符与变量表达式 |
+| `parallel`                 | `par`    | `Parallel`                | `CONTROL`   | 4.8.0.0        | 并行执行命令                   | 每行一个命令，可嵌套                        | 每行一个命令，并行执行，支持转义字符与变量表达式（注意：提交 Task 是串行的，任务调度在 Async 体系下，所以并不存在真正意义上同一时间内的并行调度） |
 | `waitCall`                 | `wc`     | `WaitCall`                | `CONTROL`   | 4.8.0.0        | 等待用户输入消息后执行          | 格式为: 命令 参数                          | 等待一条当前会话的消息，并执行指定的命令 |
-| `loop`                     | `l`      | `Loop`                    | `CONTROL`   | 4.8.0.0        | 循环执行命令                   | 格式为: 循环次数 命令 参数                  | 循环次数必须为一个有效数字且大于 0，默认为 1 |
+| `loop`                     | `l`      | `Loop`                    | `CONTROL`   | 4.8.0.0        | 循环执行命令                   | 格式为: 循环次数 命令 参数                  | 循环次数不填时，重复执行直到命令返回 0 值结束，当循环次数前面添加 `*` 时，循环直到命令返回 0 值或到达最大次数时结束 |
 | `messageWithdrawn`         | `mw`     | `MessageWithdrawn`        | `CONTROL`   | 4.8.0.0        | 撤回机器人消息                 | 引用一个该机器人的消息                      | 撤回机器人发送的消息 |
 | `poke`                     | `poke`   | `Poke`                    | `CONTROL`   | 4.8.3.2        | 戳一戳                        | @戳一戳的对象                              | 不填写参数时目标为自己 |
 | `cancel`                   | `cl`     | `Cancel`                  | `CONTROL`   | 4.8.3.2        | 取消一个命令                   | 任务 ID                                   | 取消一个命令 |
@@ -549,8 +565,9 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `silence`                  | `sil`    | `Silence`                 | `CONTROL`   | 4.9.2.1        | 静默执行任务                   | 格式为: 命令 参数                         | 静默执行任务，不输出内容 |
 | `timeout`                  | `t`      | `Timeout`                 | `CONTROL`   | 4.9.2.1        | 设置任务超时时间               | 格式为: 时间(秒): 命令 参数                | 设置任务超时时间，超时后任务在后台继续运行 |
 | `timeoutAndCancel`         | `tac`    | `TimeoutAndCancel`        | `CONTROL`   | 4.9.2.1        | 设置任务超时时间并在超时后取消  | 格式为: 时间(秒): 命令 参数                | 设置任务超时时间，超时后自动取消任务 |
-| `remoteWaitCall`           | `rwc`    | `RemoteWaitCall`          | `CONTROL`   | 4.9.2.1        | 远程等待调用                   | 格式为: Namespace 命令 参数              | 跨群或私聊等待一条消息，等待目标 Namespace 提供消息后执行命令 |
+| `remoteWaitCall`           | `rwc`    | `RemoteWaitCall`          | `CONTROL`   | 4.9.2.1        | 远程等待调用                   | 格式为: Namespace 命令 参数              | 跨群或私聊等待一条消息，等待目标 Namespace 提供消息后执行命令，**需要 super_permissions** |
 | `equal`                    | `eq`     | `Equal`                   | `CONTROL`   | 4.9.2.1        | 等于判断                       | 每行一个消息，可以添加标签                | 所有消息在去掉收尾空格后都相等时，顺序执行 `true:` 标签，否则执行 `false:` 标签；标签必须独占一行，且允许不填，则表示空内容 |
+| `flipResult`               | `fr`     | `FlipResult`              | `CONTROL`   | 4.9.3.0        | 反转结果                       | 无                                       | 当命令执行结果为 0 时返回 1，否则返回 0 |
 
 ### Variable Command
 
@@ -832,6 +849,7 @@ PS：该配置文件是专门用于对接ChatTTS的
 | :---                       | :---     | :---                      | :---:       | :---           | :---                          | :---                                      | :---    |
 | `sendMessage`              | `smsg`   | `SendMessage`             | `SENDMSG`   | 4.4.12.0       | 发送消息，使用结构体            | OneBot 消息结构                           | 发送一条自定义消息（需要 `allow_send_any_message` 字段为 `true`） |
 | `sendMessageCQ`            | `smsgcq` | `SendMessageCQ`           | `SENDMSG`   | 4.9.1.0        | 发送消息，使用 CQ 码           | 包含 CQ 码的消息结构                        | 发送一条自定义消息（需要 `allow_send_any_message` 字段为 `true`） |
+| `getCQ`                    | `gcq`    | `GetCQ`                   | `SENDMSG`   | 4.9.3.0        | 获取 CQ 码                     | 任意消息                                  | 获取当前 CQ 码 |
 
 ### Games Command
 
@@ -899,6 +917,11 @@ PS：`CHAT` 类型命令大部分都做到了支持视觉输入
 直到嵌套结束
 同时你可以在这种多行输入的命令中
 使用 `{var:<varname>}` 的方式来展开一个变量
+
+当命令涉及到发送消息时，会受到全局消息限速器的限制
+它会要求命令顺序执行，且发送间隔时间不能低于设定数目
+这可能会导致执行调度时一些操作的意外延后
+如果有无等待的需求，请尝试使用 `/bypass` 让等待让出执行权
 
 所有命令都有变体
 多单词的命令格式有：

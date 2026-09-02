@@ -1,12 +1,11 @@
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent
-from ...logger import logger
 from typing import AsyncGenerator
-from ...client_configs import storage_configs
 from .get_reply_msgs import get_reply_msgs
 
 async def get_reply_chain(
     bot: Bot,
     message: Message,
+    max_depth: int | None = None
 ) -> AsyncGenerator[MessageEvent, None]:
     """
     获取回复链
@@ -16,11 +15,13 @@ async def get_reply_chain(
 
     :param bot: Bot
     :param message: 消息
+    :param max_depth: 最大深度
     """
     times: int = 0
     while True:
-        if times > storage_configs.max_reply_chain_length:
+        if max_depth is not None and times > max_depth:
             break
+        
         reply_messages = await get_reply_msgs(
             bot = bot,
             message = message

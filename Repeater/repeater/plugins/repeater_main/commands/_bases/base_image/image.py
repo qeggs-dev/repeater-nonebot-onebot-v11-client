@@ -35,7 +35,7 @@ class GenerateImageBase(CommandPackage):
         prompts: list[str] = []
 
         images: list[FILE_TYPES] = []
-        for reply in await persona_info.from_reference_reversed_chain():
+        for reply in await persona_info.from_reply_reversed_chain():
             prompts.append(reply.message_stripped_str)
             images.extend(await self.get_images(reply))
         images.extend(await self.get_images(persona_info))
@@ -55,21 +55,21 @@ class GenerateImageBase(CommandPackage):
                     UrlFile(
                         url = image_url
                     )
-                    for image_url in await persona_info.get_images_url()
+                    for image_url in persona_info.get_images_url()
                 )
             case GenerateImageFileType.PATH:
                 images.extend(
                     PathFile(
                         path = image_url,
                     )
-                    for image_url in await persona_info.get_images_url()
+                    for image_url in persona_info.get_images_url()
                 )
             case GenerateImageFileType.BASE64:
                 images.extend(
                     Base64File(
                         data = image_url,
                     )
-                    for image_url in await persona_info.get_images_url()
+                    for image_url in persona_info.get_images_url()
                 )
         return images
     

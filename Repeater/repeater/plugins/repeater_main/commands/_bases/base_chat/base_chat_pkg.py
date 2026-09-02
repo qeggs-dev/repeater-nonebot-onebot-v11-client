@@ -71,7 +71,7 @@ class BaseChat(CommandPackage):
         ) -> tuple[str, list[str], list[str], list[str], list[str]]:
         messages_text = await self.parse_forward_msgs(persona_info, send_msg)
         text = messages_text + await self.post_parse_text(input_text)
-        images: list[str] = await persona_info.get_images_url()
+        images: list[str] = persona_info.get_images_url()
         audios: list[str] = persona_info.get_audio_url()
         videos: list[str] = persona_info.get_video_url()
         reply_msgs_texts, not_open_files = await self.open_file(persona_info)
@@ -148,7 +148,9 @@ class BaseChat(CommandPackage):
             reply_videos_list: list[str] = []
             reply_files_list: list[str] = []
             
-            reply_msgs = await persona_info.from_reference_reversed_chain( break_chain = lambda persona_info: persona_info.is_self)
+            reply_msgs = await persona_info.from_reply_reversed_chain(
+                break_chain = lambda persona_info: persona_info.is_self
+            )
             reply_msgs_text = ""
 
             if not reply_msgs:

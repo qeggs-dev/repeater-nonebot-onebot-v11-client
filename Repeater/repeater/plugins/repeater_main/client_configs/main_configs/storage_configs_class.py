@@ -25,7 +25,7 @@ class StorageConfigs(BaseModel):
     handler_timeout: int | float | None = Field(default=None, gt=0)
     client_pool_size: int = Field(default=10, ge=1)
     usage_group_context: bool = False
-    server_api_timeout:ServerAPITimeout = Field(default_factory = ServerAPITimeout)
+    server_api_timeout: ServerAPITimeout = Field(default_factory = ServerAPITimeout)
     camouflage: Camouflage = Field(default_factory = Camouflage)
     generate_image_file_type: GenerateImageFileType = GenerateImageFileType.URL
     render_error_message: RenderErrorMessage = Field(default_factory = RenderErrorMessage)
@@ -40,7 +40,7 @@ class StorageConfigs(BaseModel):
     model_first_chunk_timeout: int | float | None = 90.0
     tokenizer_cache_size: int = 50
     tokenizer_most_frequent_tokens: int = 5
-    max_reply_chain_length: int = 5
+    max_reply_chain_length: int | None = 5
     max_text_file_size: int | None = None
     text_file_encoding: str = "utf-8"
     log_registed_handler_name: bool = True

@@ -9,7 +9,8 @@ from ...assist import (
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
-    CommandPackage
+    CommandPackage,
+    SubCmdBreaked
 )
 from ._parse_input import parse_input
 from ._split_by_indent import split_by_indent
@@ -57,13 +58,14 @@ class Cascade(CommandPackage):
         for index, (package, args) in enumerate(command_call):
             try:
                 package_instance = CommandCaller.get_instance(package)
-                copyed_persona_info = persona_info.copy_with_args(args)
+                copyed_persona_info = persona_info.copy(args = args)
                 tasks.append((package_instance, copyed_persona_info))
             except KeyError:
                 await send_msg.send_error(f"[{index}] Handler instance not found")
                 send_msg.break_handler()
         
-        last_result: PersonaInfo = persona_info.copy_with_args(Message())
+        last_result: PersonaInfo = persona_info.copy(args = persona_info.make_message())
+        last_code: int | None = None
         user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         for index, (package_instance, info) in enumerate(tasks):
             copyed_send_msg = send_msg.copy(
@@ -72,15 +74,24 @@ class Cascade(CommandPackage):
 
             # 如果当前命令无参数且有上一步结果，使用上一步结果
             if info:
-                if "{message}" in str(info.message):
-                    info = info.copy_with_args(
-                        persona_info.make_message(
-                            str(info.message).replace(
+                messages: list[str] = str(info.message).splitlines()
+                new_messages: list[str] = []
+                for message in messages:
+                    if not message.startswith(" "):
+                        new_messages.append(
+                            message.replace(
                                 "{message}",
                                 str(last_result.message)
                             )
                         )
+                    else:
+                        new_messages.append(message)
+                
+                info = info.copy(
+                    args = persona_info.make_message(
+                        "\n".join(new_messages)
                     )
+                )
             elif not info and last_result:
                 info = last_result
             elif index != 0:
@@ -89,11 +100,16 @@ class Cascade(CommandPackage):
             
             copyed_send_msg.sending_target = SendingTarget.BUFFER
             
-            await CommandCaller.horizontal_call(
+            result = await CommandCaller.horizontal_call(
                 package_instance,
                 fill_var(info, user_variables),
                 copyed_send_msg
             )
+
+            if isinstance(result, SubCmdBreaked):
+                last_code = result.code
+            else:
+                last_code = None
             
             current_result = Message()
             while copyed_send_msg.buffer.qsize() > 0:
@@ -103,8 +119,12 @@ class Cascade(CommandPackage):
                 else:
                     current_result.append(buffer_result)
             
-            last_result = info.copy_with_args(current_result)
+            last_result = info.copy(args = current_result)
         
         if last_result:
             last_result_message = last_result.message
-            await send_msg.send_any(last_result_message, reply = False)
+            await send_msg.send_any(
+                last_result_message,
+                reply = False,
+                break_code = last_code or 0
+            )

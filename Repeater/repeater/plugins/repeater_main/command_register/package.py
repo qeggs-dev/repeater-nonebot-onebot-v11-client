@@ -38,7 +38,8 @@ from nonebot.rule import (
 from nonebot.permission import Permission
 from nonebot.dependencies import Dependent
 from nonebot.exception import (
-    NoneBotException
+    NoneBotException,
+    ActionFailed
 )
 from ..client_configs import storage_configs
 from nonebot import logger
@@ -361,7 +362,10 @@ class CommandPackage(ABC, Generic[T]):
         :param persona_info: PersonaInfo object
         :param send_msg: SendMsg object
         """
-        raise
+        if isinstance(exception, ActionFailed):
+            await send_msg.send_error_render(exception)
+        else:
+            raise
 
     async def on_repeater_exception(self, exception: RepeaterException, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """
@@ -371,10 +375,10 @@ class CommandPackage(ABC, Generic[T]):
         :param persona_info: PersonaInfo object
         :param send_msg: SendMsg object
         """
-        if isinstance(exception, BreakWithErrorMessage):
-            await send_msg.send_error_render(str(exception))
-        elif isinstance(exception, BreakHandler):
-            return SubCmdBreaked
+        if isinstance(exception, BreakHandler):
+            if isinstance(exception, BreakWithErrorMessage):
+                await send_msg.send_error_render(str(exception), continue_handler = True)
+            return SubCmdBreaked(exception.code)
 
     async def on_error(self, exception: Exception, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """

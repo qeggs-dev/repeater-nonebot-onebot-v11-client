@@ -1,6 +1,11 @@
 from enum import Enum
 
 class CmdTypes(Enum):
+    """
+    Category enumeration of registered commands.
+    
+    When an unclassified command appears, expand the enumeration first.
+    """
     LISTEN_ALL = "LISTEN_ALL"
     ECHO = "ECHO"
     CHAT = "CHAT"

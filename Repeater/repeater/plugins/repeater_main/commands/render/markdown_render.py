@@ -28,4 +28,8 @@ class MarkdownRender(CommandPackage):
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        await send_msg.send_render(persona_info.message_stripped_str)
+        await send_msg.send_render(
+            persona_info.make_message(
+                persona_info.message_cqcode.strip()
+            )
+        )

@@ -32,7 +32,7 @@ from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Message
 from .listen_type import ListenType
 from nonebot import logger
 from .running_package import RunningPackage
-from .sub_cmd_exit import SubCmdBreaked, SubCmdCacelled
+from .sub_cmd_exit import SubCmdBreaked, SubCmdExit
 
 T_Handler_Result = TypeVar("T_Handler_Result")
 
@@ -183,12 +183,35 @@ class CommandCaller:
                 future = repr(future),
             )
             cls.listen_message_tasks.setdefault(namespace, set()).add(future)
+
         result = await future
-        logger.info(
-            "{namespace} Message Wait Finished",
-            namespace = namespace.namespace_str,
-        )
         return result
+
+    @classmethod
+    async def cancel_wait_message(cls, namespace: Namespace) -> bool:
+        """
+        Cancel the wait message.
+
+        :param package: The command package.
+        :param task: The task.
+        :return: None
+        """
+        async with cls.listen_lock:
+            logger.info(
+                "Cancel Wait {namespace} Message Task",
+                namespace = namespace.namespace_str,
+            )
+            if namespace in cls.listen_message_tasks:
+                for future in cls.listen_message_tasks[namespace]:
+                    future.cancel()
+                del cls.listen_message_tasks[namespace]
+                logger.info(
+                    "Cancel Wait {namespace} Message Task Success",
+                    namespace = namespace.namespace_str,
+                )
+                return True
+
+        return False
 
     @classmethod
     async def run_handle(
@@ -270,12 +293,18 @@ class CommandCaller:
         if isinstance(result, type):
             if issubclass(result, SubCmdBreaked):
                 result = result()
+
+        if isinstance(result, SubCmdExit):
+            result_code = result.code
+        else:
+            result_code = 0
         
         logger.info(
-            "Handler {handler}[{task_id}] return: {result}({type})",
+            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}",
             handler = package.component,
             task_id = task_id,
             result = repr(result),
+            code = result_code,
             type = type(result).__name__,
         )
         return result
@@ -299,57 +328,66 @@ class CommandCaller:
         :return: The result of the message handler.
         """
         try:
-            logger.info(
-                "Enter {command}[{task_id}] from message: {message_id} ({enter_mode} Mode)",
-                command = package.component,
-                task_id = task_id,
-                message_id = persona_info.message_id,
-                enter_mode = persona_info.enter_type.name,
-            )
-
-            if not await package.enter_check(persona_info, send_msg):
-                logger.warning(
-                    "Enter check blocked: {name}[{task_id}]",
-                    name = package.component,
+            try:
+                logger.info(
+                    "Enter {command}[{task_id}] from message: {message_id} ({enter_mode} Mode)",
+                    command = package.component,
                     task_id = task_id,
-                )
-                send_msg.break_handler()
-
-            if not await package.permissions_check(persona_info, send_msg):
-                logger.warning(
-                    "Command {name}[{task_id}] from message {message_id} has insufficient access",
-                    name = package.component,
                     message_id = persona_info.message_id,
-                    task_id = task_id,
+                    enter_mode = persona_info.enter_type.name,
                 )
-                send_msg.break_handler()
+
+                if not await package.enter_check(persona_info, send_msg):
+                    logger.warning(
+                        "Enter check blocked: {name}[{task_id}]",
+                        name = package.component,
+                        task_id = task_id,
+                    )
+                    send_msg.break_handler()
+
+                if not await package.permissions_check(persona_info, send_msg):
+                    logger.warning(
+                        "Command {name}[{task_id}] from message {message_id} has insufficient access",
+                        name = package.component,
+                        message_id = persona_info.message_id,
+                        task_id = task_id,
+                    )
+                    send_msg.break_handler()
+                
+                if not await cls.check_acceptable_sources(package, persona_info):
+                    return await package.on_unacceptable_source(persona_info, send_msg)
+                
+                if package.super_permissions and not persona_info.has_super_permissions:
+                    return await package.insufficient_access(persona_info, send_msg)
+                
+                if send_msg.is_debug_mode:
+                    return await package.on_debug_mode(persona_info, send_msg)
+                
+                task = asyncio.create_task(
+                    package.enter_handler(
+                        persona_info = persona_info,
+                        send_msg = send_msg
+                    )
+                )
+                return await asyncio.wait_for(
+                    task,
+                    timeout = storage_configs.handler_timeout,
+                )
             
-            if not await cls.check_acceptable_sources(package, persona_info):
-                return await package.on_unacceptable_source(persona_info, send_msg)
-            
-            if package.super_permissions and not persona_info.has_super_permissions:
-                return await package.insufficient_access(persona_info, send_msg)
-            
-            if send_msg.is_debug_mode:
-                return await package.on_debug_mode(persona_info, send_msg)
-            
-            return await package.enter_handler(
-                persona_info = persona_info,
-                send_msg = send_msg
-            )
-        
-        except asyncio.CancelledError:
-            return await package.on_cancel(persona_info, send_msg)
-        except NoneBotException as e:
-            return await package.on_nonebot_exception(e, persona_info, send_msg)
-        except RepeaterException as e:
-            return await package.on_repeater_exception(e, persona_info, send_msg)
-        except Exception as e:
-            return await package.on_error(e, persona_info, send_msg)
-        except BaseException as e:
-            return await package.on_interpreter_error(e, persona_info, send_msg)
-        finally:
-            await package.handler_exit(persona_info, send_msg)
+            except asyncio.CancelledError:
+                return await package.on_cancel(persona_info, send_msg)
+            except NoneBotException as e:
+                return await package.on_nonebot_exception(e, persona_info, send_msg)
+            except RepeaterException as e:
+                return await package.on_repeater_exception(e, persona_info, send_msg)
+            except Exception as e:
+                return await package.on_error(e, persona_info, send_msg)
+            except BaseException as e:
+                return await package.on_interpreter_error(e, persona_info, send_msg)
+            finally:
+                await package.handler_exit(persona_info, send_msg)
+        except BreakHandler as e:
+            return SubCmdBreaked(e.code)
     
     @classmethod
     async def horizontal_call(
@@ -514,7 +552,7 @@ class CommandCaller:
         package_instance: CommandPackage[T_Handler_Result],
         matcher: Type[Matcher],
         handler: Union[
-        # Command Handler
+            # Command Handler
             Callable[
                 [Bot, MessageEvent, Message],
                 Awaitable[T_Handler_Result | Any | SubCmdBreaked | None]
@@ -784,4 +822,8 @@ class CommandCaller:
                 futures: set[Future[PersonaInfo]] = cls.listen_message_tasks.pop(namespace)
                 for future in futures:
                     future.set_result(persona_info)
+            logger.info(
+                "{namespace} Message Wait Finished",
+                namespace = namespace.namespace_str,
+            )
                 

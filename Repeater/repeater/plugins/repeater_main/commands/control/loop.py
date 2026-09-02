@@ -1,15 +1,13 @@
 import re
-import asyncio
 
-from typing import Any, Type
-from nonebot.adapters.onebot.v11 import MessageSegment
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
-    CommandPackage
+    CommandPackage,
+    SubCmdBreaked,
 )
-from ._remove_cmd_prefix import remove_cmd_prefix
+from ...logger import logger
 
 @CommandCaller.register
 class Loop(CommandPackage):
@@ -22,15 +20,20 @@ class Loop(CommandPackage):
     }
     cmd_type = CmdTypes.CONTROL
     description = f"""
-        loop execute command times
+    Execute a command in a loop
+    When Times is not populated, it runs in a loop until the loop body command succeeds, similar to the while loop.
+    When Times is filled, it must be executed multiple Times, whether it ends properly or not, like a for loop.
+    When Times is preceded by an asterisk, it loops until the loop body command succeeds or the specified maximum number of Times is reached.
 
         Usage:
         ```
         /{cmd} times command [args]
+        /{cmd} *times command [args]
+        /{cmd} command [args]
         ```
     """
 
-    pattern = re.compile(r"^(?P<times>\d*)\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<times>\*?\d*)\s*(?P<command>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         matched = self.pattern.match(persona_info.message_cqcode)
@@ -45,13 +48,22 @@ class Loop(CommandPackage):
 
             args = persona_info.make_message(args_str)
 
-            if not times_str:
-                times = 1
-            else:
-                times = int(times_str)
-            
-            if times < 1:
-                await send_msg.send_error("times must be greater than 0")
+            try:
+                if not times_str:
+                    times = None
+                    max_times = None
+                elif times_str.startswith("*"):
+                    times = None
+                    max_times = int(times_str.removeprefix("*"))
+                else:
+                    times = int(times_str)
+                    max_times = times
+                
+                    if times < 1:
+                        await send_msg.send_error("times must be greater than 0")
+                        return
+            except ValueError:
+                await send_msg.send_error("times must be int or [int]")
                 return
 
             try:
@@ -66,17 +78,42 @@ class Loop(CommandPackage):
                 await send_msg.send_error(f"Command instance {command} not found: {e}")
                 return
 
-            copyed_persona_info = persona_info.copy_with_args(
+            copyed_persona_info = persona_info.copy(
                 args = args
             )
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )
-            for i in range(times):
-                await CommandCaller.horizontal_call(
-                    package_instance,
-                    copyed_persona_info,
-                    copyed_send_msg
-                )
+            if times is None:
+                times_count: int = 0
+                while True:
+                    logger.info(
+                        "Looping command times: {times_count}",
+                        times_count = times_count + 1
+                    )
+                    result = await CommandCaller.horizontal_call(
+                        package_instance,
+                        copyed_persona_info,
+                        copyed_send_msg
+                    )
+
+                    if isinstance(result, SubCmdBreaked):
+                        if result.code == 0:
+                            break
+
+                    times_count += 1
+                    if max_times is not None and times_count >= max_times:
+                        break
+            else:
+                for i in range(times):
+                    logger.info(
+                        "Looping command times: {times_count}",
+                        times_count = i + 1
+                    )
+                    await CommandCaller.horizontal_call(
+                        package_instance,
+                        copyed_persona_info,
+                        copyed_send_msg
+                    )
         else:
             await send_msg.send_error("Invalid command format")

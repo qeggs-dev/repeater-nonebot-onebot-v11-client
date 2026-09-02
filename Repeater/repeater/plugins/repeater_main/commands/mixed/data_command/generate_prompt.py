@@ -46,7 +46,7 @@ class GeneratePrompt(CommandPackage):
             await async_text_storage.save(path=meta_prompt_file_path, data=meta_prompt)
 
         chat_client = ChatClient(persona_info, user_configs)
-        image_url = await persona_info.get_images_url()
+        image_url = persona_info.get_images_url()
         chat_response = await chat_client.send_message(
             message,
             raw_message = False,
