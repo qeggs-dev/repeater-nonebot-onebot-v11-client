@@ -4,6 +4,18 @@ from ....assist import PersonaInfo, SendMsg
 from .base_branch import BaseBranch
 
 class GetBranchList(BaseBranch):
+    @classmethod
+    def documents(cls):
+        docs = [
+            "Lists the names of all branches.",
+            "",
+            "Usage:",
+            "```",
+            f"/{cls.cmd}",
+            "```"
+        ]
+        cls.description = "\n".join(docs)
+        return cls.description
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         try:
