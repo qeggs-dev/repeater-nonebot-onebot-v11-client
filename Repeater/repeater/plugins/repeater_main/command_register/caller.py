@@ -363,9 +363,15 @@ class CommandCaller:
                 if send_msg.is_debug_mode:
                     return await package.on_debug_mode(persona_info, send_msg)
                 
-                return await package.enter_handler(
-                    persona_info = persona_info,
-                    send_msg = send_msg
+                task = asyncio.create_task(
+                    package.enter_handler(
+                        persona_info = persona_info,
+                        send_msg = send_msg
+                    )
+                )
+                return await asyncio.wait_for(
+                    task,
+                    timeout = storage_configs.handler_timeout,
                 )
             
             except asyncio.CancelledError:
