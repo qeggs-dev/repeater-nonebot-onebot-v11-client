@@ -54,7 +54,7 @@ class Bypass(CommandPackage):
                 await send_msg.send_error(f"Command instance {package.component} not found: {e}")
                 return
 
-            copyed_persona_info = persona_info.copy_with_args(
+            copyed_persona_info = persona_info.copy(
                 args = args
             )
             copyed_send_msg = send_msg.copy(

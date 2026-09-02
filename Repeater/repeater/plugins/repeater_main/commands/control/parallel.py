@@ -57,7 +57,7 @@ class Parallel(CommandPackage):
             except KeyError:
                 await send_msg.send_error(f"[{index}] Handler instance not found")
                 send_msg.break_handler()
-            copyed_persona_info = persona_info.copy_with_args(args)
+            copyed_persona_info = persona_info.copy(args = args)
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
             )

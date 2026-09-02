@@ -58,13 +58,13 @@ class Cascade(CommandPackage):
         for index, (package, args) in enumerate(command_call):
             try:
                 package_instance = CommandCaller.get_instance(package)
-                copyed_persona_info = persona_info.copy_with_args(args)
+                copyed_persona_info = persona_info.copy(args = args)
                 tasks.append((package_instance, copyed_persona_info))
             except KeyError:
                 await send_msg.send_error(f"[{index}] Handler instance not found")
                 send_msg.break_handler()
         
-        last_result: PersonaInfo = persona_info.copy_with_args(Message())
+        last_result: PersonaInfo = persona_info.copy(args = persona_info.make_message())
         last_code: int | None = None
         user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         for index, (package_instance, info) in enumerate(tasks):
@@ -87,8 +87,8 @@ class Cascade(CommandPackage):
                     else:
                         new_messages.append(message)
                 
-                info = info.copy_with_args(
-                    persona_info.make_message(
+                info = info.copy(
+                    args = persona_info.make_message(
                         "\n".join(new_messages)
                     )
                 )
@@ -119,7 +119,7 @@ class Cascade(CommandPackage):
                 else:
                     current_result.append(buffer_result)
             
-            last_result = info.copy_with_args(current_result)
+            last_result = info.copy(args = current_result)
         
         if last_result:
             last_result_message = last_result.message

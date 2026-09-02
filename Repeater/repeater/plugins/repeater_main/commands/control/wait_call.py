@@ -77,7 +77,7 @@ class WaitCall(CommandPackage):
             else:
                 args = persona_info.make_message(result.message_cqcode)
 
-            info = result.copy_with_args(args)
+            info = result.copy(args = args)
             
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component

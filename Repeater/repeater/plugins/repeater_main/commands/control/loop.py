@@ -1,5 +1,4 @@
 import re
-import asyncio
 
 from ...assist import PersonaInfo, SendMsg
 from ...cmd_info import CmdTypes
@@ -79,7 +78,7 @@ class Loop(CommandPackage):
                 await send_msg.send_error(f"Command instance {command} not found: {e}")
                 return
 
-            copyed_persona_info = persona_info.copy_with_args(
+            copyed_persona_info = persona_info.copy(
                 args = args
             )
             copyed_send_msg = send_msg.copy(

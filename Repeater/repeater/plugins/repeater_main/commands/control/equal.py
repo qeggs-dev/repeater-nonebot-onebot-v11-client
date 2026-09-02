@@ -84,7 +84,7 @@ class Equal(CommandPackage):
 
         await CommandCaller.horizontal_call(
             package = Serial,
-            persona_info = persona_info.copy_with_args(
+            persona_info = persona_info.copy(
                 args = execable_code
             ),
             send_msg = send_msg,

@@ -32,7 +32,7 @@ class MessageWithdrawn(CommandPackage):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
 
-        reply  = await persona_info.from_reference()
+        reply  = await persona_info.from_reply()
         if reply is None:
             await send_msg.send_error("No message to withdraw.")
             return
