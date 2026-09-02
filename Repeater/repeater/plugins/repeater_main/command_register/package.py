@@ -112,8 +112,14 @@ class CommandPackage(ABC, Generic[T]):
     enabled: bool = True
     """Whether the handler."""
 
-    documents: str | Iterable[str] | None = None
-    """This handler's documentation"""
+    @classmethod
+    def documents(cls) -> str | Iterable[str] | None:
+        """This handler's documentation"""
+        pass
+
+    def instance_docs(self) -> str | Iterable[str] | None:
+        """This handler's instance documentation"""
+        pass
 
     description: str | Iterable[str] | None = None
     """This handler's description"""
@@ -135,13 +141,14 @@ class CommandPackage(ABC, Generic[T]):
     def get_description(self) -> str:
         """Handler description"""
         
-        if self.description is not None:
-            doc = self.description
-        elif self.documents is not None:
-            doc = self.documents
-        elif self.__doc__ is not None:
+        doc = self.description
+        if doc is None:
+            doc = self.documents()
+        if doc is None:
+            doc = self.instance_docs()
+        if doc is None:
             doc = self.__doc__
-        else:
+        if doc is None:
             doc = ""
         
         if isinstance(doc, str):
