@@ -112,15 +112,6 @@ class CommandPackage(ABC, Generic[T]):
     enabled: bool = True
     """Whether the handler."""
 
-    @classmethod
-    def documents(cls) -> str | Iterable[str] | None:
-        """This handler's documentation"""
-        pass
-
-    def instance_docs(self) -> str | Iterable[str] | None:
-        """This handler's instance documentation"""
-        pass
-
     description: str | Iterable[str] | None = None
     """This handler's description"""
 
@@ -137,6 +128,15 @@ class CommandPackage(ABC, Generic[T]):
     def component(self) -> str:
         """The human-readable name of the Handler (required) """
         return f"Repeater.{self.cmd_type.value}.{self.__class__.__name__}"
+
+    @classmethod
+    def documents(cls) -> str | Iterable[str] | None:
+        """This handler's documentation"""
+        pass
+
+    def instance_docs(self) -> str | Iterable[str] | None:
+        """This handler's instance documentation"""
+        pass
     
     def get_description(self) -> str:
         """Handler description"""
