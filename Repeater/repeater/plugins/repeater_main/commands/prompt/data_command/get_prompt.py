@@ -18,6 +18,14 @@ class GetPrompt(CommandPackage):
         "GET_PROMPT",
     }
     cmd_type = CmdTypes.PROMPT
+    description = f"""
+    View your own custom prompts.
+
+    Usage:
+    ```
+    /{cmd}
+    ```
+    """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()

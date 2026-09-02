@@ -31,9 +31,10 @@ async def see_cmds(
                 text_buffer.append(f"**Do you have access to the command**: `{persona_info.has_super_permissions}`")
             else:
                 text_buffer.append(f"**Do you have access to the command**: `True`")
-            if package.description:
+            description = package.get_description()
+            if description:
                 text_buffer.append("")
-                text_buffer.append(package.get_description().replace("\n", "\n> "))
+                text_buffer.append("> " + package.get_description().replace("\n", "\n> "))
                 text_buffer.append("")
             
             text_buffer.append("**trigger:**")

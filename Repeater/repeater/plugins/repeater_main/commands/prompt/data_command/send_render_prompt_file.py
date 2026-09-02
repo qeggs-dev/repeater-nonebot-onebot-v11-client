@@ -8,19 +8,19 @@ from ....clients import PromptClient
 
 
 @CommandCaller.register
-class SendPromptFile(CommandPackage):
-    cmd = "sendPromptFile"
+class SendRenderPromptFile(CommandPackage):
+    cmd = "sendRenderPromptFile"
     aliases = {
-        "spf",
-        "SPF",
-        "send_prompt_file",
-        "Send_Prompt_File",
-        "SendPromptFile",
-        "SEND_PROMPT_FILE",
+        "srpf",
+        "SRPF",
+        "send_render_prompt_file",
+        "Send_Render_Prompt_File",
+        "SendRenderPromptFile",
+        "SEND_RENDER_PROMPT_FILE",
     }
     cmd_type = CmdTypes.PROMPT
     description = f"""
-    Export the prompt file.
+    Export the render prompt file.
 
     Usage:
     ```

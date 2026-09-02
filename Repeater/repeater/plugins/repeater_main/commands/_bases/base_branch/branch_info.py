@@ -2,7 +2,19 @@ from ....assist import PersonaInfo, SendMsg
 from .base_branch import BaseBranch
 
 class BranchInfo(BaseBranch):
-
+    @classmethod
+    def documents(cls):
+        docs = [
+            "Gets metadata for the current active branch.",
+            "",
+            "Usage:",
+            "```",
+            f"/{cls.cmd}",
+            "```"
+        ]
+        cls.description = "\n".join(docs)
+        return cls.description
+    
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         client = await self.get_client(persona_info)
         response = await client.branch_info()
@@ -10,6 +22,7 @@ class BranchInfo(BaseBranch):
             data = response.get_data()
             if data is None:
                 await send_msg.send_error("Unable to process data.")
+                send_msg.break_handler()
 
             text_buffer: list[str] = []
             text_buffer.append(f"Branch Type: {self.userdata_cmds_type.value}")

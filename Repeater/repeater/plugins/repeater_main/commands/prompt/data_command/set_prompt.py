@@ -18,6 +18,15 @@ class SetPrompt(CommandPackage):
         "SET_PROMPT",
     }
     cmd_type = CmdTypes.PROMPT
+    description = f"""
+    Set user custom prompt.
+
+    Usage:
+    ```
+    /{cmd}
+    ```
+    """
+
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = persona_info.message_stripped_str
