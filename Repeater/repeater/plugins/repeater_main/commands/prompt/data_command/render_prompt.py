@@ -6,21 +6,20 @@ from ....command_register import(
 )
 from ....clients import PromptClient
 
-
 @CommandCaller.register
-class SendPromptFile(CommandPackage):
-    cmd = "sendPromptFile"
+class RenderPrompt(CommandPackage):
+    cmd = "renderPrompt"
     aliases = {
-        "spf",
-        "SPF",
-        "send_prompt_file",
-        "Send_Prompt_File",
-        "SendPromptFile",
-        "SEND_PROMPT_FILE",
+        "rp",
+        "RP",
+        "render_prompt",
+        "Render_Prompt",
+        "RenderPrompt",
+        "RENDER_PROMPT",
     }
     cmd_type = CmdTypes.PROMPT
     description = f"""
-    Export the prompt file.
+    Preview the prompts submitted to AI.
 
     Usage:
     ```
@@ -28,9 +27,14 @@ class SendPromptFile(CommandPackage):
     ```
     """
 
-
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         user_configs = await persona_info.get_user_configs()
         prompt_client = PromptClient(persona_info, user_configs)
-        file_url = prompt_client.get_prompt_url()
-        await send_msg.send_file(file_url, f"{persona_info.namespace_str}_User_Prompt.md")
+        response = await prompt_client.get_prompt()
+        if response:
+            if response.text:
+                await send_msg.send_render_prompt(response.text)
+            else:
+                await send_msg.send_prompt("[No Prompt]")
+        else:
+            await send_msg.send_response(response)
