@@ -25,7 +25,7 @@ class StorageConfigs(BaseModel):
     handler_timeout: int | float | None = Field(default=None, gt=0)
     client_pool_size: int = Field(default=10, ge=1)
     usage_group_context: bool = False
-    server_api_timeout:ServerAPITimeout = Field(default_factory = ServerAPITimeout)
+    server_api_timeout: ServerAPITimeout = Field(default_factory = ServerAPITimeout)
     camouflage: Camouflage = Field(default_factory = Camouflage)
     generate_image_file_type: GenerateImageFileType = GenerateImageFileType.URL
     render_error_message: RenderErrorMessage = Field(default_factory = RenderErrorMessage)
