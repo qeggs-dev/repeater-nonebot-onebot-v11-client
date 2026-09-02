@@ -3,6 +3,19 @@ from ....assist import PersonaInfo, SendMsg
 from ....cmd_info import CmdTypes
 
 class DownloadFromNexus(BaseNexus):
+    @classmethod
+    def documents(cls):
+        docs = [
+            f"Download {cls.userdata_cmds_type.value} data from Nexus.",
+            "",
+            "Usage:",
+            "```",
+            f"/{cls.cmd}",
+            "```"
+        ]
+        cls.description = "\n".join(docs)
+        return cls.description
+    
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         nexus_client = await self.get_client(persona_info)
         
