@@ -817,8 +817,11 @@ class PersonaInfo:
 
         # 经过框架处理的 Event 中可能并未包含 reply 消息段
         # 需要重新获取原始 Event
-        event = await self.get_message_event()
-        message: Message = event.message
+        if "reply" in self.message:
+            message = self.message
+        else:
+            event = await self.get_message_event()
+            message = event.message
 
         chain = get_reply_chain(
             bot = self._cached_api,
