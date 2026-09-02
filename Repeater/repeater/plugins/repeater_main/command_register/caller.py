@@ -522,7 +522,7 @@ class CommandCaller:
     ]:
         package.on_before_instantiate()
         package_instance = package()
-        package_instance.__time_for_registed__ = time.time_ns()
+        package_instance.__time_for_registered__ = time.time_ns()
             
         match package_instance.listen_type:
             case ListenType.Command:
