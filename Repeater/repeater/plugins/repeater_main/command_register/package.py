@@ -64,8 +64,8 @@ class CommandPackage(ABC, Generic[T]):
     Command Package Base Class
     """
 
-    __time_for_registed__: int
-    """Time for registed"""
+    __time_for_registered__: int
+    """Time for registered"""
 
     cmd: str | tuple[str, ...]
     """[Command Only] Command"""
