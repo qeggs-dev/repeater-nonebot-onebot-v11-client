@@ -148,7 +148,7 @@ main_api.json
 ```json
 {
     // Text Length Score 配置
-    "text_length_score_config":{
+    "text_length_score_configs":{
 
         // 最大长度阈值
         "max_lines": 5,
@@ -341,6 +341,11 @@ main_api.json
     // 默认使用的 Repeater Server
     "default_backend": "repeater",
 
+    // Client Pool 的大小
+    // 数量越多，缓存出现的概率越小
+    // 但会增加内存消耗
+    "client_pool_size": 10,
+
     // 是否将用户ID哈希化
     "hash_user_id": false,
 
@@ -355,10 +360,6 @@ main_api.json
     // 将其设置为 null 可以忽略超时检查
     "model_first_chunk_timeout": 90.0,
 
-    // 解析消息中的文本文件时
-    // 使用的编码
-    "text_file_encoding": "utf-8",
-    
     // 是否在注册时打印 Handler 名称
     // 默认为 true
     "log_registed_handler_name": true,
@@ -368,6 +369,21 @@ main_api.json
 
     // 在计算模型 Token 时，会显示多少个最常用的 Token
     "tokenizer_most_frequent_tokens": 5,
+
+    // 分析引用链时
+    // 最大的引用链长度
+    // 超过该长度后，即使仍然符合要求也不会继续分析
+    // 默认为 5
+    // 设置为 null 则不限制
+    "max_reply_chain_length": 5,
+
+    // 限制读取文本文件并展开时
+    // 允许读取的最大文件大小
+    "max_text_file_size": null,
+
+    // 解析消息中的文本文件时
+    // 使用的编码
+    "text_file_encoding": "utf-8",
 
     // 入口忽略配置
     "ignore_enter": {
