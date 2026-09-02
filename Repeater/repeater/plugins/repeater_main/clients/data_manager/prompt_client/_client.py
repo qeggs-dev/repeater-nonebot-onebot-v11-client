@@ -34,3 +34,17 @@ class PromptClient(UserDataClient):
     def get_prompt_url(self) -> str:
         return self.join_url(GET_PROMPT_ROUTE, f"{self.namespace_str}.md")
     # endregion
+
+    # region render prompt  
+    async def render_prompt(self) -> Response[str]:
+        logger.info("Rendering prompt")
+        response = await self.client.get(
+            self.join_url_static(RENDER_PROMPT_ROUTE, self.namespace_str)
+        )
+        return Response(response)
+    # endregion
+
+    # region render prompt file
+    def render_prompt_file_url(self) -> str:
+        return self.join_url(RENDER_PROMPT_ROUTE, f"{self.namespace_str}.md")
+    # endregion

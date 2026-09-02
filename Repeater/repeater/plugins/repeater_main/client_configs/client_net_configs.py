@@ -19,6 +19,7 @@ WIHTDRAW_CONTEXT_ROUTE = "/userdata/context/withdraw"
 # ==== PROMPT API ==== #
 SET_PROMPT_ROUTE = "/userdata/prompt/set"
 GET_PROMPT_ROUTE = "/userdata/prompt/get"
+RENDER_PROMPT_ROUTE = "/userdata/prompt/render"
 
 # ==== CONFIG API ==== #
 SET_CONFIG_ROUTE = "/userdata/config/set"
