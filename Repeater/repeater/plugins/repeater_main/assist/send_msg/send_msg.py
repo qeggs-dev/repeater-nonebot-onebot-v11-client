@@ -193,6 +193,7 @@ class SendMsg:
         self._component: str = component
         self._persona_info: PersonaInfo = persona_info
         self._prefix: Message = Message()
+        self._suffix: Message = Message()
         self._chat_tts_api = ChatTTSAPI()
         self._matcher: Type[Matcher] | None = matcher
         self._target_group: str | None = target_group
@@ -215,6 +216,8 @@ class SendMsg:
             component: str | None = None,
             persona_info: PersonaInfo | None = None,
             matcher: Type[Matcher] | None = None,
+            prefix: Message | None = None,
+            suffix: Message | None = None,
             target_group: str | None = None,
             target_user: str | None = None,
             send_target: SendingTarget | None = None,
@@ -225,7 +228,7 @@ class SendMsg:
         send_target = send_target if send_target is not None else self.sending_target
         target_group = target_group if target_group is not None else self._target_group
         target_user = target_user if target_user is not None else self._target_user
-        return self.__class__(
+        instance = self.__class__(
             component = component,
             persona_info = persona_info,
             matcher = matcher,
@@ -233,6 +236,26 @@ class SendMsg:
             target_group = target_group,
             target_user = target_user,
         )
+
+        if prefix is not None:
+            instance.set_prefix(prefix)
+        else:
+            instance.set_prefix(self._prefix.copy())
+        
+        if suffix is not None:
+            instance.set_suffix(suffix)
+        else:
+            instance.set_suffix(self._suffix.copy())
+        
+        return instance
+
+    def set_prefix(self, prefix: Message):
+        """
+        设置消息前缀
+        """
+        if not isinstance(prefix, Message):
+            raise TypeError("prefix must be a Message")
+        self._prefix = prefix
     
     def add_prefix(self, prefix: MessageSegment | str):
         """
@@ -245,6 +268,26 @@ class SendMsg:
         清空消息前缀
         """
         self._prefix = Message()
+
+    def set_suffix(self, suffix: Message):
+        """
+        设置消息后缀
+        """
+        if not isinstance(suffix, Message):
+            raise TypeError("suffix must be a Message")
+        self._suffix = suffix
+
+    def add_suffix(self, suffix: MessageSegment | str):
+        """
+        添加消息后缀
+        """
+        self._suffix.append(suffix)
+
+    def clear_suffix(self):
+        """
+        清空消息后缀
+        """
+        self._suffix = Message()
     
     @overload
     async def __call__(
@@ -1911,7 +1954,7 @@ class SendMsg:
         :param reply: 是否携带引用
         :param continue_handler: 是否继续运行当前处理流程
         """
-        send_msg = self._prefix + message
+        send_msg = self._prefix + message + self._suffix
         if reply:
             send_msg = self._persona_info.reply + send_msg
         try:
