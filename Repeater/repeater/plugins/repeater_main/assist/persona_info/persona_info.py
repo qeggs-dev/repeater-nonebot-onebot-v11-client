@@ -272,6 +272,7 @@ class PersonaInfo:
             instance = self.copy(
                 event = event,
                 args = None,
+                copyargs = False,
                 copydata = copydata,
                 deepcopy = deepcopy
             )
