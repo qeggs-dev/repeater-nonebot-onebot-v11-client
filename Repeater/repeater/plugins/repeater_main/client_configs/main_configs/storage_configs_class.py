@@ -1,3 +1,4 @@
+import secrets
 from pydantic import BaseModel, Field
 
 from .camouflage import Camouflage
@@ -35,7 +36,8 @@ class StorageConfigs(BaseModel):
     summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
     ciallo_content: str = "Ciallo~ (∠・ω< )⌒★"
     branch_file_size_use_abbreviation: bool = True
-    hash_namespace_salt: str | None = None
+    hash_namespace_salt: str = Field(default_factory = lambda: secrets.token_urlsafe(64))
+    hash_namespace_iterations: int = 0
     allow_send_any_message: bool = False
     model_first_chunk_timeout: int | float | None = 90.0
     tokenizer_cache_size: int = 50

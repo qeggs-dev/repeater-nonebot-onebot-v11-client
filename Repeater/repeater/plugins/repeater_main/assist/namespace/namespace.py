@@ -51,13 +51,13 @@ class Namespace(BaseModel):
 
     @staticmethod
     def _hash_str(string: str) -> str:
-        if storage_configs.hash_namespace_salt:
+        if storage_configs.hash_namespace_iterations > 0:
             return base64.urlsafe_b64encode(
                 hashlib.pbkdf2_hmac(
                     hash_name = "sha3_256",
                     password = string.encode("utf-8"),
                     salt = storage_configs.hash_namespace_salt.encode("utf-8"),
-                    iterations = 100000
+                    iterations = storage_configs.hash_namespace_iterations
                 )
             ).decode("utf-8")
         else:
