@@ -165,6 +165,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher],
+            prefix: Message | None = None,
+            suffix: Message | None = None,
             target_group: str | None = None,
             target_user: str | None = None,
             send_target: Literal[SendingTarget.MATCHER] = SendingTarget.MATCHER
@@ -176,6 +178,8 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher] | None = None,
+            prefix: Message | None = None,
+            suffix: Message | None = None,
             target_group: str | None = None,
             target_user: str | None = None,
             send_target: SendingTarget = SendingTarget.AUTO
@@ -186,14 +190,16 @@ class SendMsg:
             component: str,
             persona_info: PersonaInfo,
             matcher: Type[Matcher] | None = None,
+            prefix: Message | None = None,
+            suffix: Message | None = None,
             target_group: str | None = None,
             target_user: str | None = None,
             send_target: SendingTarget = SendingTarget.AUTO
         ):
         self._component: str = component
         self._persona_info: PersonaInfo = persona_info
-        self._prefix: Message = Message()
-        self._suffix: Message = Message()
+        self._prefix: Message = prefix or Message()
+        self._suffix: Message = suffix or Message()
         self._chat_tts_api = ChatTTSAPI()
         self._matcher: Type[Matcher] | None = matcher
         self._target_group: str | None = target_group
@@ -210,6 +216,19 @@ class SendMsg:
             case SendingTarget.MATCHER:
                 if matcher is None:
                     raise ValueError("Matcher can't be a target, because it's not given.")
+
+    def __repr__(self) -> str:
+        args_map:  list[tuple[str, Any]] = [
+            ("component", self._component),
+            ("persona_info", self._persona_info),
+            ("matcher", self._matcher),
+            ("prefix", self._prefix),
+            ("suffix", self._suffix),
+            ("target_group", self._target_group),
+            ("target_user", self._target_user),
+            ("sending_target", self.sending_target)
+        ]
+        return f"{self.__class__.__name__}({', '.join([f'{k}={v!r}' for k, v in args_map if v is not None])})"
     
     def copy(
             self,
@@ -435,10 +454,8 @@ class SendMsg:
         logger.info(
             "Send Debug Message"
         )
-        await self._send(
-            self._persona_info.reply + (
-                f"[{self._component}|{self._persona_info.namespace}|{self._persona_info.nickname}]: {self._persona_info.message}"
-            ),
+        await self.send_text(
+            f"[{self._component}|{self._persona_info.namespace}|{self._persona_info.nickname}]: {self._persona_info.message}",
             reply = reply,
             break_code = break_code,
             continue_handler = continue_handler,
