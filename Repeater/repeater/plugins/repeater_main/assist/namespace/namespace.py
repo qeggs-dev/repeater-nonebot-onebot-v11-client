@@ -23,6 +23,8 @@ class Namespace(BaseModel):
 
     @classmethod
     def from_str(cls, string: str) -> "Namespace":
+        if storage_configs.hash_namespace_iterations > 0:
+            raise RuntimeError("Hashed namespace can not be deserialized!")
         match_result = group_pattern.match(string)
         if match_result is not None:
             return cls(
