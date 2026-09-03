@@ -35,7 +35,7 @@ class StorageConfigs(BaseModel):
     summarize_and_contract_default_message: str = "System Message: please sum up all the contents above."
     ciallo_content: str = "Ciallo~ (∠・ω< )⌒★"
     branch_file_size_use_abbreviation: bool = True
-    hash_user_id: bool = False
+    hash_namespace_salt: str | None = None
     allow_send_any_message: bool = False
     model_first_chunk_timeout: int | float | None = 90.0
     tokenizer_cache_size: int = 50
