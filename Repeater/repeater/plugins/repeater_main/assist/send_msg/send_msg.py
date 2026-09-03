@@ -1715,8 +1715,9 @@ class SendMsg:
             break_code=break_code,
             continue_handler = continue_handler
         )
-    
-    def handler_finished(self) -> NoReturn:
+
+    @staticmethod
+    def handler_finished() -> NoReturn:
         """
         跳出当前处理函数
 
@@ -1726,8 +1727,9 @@ class SendMsg:
             "Handler finished"
         )
         raise FinishedException
-    
-    def break_handler(self, code: int = 0) -> NoReturn:
+
+    @staticmethod
+    def break_handler(code: int = 0) -> NoReturn:
         """
         跳出当前处理函数
 
