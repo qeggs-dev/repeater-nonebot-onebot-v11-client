@@ -346,8 +346,12 @@ main_api.json
     // 但会增加内存消耗
     "client_pool_size": 10,
 
-    // 是否将用户ID哈希化
-    "hash_user_id": false,
+    // Namespace 字符串序列化时 hash 的掺盐内容
+    "hash_namespace_salt": "",
+
+    // Namespace 字符串序列化时 hash 的迭代次数
+    // 为 0 时则不进行 hash
+    "hash_namespace_iterations": 100000,
 
     // 是否允许用户构造任意消息发送
     "allow_send_any_message": false,
