@@ -12,7 +12,7 @@ class FrameworkMessageListener(CommandPackage):
     cmd_type = CmdTypes.LISTEN_ALL
     priority = 0
     block = False
-    document = """
+    description = """
     A Handler inside the Repeater framework for unfiltered message listening.
     """
 
