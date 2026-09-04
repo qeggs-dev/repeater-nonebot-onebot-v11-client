@@ -1,9 +1,7 @@
-from _asyncio import Future
 import sys
 import time
 import uuid
 import asyncio
-import textwrap
 from .package import CommandPackage
 from ..assist import (
     PersonaInfo,
@@ -585,11 +583,6 @@ class CommandCaller:
         package_instance = package(*args, **kwargs)
         package_instance.__time_for_created__ = time.time_ns()
         package_instance.__time_for_created_monotonic__ = time.perf_counter_ns()
-        
-        if isinstance(package_instance.description, str):
-            package_instance.description = textwrap.dedent(
-                package_instance.description.expandtabs(4)
-            )
             
         match package_instance.listen_type:
             case ListenType.Command:
@@ -886,7 +879,7 @@ class CommandCaller:
         namespace = persona_info.namespace
         if namespace in cls.listen_message_tasks:
             async with cls.listen_lock:
-                futures: set[Future[PersonaInfo]] = cls.listen_message_tasks.pop(namespace)
+                futures: set[asyncio.Future[PersonaInfo]] = cls.listen_message_tasks.pop(namespace)
                 for future in futures:
                     future.set_result(persona_info)
             logger.info(
