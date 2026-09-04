@@ -1,4 +1,5 @@
 import httpx
+import textwrap
 
 from abc import (
     ABC,
@@ -189,7 +190,10 @@ class CommandPackage(ABC, Generic[T]):
         """
         This method will be called before initialization.
         """
-        pass
+        if isinstance(self.description, str):
+            self.description = textwrap.dedent(
+                self.description.expandtabs(4)
+            )
 
     def __post_init__(self):
         """
