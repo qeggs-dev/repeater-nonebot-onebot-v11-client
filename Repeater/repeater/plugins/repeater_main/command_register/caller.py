@@ -310,7 +310,7 @@ class CommandCaller:
             result_code = 0
         
         logger.info(
-            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}, debug: {debug}",
+            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}, debug: {debug_mode}",
             handler = package.component,
             task_id = task_id,
             result = repr(result),
