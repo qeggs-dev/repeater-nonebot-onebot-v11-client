@@ -56,6 +56,9 @@ from .sub_cmd_exit import (
     SubCmdCacelled,
     SubCmdTimeout
 )
+from .typings import (
+    New
+)
 
 T = TypeVar("T")
 
@@ -75,6 +78,9 @@ class CommandPackage(ABC, Generic[T]):
 
     __time_for_registered_monotonic__: int
     """Time for registered (monotonic)"""
+
+    __raw_new__: New
+    """raw `__new__` method"""
 
     cmd: str | tuple[str, ...]
     """[Command Only] Command"""
@@ -179,8 +185,7 @@ class CommandPackage(ABC, Generic[T]):
         """
         pass
 
-    @classmethod
-    def __pre_init__(cls):
+    def __pre_init__(self):
         """
         This method will be called before initialization.
         """
