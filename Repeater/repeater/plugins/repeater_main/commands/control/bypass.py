@@ -1,6 +1,6 @@
 import re
 
-from ...assist import PersonaInfo, SendMsg
+from ...assist import PersonaInfo, SendMsg, SendingTarget
 from ...cmd_info import CmdTypes
 from ...command_register import(
     CommandCaller,
@@ -58,7 +58,8 @@ class Bypass(CommandPackage):
                 args = args
             )
             copyed_send_msg = send_msg.copy(
-                component = package_instance.component
+                component = package_instance.component,
+                send_target = SendingTarget.API
             )
             await CommandCaller.horizontal_enter_wait_created(
                 package_instance,
