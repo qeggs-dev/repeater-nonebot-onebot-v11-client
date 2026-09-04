@@ -1,5 +1,4 @@
 import httpx
-import textwrap
 
 from abc import (
     ABC,
@@ -65,8 +64,17 @@ class CommandPackage(ABC, Generic[T]):
     Command Package Base Class
     """
 
+    __time_for_created__: int
+    """Time for created"""
+
+    __time_for_created_monotonic__: int
+    """Time for created (monotonic)"""
+
     __time_for_registered__: int
     """Time for registered"""
+
+    __time_for_registered_monotonic__: int
+    """Time for registered (monotonic)"""
 
     cmd: str | tuple[str, ...]
     """[Command Only] Command"""
@@ -168,22 +176,19 @@ class CommandPackage(ABC, Generic[T]):
     def __init__(self):
         """
         Initialize the command package.
-
-        Warning: this method is used for the main initialization process of the Package. Do not override this method.
-        If you need advice try `__pre_init__` and `__post_init__` method.
         """
         pass
 
     @classmethod
     def __pre_init__(cls):
         """
-        This method will be called at initialization time.
+        This method will be called before initialization.
         """
         pass
 
     def __post_init__(self):
         """
-        This method will be called at initialization time.
+        This method will be called after registration is complete.
         """
         pass
 

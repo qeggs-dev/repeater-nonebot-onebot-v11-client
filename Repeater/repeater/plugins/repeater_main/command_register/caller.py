@@ -3,6 +3,7 @@ import sys
 import time
 import uuid
 import asyncio
+import textwrap
 from .package import CommandPackage
 from ..assist import (
     PersonaInfo,
@@ -272,7 +273,8 @@ class CommandCaller:
         task_id: uuid.UUID,
         package: CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg
+        send_msg: SendMsg,
+        debug_mode: bool | None = None,
     ) -> T_Handler_Result | Any:
         """
         Enter the message handler.
@@ -282,13 +284,21 @@ class CommandCaller:
         :param persona_info: The persona info.
         :param send_msg: The send message function.
         :param created: The running package created future.
+        :param debug_mode: The debug mode.
         :return: The result of the message handler.
         """
+        if debug_mode is None:
+            if send_msg.is_debug_mode:
+                debug_mode = True
+            else:
+                debug_mode = False
+        
         result = await cls._enter_hander(
             task_id,
             package,
             persona_info,
-            send_msg
+            send_msg,
+            debug_mode,
         )
         if isinstance(result, type):
             if issubclass(result, SubCmdBreaked):
@@ -300,12 +310,13 @@ class CommandCaller:
             result_code = 0
         
         logger.info(
-            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}",
+            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}, debug: {debug}",
             handler = package.component,
             task_id = task_id,
             result = repr(result),
             code = result_code,
             type = type(result).__name__,
+            debug_mode = debug_mode
         )
         return result
     
@@ -315,7 +326,8 @@ class CommandCaller:
         task_id: uuid.UUID,
         package: CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg
+        send_msg: SendMsg,
+        debug_mode: bool = False,
     ) -> T_Handler_Result | Any:
         """
         Enter the message handler.
@@ -325,6 +337,7 @@ class CommandCaller:
         :param package: The command package.
         :param persona_info: The persona info.
         :param send_msg: The send message function.
+        :param debug_mode: Whether to enable debug mode.
         :return: The result of the message handler.
         """
         try:
@@ -359,8 +372,8 @@ class CommandCaller:
                 
                 if package.super_permissions and not persona_info.has_super_permissions:
                     return await package.insufficient_access(persona_info, send_msg)
-                
-                if send_msg.is_debug_mode:
+
+                if debug_mode:
                     return await package.on_debug_mode(persona_info, send_msg)
                 
                 task = asyncio.create_task(
@@ -376,6 +389,8 @@ class CommandCaller:
             
             except asyncio.CancelledError:
                 return await package.on_cancel(persona_info, send_msg)
+            except asyncio.TimeoutError:
+                return await package.on_timeout(persona_info, send_msg)
             except NoneBotException as e:
                 return await package.on_nonebot_exception(e, persona_info, send_msg)
             except RepeaterException as e:
@@ -469,9 +484,19 @@ class CommandCaller:
         if package.acceptable_sources is None:
             return True
         return persona_info.source in package.acceptable_sources
-    
+
     @classmethod
     def register(cls, package: Type[CommandPackage[T_Handler_Result]]) -> Type[CommandPackage[T_Handler_Result]]:
+        """
+        Register a command
+
+        :param package: CommandPackage
+        :return: CommandPackage
+        """
+        return cls._register(package)
+    
+    @classmethod
+    def _register(cls, package: Type[CommandPackage[T_Handler_Result]]) -> Type[CommandPackage[T_Handler_Result]]:
         """
         Register a command
 
@@ -491,7 +516,10 @@ class CommandCaller:
                 matcher = matcher,
                 handler = handler
             )
+            package_instance.__post_init__()
+            package_instance.__time_for_registered__ = time.time_ns()
             register_end_time = time.perf_counter_ns()
+            package_instance.__time_for_registered_monotonic__ = register_end_time
 
             logger.info(
                 "Register command {name} done, cost {cost:.3f} ms",
@@ -521,8 +549,15 @@ class CommandCaller:
         ]
     ]:
         package.on_before_instantiate()
+        package.__pre_init__()
         package_instance = package()
-        package_instance.__time_for_registered__ = time.time_ns()
+        package_instance.__time_for_created__ = time.time_ns()
+        package_instance.__time_for_created_monotonic__ = time.perf_counter_ns()
+        
+        if isinstance(package_instance.description, str):
+            package_instance.description = textwrap.dedent(
+                package_instance.description.expandtabs(4)
+            )
             
         match package_instance.listen_type:
             case ListenType.Command:
