@@ -219,15 +219,17 @@ class CommandCaller:
         package: CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
         send_msg: SendMsg,
+        debug_mode: bool | None = None,
         created: asyncio.Future[RunningPackage[T_Handler_Result]] | None = None
     ) -> T_Handler_Result | Any | SubCmdBreaked | None | NoReturn:
         try:
             task = asyncio.create_task(
                 cls.enter_handler(
-                    task_id,
-                    package,
-                    persona_info,
-                    send_msg
+                    task_id = task_id,
+                    package = package,
+                    persona_info = persona_info,
+                    send_msg = send_msg,
+                    debug_mode = debug_mode,
                 )
             )
             running: RunningPackage[T_Handler_Result] = RunningPackage(
@@ -407,7 +409,8 @@ class CommandCaller:
         cls,
         package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg | None = None
+        send_msg: SendMsg | None = None,
+        debug_mode: bool | None = None
     ) -> T_Handler_Result | Any:
         """
         Horizontal call handler
@@ -415,6 +418,7 @@ class CommandCaller:
         :param package: CommandPackage
         :param persona_info: PersonaInfo
         :param send_msg: SendMsg
+        :param debug_mode: run handler at debug mode
         :return: Handler result
         """
         if isinstance(package, CommandPackage):
@@ -427,10 +431,11 @@ class CommandCaller:
         persona_info_copy, send_msg_copy = await package_instance.horizontal_enter(persona_info, send_msg)
         task_id = uuid.uuid4()
         return await cls.run_handle(
-            task_id,
-            package_instance,
-            persona_info_copy,
-            send_msg_copy
+            task_id = task_id,
+            package = package_instance,
+            persona_info = persona_info_copy,
+            send_msg = send_msg_copy,
+            debug_mode = debug_mode
         )
 
     @classmethod
@@ -438,7 +443,8 @@ class CommandCaller:
         cls,
         package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg | None = None
+        send_msg: SendMsg | None = None,
+        debug_mode: bool | None = None
     ) -> RunningPackage[T_Handler_Result]:
         """
         Horizontal call handler and waiting for the running package to created.
@@ -460,11 +466,12 @@ class CommandCaller:
         created: asyncio.Future[RunningPackage[T_Handler_Result]] = loop.create_future()
         asyncio.create_task(
             cls.run_handle(
-                task_id,
-                package_instance,
-                persona_info_copy,
-                send_msg_copy,
-                created = created
+                task_id = task_id,
+                package = package_instance,
+                persona_info = persona_info_copy,
+                send_msg = send_msg_copy,
+                debug_mode = debug_mode,
+                created = created,
             )
         )
         return await created
