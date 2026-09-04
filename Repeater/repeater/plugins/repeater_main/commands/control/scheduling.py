@@ -60,8 +60,7 @@ class Scheduling(CommandPackage):
                 args = args
             )
             copyed_send_msg = send_msg.copy(
-                component = package_instance.component,
-                send_target = SendingTarget.API
+                component = package_instance.component
             )
             try:
                 await CommandCaller.timed_scheduling(
