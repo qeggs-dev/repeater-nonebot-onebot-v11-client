@@ -2,6 +2,8 @@ import sys
 import time
 import uuid
 import asyncio
+from croniter import croniter
+from datetime import datetime
 from .package import CommandPackage
 from ..assist import (
     PersonaInfo,
@@ -422,6 +424,34 @@ class CommandCaller:
                 await package.handler_exit(persona_info, send_msg)
         except BreakHandler as e:
             return SubCmdBreaked(e.code)
+
+    @classmethod
+    async def timed_scheduling(
+        cls,
+        package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
+        cron: str,
+        persona_info: PersonaInfo,
+        send_msg: SendMsg | None = None,
+        debug_mode: bool | None = None
+    ):
+        try:
+            cron_iter = croniter(
+                expr_format = cron,
+                start_time = datetime.now()
+            )
+        except ValueError as e:
+            raise ValueError(f"Invalid cron expression: {e}") from e
+        while True:
+            now = datetime.now()
+            next_time = cron_iter.get_next(datetime)
+            delta = next_time - now
+            await asyncio.sleep(delta.total_seconds())
+            await cls.horizontal_call(
+                package = package,
+                persona_info = persona_info,
+                send_msg = send_msg,
+                debug_mode = debug_mode
+            )
     
     @classmethod
     async def horizontal_call(
@@ -898,7 +928,7 @@ class CommandCaller:
             raise ValueError(f"Unknown listen type: {package.listen_type}")
     
     @classmethod
-    async def report_message(cls, persona_info: PersonaInfo, send_msg: SendMsg):
+    async def report_message(cls, persona_info: PersonaInfo):
         """
         Report a new message for processing.
         """

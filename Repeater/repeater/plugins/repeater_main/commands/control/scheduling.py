@@ -8,35 +8,37 @@ from ...command_register import(
 )
 
 @CommandCaller.register
-class Bypass(CommandPackage):
-    cmd = "bypass"
+class Scheduling(CommandPackage):
+    cmd = "scheduling"
     aliases = {
-        "byp",
-        "BYP",
-        "Bypass",
-        "BYPASS"
+        "scdl",
+        "SCDL",
+        "Scheduling",
+        "SCEDULING"
     }
     cmd_type = CmdTypes.CONTROL
     description = f"""
-        Run a command in the background,
-        and quits immediately.
+        Create a scheduled task using a cron expression.
 
         Usage:
         ```
-        /{cmd} command [args]
+        /{cmd} {{cron_expression}} command [args]
         ```
+        PS: The curly braces need to be retained here to ensure that the cron expression resolves properly.
     """
 
-    pattern = re.compile(r"^(?P<components_or_trigger>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^(?P<cron_expression>\{.*\})\s*(?P<components_or_trigger>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = str(persona_info.message)
         
         matched = self.pattern.match(msg)
         if matched:
+            cron = matched.group("cron_expression")
             components_or_trigger = matched.group("components_or_trigger")
             args_prefix = matched.group("args")
 
+            assert isinstance(cron, str), "cron must be str"
             assert isinstance(components_or_trigger, str), "components must be str"
             assert isinstance(args_prefix, str), "args_prefix must be str"
 
@@ -58,13 +60,16 @@ class Bypass(CommandPackage):
                 args = args
             )
             copyed_send_msg = send_msg.copy(
-                component = package_instance.component,
-                send_target = SendingTarget.API
+                component = package_instance.component
             )
-            await CommandCaller.horizontal_enter_wait_created(
-                package_instance,
-                copyed_persona_info,
-                copyed_send_msg
-            )
+            try:
+                await CommandCaller.timed_scheduling(
+                    package = package_instance,
+                    cron = cron,
+                    persona_info = copyed_persona_info,
+                    send_msg = copyed_send_msg
+                )
+            except ValueError as e:
+                await send_msg.send_error(f"Cron format error: {e}")
         else:
             await send_msg.send_error("Invalid command format")

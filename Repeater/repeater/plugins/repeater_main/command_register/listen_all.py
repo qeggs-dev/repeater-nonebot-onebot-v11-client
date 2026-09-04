@@ -12,7 +12,7 @@ class FrameworkMessageListener(CommandPackage):
     cmd_type = CmdTypes.LISTEN_ALL
     priority = 0
     block = False
-    document = """
+    description = """
     A Handler inside the Repeater framework for unfiltered message listening.
     """
 
@@ -24,7 +24,8 @@ class FrameworkMessageListener(CommandPackage):
         return await super().enter_handler(persona_info, send_msg)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        await CommandCaller.report_message(
-            persona_info = persona_info,
-            send_msg = send_msg
+        asyncio.create_task(
+            coro = CommandCaller.report_message(
+                persona_info = persona_info
+            )
         )

@@ -573,7 +573,8 @@ PS：该配置文件是专门用于对接ChatTTS的
 | `equal`                    | `eq`     | `Equal`                   | `CONTROL`   | 4.9.2.1        | 等于判断                       | 每行一个消息，可以添加标签                  | 所有消息在去掉收尾空格后都相等时，顺序执行 `true:` 标签，否则执行 `false:` 标签；标签必须独占一行，且允许不填，则表示空内容 |
 | `flipResult`               | `fr`     | `FlipResult`              | `CONTROL`   | 4.9.3.0        | 反转结果                       | 格式为：命令 参数                          | 当命令执行结果为 0 时返回 1，否则返回 0 |
 | `terminate`                | `ter`    | `Terminate`               | `CONTROL`   | 4.9.3.0        | 终止任务                       | 无                                        | 终止当前任务以及所在父级的整条任务树 |
-| `debugMode`                | `dm`     | `DebugMode`               | `CONTROL`   | 4.9.3.0        | 调试模式                       | 格式为：命令 参数                          | 启用或关闭调试模式 |
+| `debugMode`                | `dm`     | `DebugMode`               | `CONTROL`   | 4.9.3.0        | 调试模式                       | 格式为：命令 参数                          | 启用调试模式运行一个命令 |
+| `scheduling`               | `scdl`   | `Scheduling`              | `CONTROL`   | 4.9.3.0        | 定时任务                       | 格式为：{cron 表达式} 命令 参数             | 创建一个定时任务，注意花括号需要保留以告知程序 cron 表达式的边界 |
 
 ### Variable Command
 
