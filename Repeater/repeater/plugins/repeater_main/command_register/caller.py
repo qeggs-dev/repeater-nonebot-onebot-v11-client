@@ -486,7 +486,10 @@ class CommandCaller:
         return persona_info.source in package.acceptable_sources
 
     @classmethod
-    def register(cls, package: Type[CommandPackage[T_Handler_Result]]) -> Type[CommandPackage[T_Handler_Result]]:
+    def register(
+        cls,
+        package: Type[CommandPackage[T_Handler_Result]]
+    ) -> Type[CommandPackage[T_Handler_Result]]:
         """
         Register a command
 
@@ -494,9 +497,27 @@ class CommandCaller:
         :return: CommandPackage
         """
         return cls._register(package)
+
+    @classmethod
+    def register_with_args(
+        cls,
+        *args,
+        **kwargs
+    ) -> Callable[[Type[CommandPackage[T_Handler_Result]]], type[CommandPackage[T_Handler_Result]]]:
+        """
+        Register a command with args
+
+        :param args: args
+        :param kwargs: kwargs
+        :return: CommandPackage
+        """
+        def _decorator(package: Type[CommandPackage[T_Handler_Result]]) -> Type[CommandPackage[T_Handler_Result]]:
+            nonlocal args, kwargs
+            return cls._register(package, *args, **kwargs)
+        return _decorator
     
     @classmethod
-    def _register(cls, package: Type[CommandPackage[T_Handler_Result]]) -> Type[CommandPackage[T_Handler_Result]]:
+    def _register(cls, package: Type[CommandPackage[T_Handler_Result]], *args: Any, **kwargs: Any) -> Type[CommandPackage[T_Handler_Result]]:
         """
         Register a command
 
@@ -506,7 +527,7 @@ class CommandCaller:
         if package.enabled:
             register_start_time = time.perf_counter_ns()
             try:
-                package_instance, matcher, handler = cls._make_pack(package)
+                package_instance, matcher, handler = cls._make_pack(package, *args, **kwargs)
             except:
                 package.on_reg_failed(*sys.exc_info())
             
@@ -532,6 +553,8 @@ class CommandCaller:
     def _make_pack(
         cls,
         package: Type[CommandPackage[T_Handler_Result]],
+        *args: Any,
+        **kwargs: Any,
     )  -> tuple[
         CommandPackage[T_Handler_Result], # package_instance
         type[Matcher], # matcher
@@ -549,8 +572,17 @@ class CommandCaller:
         ]
     ]:
         package.on_before_instantiate()
-        package.__pre_init__()
-        package_instance = package()
+
+        package_raw_new = package.__new__
+        def package_new(cls: Type[CommandPackage[T_Handler_Result]]):
+            nonlocal package_raw_new
+            package_instance = package_raw_new(cls)
+            package_instance.__pre_init__()
+            return package_instance
+        package.__new__ = package_new
+        package.__raw_new__ = package_raw_new
+
+        package_instance = package(*args, **kwargs)
         package_instance.__time_for_created__ = time.time_ns()
         package_instance.__time_for_created_monotonic__ = time.perf_counter_ns()
         
