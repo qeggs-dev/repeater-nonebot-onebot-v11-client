@@ -1,5 +1,6 @@
 import re
 import hashlib
+import base64
 from pydantic import BaseModel, ConfigDict
 from ...client_configs import storage_configs
 from .message_source import MessageSource
@@ -22,6 +23,8 @@ class Namespace(BaseModel):
 
     @classmethod
     def from_str(cls, string: str) -> "Namespace":
+        if storage_configs.hash_namespace_iterations > 0:
+            raise RuntimeError("Hashed namespace can not be deserialized!")
         match_result = group_pattern.match(string)
         if match_result is not None:
             return cls(
@@ -47,15 +50,24 @@ class Namespace(BaseModel):
             return f"Private_{self.user_id}"
         else:
             return f"UnknownSource_{self.user_id}"
-    
+
+    @staticmethod
+    def _hash_str(string: str) -> str:
+        if storage_configs.hash_namespace_iterations > 0:
+            return base64.urlsafe_b64encode(
+                hashlib.pbkdf2_hmac(
+                    hash_name = "sha3_256",
+                    password = string.encode("utf-8"),
+                    salt = storage_configs.hash_namespace_salt.encode("utf-8"),
+                    iterations = storage_configs.hash_namespace_iterations
+                )
+            ).decode("utf-8")
+        else:
+            return string
+
     @property
     def namespace_str(self):
-        if storage_configs.hash_user_id:
-            return hashlib.sha3_256(
-                self._namespace.encode("utf-8")
-            ).hexdigest()
-        else:
-            return self._namespace
+        return self._hash_str(self._namespace)
     
     @property
     def _merge_group_id(self):
@@ -70,12 +82,7 @@ class Namespace(BaseModel):
     
     @property
     def merge_namespace(self):
-        if storage_configs.hash_user_id:
-            return hashlib.sha3_256(
-                self._merge_group_id.encode("utf-8")
-            ).hexdigest()
-        else:
-            return self._merge_group_id
+        return self._hash_str(self._merge_group_id)
     
     @property
     def _public_space_id(self):
@@ -90,12 +97,7 @@ class Namespace(BaseModel):
     
     @property
     def public_space_id(self):
-        if storage_configs.hash_user_id:
-            return hashlib.sha3_256(
-                self._public_space_id.encode("utf-8")
-            ).hexdigest()
-        else:
-            return self._public_space_id
+        return self._hash_str(self._public_space_id)
     
     def __str__(self) -> str:
         return self.namespace_str

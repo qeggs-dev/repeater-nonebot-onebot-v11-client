@@ -4,9 +4,20 @@ import copy
 import aiofiles
 
 from nonebot import get_bots
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment, Message
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    MessageEvent,
+    MessageSegment,
+    Message
+)
 from nonebot.internal.adapter.adapter import Adapter
-from typing import AsyncGenerator, Container, Iterable, Callable
+from typing import (
+    Any,
+    AsyncGenerator,
+    Container,
+    Iterable,
+    Callable
+)
 
 from nonebot.internal.adapter.bot import Bot
 from ..assist_func import (
@@ -60,7 +71,8 @@ class PersonaInfo:
             self,
             bot: Bot,
             event: MessageEvent,
-            args: str | Message | None = None
+            args: str | Message | None = None,
+            enter_type: EnterType = EnterType.Command
         ) -> None:
         """
         创建一个 PersonaInfo 对象
@@ -85,9 +97,8 @@ class PersonaInfo:
             self._args = None
         
         self._group_id: str | None = None
-        self._source: MessageSource = MessageSource.GROUP
         self._source = MessageSource(event.message_type.strip().lower())
-        self._enter_type: EnterType = EnterType.Command
+        self._enter_type: EnterType = enter_type
         self._raw_message_event: MessageEvent | None = None
         self._self_id: str = bot.self_id
 
@@ -101,6 +112,15 @@ class PersonaInfo:
         
         self._super_permissions_checker: PermissionChecker = PermissionChecker(storage_configs.super_permissions)
         self._user_config_loader = UserConfigLoader(self.namespace)
+
+    def __repr__(self) -> str:
+        args_map:  list[tuple[str, Any]] = [
+            ("bot", self._bot),
+            ("event", self._message_event),
+            ("args", self._args),
+            ("enter_type", self._enter_type)
+        ]
+        return f"{self.__class__.__name__}({', '.join([f'{k}={v!r}' for k, v in args_map if v is not None])})"
     
     @classmethod
     def from_command(cls, bot: Bot, event: MessageEvent, args: Message | None = None) -> PersonaInfo:
@@ -114,9 +134,9 @@ class PersonaInfo:
         persona_info = cls(
             bot = bot,
             event = event,
-            args = args
+            args = args,
+            enter_type = EnterType.Command
         )
-        persona_info._enter_type = EnterType.Command
         return persona_info
     
     @classmethod
@@ -129,9 +149,9 @@ class PersonaInfo:
         """
         persona_info = cls(
             bot = bot,
-            event = event
+            event = event,
+            enter_type = EnterType.Message
         )
-        persona_info._enter_type = EnterType.Message
         return persona_info
     
     @classmethod
@@ -144,9 +164,9 @@ class PersonaInfo:
         persona_info = cls(
             bot = persona_info.bot,
             event = persona_info.event,
-            args = persona_info.args
+            args = persona_info.args,
+            enter_type = EnterType.Horizontal
         )
-        persona_info._enter_type = EnterType.Horizontal
         return persona_info
     
     def copy(
@@ -272,6 +292,7 @@ class PersonaInfo:
             instance = self.copy(
                 event = event,
                 args = None,
+                copyargs = False,
                 copydata = copydata,
                 deepcopy = deepcopy
             )

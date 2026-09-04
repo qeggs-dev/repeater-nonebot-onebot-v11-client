@@ -1,4 +1,3 @@
-from _asyncio import Future
 import sys
 import time
 import uuid
@@ -220,15 +219,17 @@ class CommandCaller:
         package: CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
         send_msg: SendMsg,
+        debug_mode: bool | None = None,
         created: asyncio.Future[RunningPackage[T_Handler_Result]] | None = None
     ) -> T_Handler_Result | Any | SubCmdBreaked | None | NoReturn:
         try:
             task = asyncio.create_task(
                 cls.enter_handler(
-                    task_id,
-                    package,
-                    persona_info,
-                    send_msg
+                    task_id = task_id,
+                    package = package,
+                    persona_info = persona_info,
+                    send_msg = send_msg,
+                    debug_mode = debug_mode,
                 )
             )
             running: RunningPackage[T_Handler_Result] = RunningPackage(
@@ -272,7 +273,8 @@ class CommandCaller:
         task_id: uuid.UUID,
         package: CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg
+        send_msg: SendMsg,
+        debug_mode: bool | None = None,
     ) -> T_Handler_Result | Any:
         """
         Enter the message handler.
@@ -282,13 +284,21 @@ class CommandCaller:
         :param persona_info: The persona info.
         :param send_msg: The send message function.
         :param created: The running package created future.
+        :param debug_mode: The debug mode.
         :return: The result of the message handler.
         """
+        if debug_mode is None:
+            if send_msg.is_debug_mode:
+                debug_mode = True
+            else:
+                debug_mode = False
+        
         result = await cls._enter_hander(
             task_id,
             package,
             persona_info,
-            send_msg
+            send_msg,
+            debug_mode,
         )
         if isinstance(result, type):
             if issubclass(result, SubCmdBreaked):
@@ -300,12 +310,13 @@ class CommandCaller:
             result_code = 0
         
         logger.info(
-            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}",
+            "Handler {handler}[{task_id}] result: {result}({type}), return code: {code}, debug: {debug}",
             handler = package.component,
             task_id = task_id,
             result = repr(result),
             code = result_code,
             type = type(result).__name__,
+            debug_mode = debug_mode
         )
         return result
     
@@ -315,7 +326,8 @@ class CommandCaller:
         task_id: uuid.UUID,
         package: CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg
+        send_msg: SendMsg,
+        debug_mode: bool = False,
     ) -> T_Handler_Result | Any:
         """
         Enter the message handler.
@@ -325,6 +337,7 @@ class CommandCaller:
         :param package: The command package.
         :param persona_info: The persona info.
         :param send_msg: The send message function.
+        :param debug_mode: Whether to enable debug mode.
         :return: The result of the message handler.
         """
         try:
@@ -359,8 +372,8 @@ class CommandCaller:
                 
                 if package.super_permissions and not persona_info.has_super_permissions:
                     return await package.insufficient_access(persona_info, send_msg)
-                
-                if send_msg.is_debug_mode:
+
+                if debug_mode:
                     return await package.on_debug_mode(persona_info, send_msg)
                 
                 task = asyncio.create_task(
@@ -376,6 +389,8 @@ class CommandCaller:
             
             except asyncio.CancelledError:
                 return await package.on_cancel(persona_info, send_msg)
+            except asyncio.TimeoutError:
+                return await package.on_timeout(persona_info, send_msg)
             except NoneBotException as e:
                 return await package.on_nonebot_exception(e, persona_info, send_msg)
             except RepeaterException as e:
@@ -394,7 +409,8 @@ class CommandCaller:
         cls,
         package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg | None = None
+        send_msg: SendMsg | None = None,
+        debug_mode: bool | None = None
     ) -> T_Handler_Result | Any:
         """
         Horizontal call handler
@@ -402,6 +418,7 @@ class CommandCaller:
         :param package: CommandPackage
         :param persona_info: PersonaInfo
         :param send_msg: SendMsg
+        :param debug_mode: run handler at debug mode
         :return: Handler result
         """
         if isinstance(package, CommandPackage):
@@ -414,10 +431,11 @@ class CommandCaller:
         persona_info_copy, send_msg_copy = await package_instance.horizontal_enter(persona_info, send_msg)
         task_id = uuid.uuid4()
         return await cls.run_handle(
-            task_id,
-            package_instance,
-            persona_info_copy,
-            send_msg_copy
+            task_id = task_id,
+            package = package_instance,
+            persona_info = persona_info_copy,
+            send_msg = send_msg_copy,
+            debug_mode = debug_mode
         )
 
     @classmethod
@@ -425,7 +443,8 @@ class CommandCaller:
         cls,
         package: Type[CommandPackage[T_Handler_Result]] | CommandPackage[T_Handler_Result],
         persona_info: PersonaInfo,
-        send_msg: SendMsg | None = None
+        send_msg: SendMsg | None = None,
+        debug_mode: bool | None = None
     ) -> RunningPackage[T_Handler_Result]:
         """
         Horizontal call handler and waiting for the running package to created.
@@ -447,11 +466,12 @@ class CommandCaller:
         created: asyncio.Future[RunningPackage[T_Handler_Result]] = loop.create_future()
         asyncio.create_task(
             cls.run_handle(
-                task_id,
-                package_instance,
-                persona_info_copy,
-                send_msg_copy,
-                created = created
+                task_id = task_id,
+                package = package_instance,
+                persona_info = persona_info_copy,
+                send_msg = send_msg_copy,
+                debug_mode = debug_mode,
+                created = created,
             )
         )
         return await created
@@ -469,9 +489,40 @@ class CommandCaller:
         if package.acceptable_sources is None:
             return True
         return persona_info.source in package.acceptable_sources
+
+    @classmethod
+    def register(
+        cls,
+        package: Type[CommandPackage[T_Handler_Result]]
+    ) -> Type[CommandPackage[T_Handler_Result]]:
+        """
+        Register a command
+
+        :param package: CommandPackage
+        :return: CommandPackage
+        """
+        return cls._register(package)
+
+    @classmethod
+    def register_with_args(
+        cls,
+        *args,
+        **kwargs
+    ) -> Callable[[Type[CommandPackage[T_Handler_Result]]], type[CommandPackage[T_Handler_Result]]]:
+        """
+        Register a command with args
+
+        :param args: args
+        :param kwargs: kwargs
+        :return: CommandPackage
+        """
+        def _decorator(package: Type[CommandPackage[T_Handler_Result]]) -> Type[CommandPackage[T_Handler_Result]]:
+            nonlocal args, kwargs
+            return cls._register(package, *args, **kwargs)
+        return _decorator
     
     @classmethod
-    def register(cls, package: Type[CommandPackage[T_Handler_Result]]) -> Type[CommandPackage[T_Handler_Result]]:
+    def _register(cls, package: Type[CommandPackage[T_Handler_Result]], *args: Any, **kwargs: Any) -> Type[CommandPackage[T_Handler_Result]]:
         """
         Register a command
 
@@ -481,7 +532,7 @@ class CommandCaller:
         if package.enabled:
             register_start_time = time.perf_counter_ns()
             try:
-                package_instance, matcher, handler = cls._make_pack(package)
+                package_instance, matcher, handler = cls._make_pack(package, *args, **kwargs)
             except:
                 package.on_reg_failed(*sys.exc_info())
             
@@ -491,7 +542,10 @@ class CommandCaller:
                 matcher = matcher,
                 handler = handler
             )
+            package_instance.__post_init__()
+            package_instance.__time_for_registered__ = time.time_ns()
             register_end_time = time.perf_counter_ns()
+            package_instance.__time_for_registered_monotonic__ = register_end_time
 
             logger.info(
                 "Register command {name} done, cost {cost:.3f} ms",
@@ -504,6 +558,8 @@ class CommandCaller:
     def _make_pack(
         cls,
         package: Type[CommandPackage[T_Handler_Result]],
+        *args: Any,
+        **kwargs: Any,
     )  -> tuple[
         CommandPackage[T_Handler_Result], # package_instance
         type[Matcher], # matcher
@@ -521,8 +577,19 @@ class CommandCaller:
         ]
     ]:
         package.on_before_instantiate()
-        package_instance = package()
-        package_instance.__time_for_registered__ = time.time_ns()
+
+        package_raw_new = package.__new__
+        def package_new(cls: Type[CommandPackage[T_Handler_Result]]):
+            nonlocal package_raw_new
+            package_instance = package_raw_new(cls)
+            package_instance.__pre_init__()
+            return package_instance
+        package.__new__ = package_new
+        package.__raw_new__ = package_raw_new
+
+        package_instance = package(*args, **kwargs)
+        package_instance.__time_for_created__ = time.time_ns()
+        package_instance.__time_for_created_monotonic__ = time.perf_counter_ns()
             
         match package_instance.listen_type:
             case ListenType.Command:
@@ -819,7 +886,7 @@ class CommandCaller:
         namespace = persona_info.namespace
         if namespace in cls.listen_message_tasks:
             async with cls.listen_lock:
-                futures: set[Future[PersonaInfo]] = cls.listen_message_tasks.pop(namespace)
+                futures: set[asyncio.Future[PersonaInfo]] = cls.listen_message_tasks.pop(namespace)
                 for future in futures:
                     future.set_result(persona_info)
             logger.info(

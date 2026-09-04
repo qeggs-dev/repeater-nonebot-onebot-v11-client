@@ -54,7 +54,11 @@ from typing import (
 )
 from .sub_cmd_exit import (
     SubCmdBreaked,
-    SubCmdCacelled
+    SubCmdCacelled,
+    SubCmdTimeout
+)
+from .typings import (
+    New
 )
 
 T = TypeVar("T")
@@ -64,8 +68,20 @@ class CommandPackage(ABC, Generic[T]):
     Command Package Base Class
     """
 
+    __time_for_created__: int
+    """Time for created"""
+
+    __time_for_created_monotonic__: int
+    """Time for created (monotonic)"""
+
     __time_for_registered__: int
     """Time for registered"""
+
+    __time_for_registered_monotonic__: int
+    """Time for registered (monotonic)"""
+
+    __raw_new__: New
+    """raw `__new__` method"""
 
     cmd: str | tuple[str, ...]
     """[Command Only] Command"""
@@ -164,46 +180,29 @@ class CommandPackage(ABC, Generic[T]):
             )
             return ""
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """
         Initialize the command package.
-
-        Warning: this method is used for the main initialization process of the Package. Do not override this method.
-        If you need advice try `__pre_init__` and `__post_init__` method.
         """
-        self.__pre_init__(*args, **kwargs)
+        pass
+
+    def __pre_init__(self):
+        """
+        This method will be called before initialization.
+        """
         if isinstance(self.description, str):
             self.description = textwrap.dedent(
                 self.description.expandtabs(4)
             )
-        self._args = args
-        self._kwargs = kwargs
-        self.__post_init__(*args, **kwargs)
-    
-    def __pre_init__(self):
-        """
-        This method will be called at initialization time.
-        """
-        pass
-    
+
     def __post_init__(self):
         """
-        This method will be called at initialization time.
+        This method will be called after registration is complete.
         """
         pass
 
     def __repr__(self):
-        args = ", ".join(repr(item) for item in self._args)
-        kwargs = ", ".join(f"{repr(key)}={repr(value)}" for key, value in self._kwargs.items())
-
-        if args and kwargs:
-            return f"{self.__class__.__name__}({args}, {kwargs})"
-        elif args:
-            return f"{self.__class__.__name__}({args})"
-        elif kwargs:
-            return f"{self.__class__.__name__}({kwargs})"
-        else:
-            return f"{self.__class__.__name__}()"
+        return f"{self.__class__.__name__}()"
 
     async def message_enter(self, bot: Bot, event: MessageEvent, matcher: Type[Matcher]) -> tuple[PersonaInfo, SendMsg]:
         """
@@ -435,6 +434,18 @@ class CommandPackage(ABC, Generic[T]):
         """
         logger.warning(f"{self.component} cancelled")
         return SubCmdCacelled
+
+    async def on_timeout(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
+        """
+        This section is executed when the Handler times out.
+
+        You can override this method and do what you need to do.
+
+        :param persona_info: The persona_info object
+        :param send_msg: The send_msg object
+        """
+        logger.warning(f"{self.component} timed out")
+        return SubCmdTimeout(3)
     
     async def handler_exit(self, persona_info: PersonaInfo, send_msg: SendMsg) -> T | Any | None | NoReturn:
         """

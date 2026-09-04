@@ -16,3 +16,6 @@ class SubCmdBreaked(SubCmdExit):
 
 class SubCmdCacelled(SubCmdExit):
     pass
+
+class SubCmdTimeout(SubCmdExit):
+    pass
