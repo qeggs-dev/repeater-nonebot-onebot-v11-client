@@ -43,9 +43,14 @@ class CommandCaller:
     types: dict[CmdTypes, list[Type[CommandPackage[Any]]]] = {}
     matchers: dict[Type[CommandPackage[Any]], Type[Matcher]] = {}
     components: dict[str, Type[CommandPackage[Any]]] = {}
+
     runnings: dict[uuid.UUID, RunningPackage] = {}
     running_map: dict[Namespace, set[uuid.UUID]] = {}
+    running_lock = asyncio.Lock()
+
     variables: dict[Namespace, Variables[str]] = {}
+    variable_lock = asyncio.Lock()
+
     listen_message_tasks: dict[Namespace, set[asyncio.Future[PersonaInfo]]] = {}
     listen_lock: asyncio.Lock = asyncio.Lock()
 
@@ -80,6 +85,22 @@ class CommandCaller:
                     cls.running_map[namespace].remove(task_id)
 
     @classmethod
+    async def has_running_task(cls, namespace: Namespace, task: uuid.UUID) -> bool:
+        async with cls.running_lock:
+            return task in cls.running_map.get(namespace, set())
+
+    @classmethod
+    async def get_runnings(cls, namespace: Namespace) -> set[RunningPackage]:
+        async with cls.running_lock:
+            runnings = cls.running_map.get(namespace, set())
+            return {cls.runnings[i] for i in runnings}
+    
+    @classmethod
+    async def get_user_runnings(cls, namespace: Namespace) -> list[RunningPackage]:
+        async with cls.running_lock:
+            return [cls.runnings[uuid] for uuid in cls.running_map.get(namespace, set())]
+
+    @classmethod
     def match_trigger_or_component(cls, string: str | tuple[str, ...]) -> Type[CommandPackage[Any]]:
         if isinstance(string, str):
             package: type[CommandPackage] | None = None
@@ -109,10 +130,6 @@ class CommandCaller:
         :return: The instance of the command package.
         """
         return cls.commands[package]
-    
-    @classmethod
-    def get_user_runnings(cls, namespace: Namespace) -> list[RunningPackage]:
-        return [cls.runnings[uuid] for uuid in cls.running_map.get(namespace, set())]
 
     @classmethod
     def get_command_handler(cls, package: CommandPackage[T_Handler_Result], matcher: Type[Matcher]) -> Callable[[Bot, MessageEvent, Message], Awaitable[T_Handler_Result | Any | SubCmdBreaked | None | NoReturn]]:
@@ -242,12 +259,13 @@ class CommandCaller:
                 send_msg = send_msg,
                 task = task
             )
-            
-            cls.runnings[task_id] = running
-            cls.running_map.setdefault(
-                persona_info.namespace,
-                set()
-            ).add(task_id)
+
+            async with cls.running_lock:
+                cls.runnings[task_id] = running
+                cls.running_map.setdefault(
+                    persona_info.namespace,
+                    set()
+                ).add(task_id)
         except Exception as e:
             if created is not None:
                 created.set_exception(e)
@@ -260,12 +278,13 @@ class CommandCaller:
             result = await running
             return result
         finally:
-            cls.runnings.pop(task_id, None)
-            if persona_info.namespace in cls.running_map:
-                user_running = cls.running_map[persona_info.namespace]
-                user_running.discard(task_id)
-                if not user_running:
-                    cls.running_map.pop(persona_info.namespace)
+            async with cls.running_lock:
+                cls.runnings.pop(task_id, None)
+                if persona_info.namespace in cls.running_map:
+                    user_running = cls.running_map[persona_info.namespace]
+                    user_running.discard(task_id)
+                    if not user_running:
+                        cls.running_map.pop(persona_info.namespace)
     
     @classmethod
     async def enter_handler(
