@@ -30,16 +30,17 @@ class Cancel(CommandPackage):
             task_id = uuid.UUID(persona_info.message_stripped_str)
         except ValueError:
             await send_msg("Invalid task id.")
-        
-        if task_id in CommandCaller.running_map.get(persona_info.namespace, set()):
-            try:
-                task = CommandCaller.runnings[task_id]
-            except KeyError:
-                await send_msg.send_error("Task in user running map, but not running.")
-            component = task.package.component
-            task.cancel()
-            await send_msg.send_prompt(
-                f"Task `{component}`({task_id}) cancelled."
-            )
+
+        if await CommandCaller.has_running_task(persona_info.namespace, task_id):
+            async with CommandCaller.running_lock:
+                task = CommandCaller.runnings.get(task_id)
+                if task is None:
+                    await send_msg.send_error("This task exists in the user runtime list, but not in the global runtime list.")
+                else:
+                    component = task.package.component
+                    task.cancel()
+                    await send_msg.send_prompt(
+                        f"Task `{component}`({task_id}) cancelled."
+                    )
         else:
             await send_msg.send_error("Task not found.")

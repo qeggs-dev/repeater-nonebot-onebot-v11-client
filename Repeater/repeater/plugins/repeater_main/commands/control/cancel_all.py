@@ -38,16 +38,17 @@ class CancelAll(CommandPackage):
         instance = CommandCaller.get_instance(package)
         component: str = instance.component
 
-        task_ids = CommandCaller.running_map.get(persona_info.namespace, set()).copy()
-        cancelled: set[uuid.UUID] = set()
-        for task_id in task_ids:
-            try:
-                task = CommandCaller.runnings[task_id]
-            except KeyError:
-                continue
-            if type(task.package) is package:
-                task.cancel()
-                cancelled.add(task_id)
+        async with CommandCaller.running_lock:
+            task_ids = CommandCaller.running_map.get(persona_info.namespace, set()).copy()
+            cancelled: set[uuid.UUID] = set()
+            for task_id in task_ids:
+                try:
+                    task = CommandCaller.runnings[task_id]
+                except KeyError:
+                    continue
+                if type(task.package) is package:
+                    task.cancel()
+                    cancelled.add(task_id)
         
         if cancelled:
             text_buffer: list[str] = []

@@ -32,6 +32,7 @@ class TokenCalculator(CommandPackage):
     ```
     """
     file_ids_cache: LRUCache[str, str] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
+    cache_lock = asyncio.Lock()
     cache: LRUCache[str, Tokenizer] = LRUCache(maxsize=storage_configs.tokenizer_cache_size)
     
     def init_tokenizer(self, json: str):
@@ -72,10 +73,11 @@ class TokenCalculator(CommandPackage):
             
         logger.info("Loading tokenizer...")
         init_start_time = time.perf_counter_ns()
-        tokenizer = await asyncio.to_thread(
-            self.init_tokenizer,
-            json = file_content
-        )
+        async with self.cache_lock:
+            tokenizer = await asyncio.to_thread(
+                self.init_tokenizer,
+                json = file_content
+            )
         init_end_time = time.perf_counter_ns()
         logger.info("Inited tokenizer in {init_time:.2f}ms.", init_time=(init_end_time - init_start_time) / 1e6)
         logger.info("Calculating tokens...")

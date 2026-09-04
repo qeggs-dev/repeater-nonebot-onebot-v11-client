@@ -65,7 +65,8 @@ class Serial(CommandPackage):
                 )
             )
 
-        user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
+        async with CommandCaller.variable_lock:
+            user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         results = []
         last_code: int | None = None
         for package, info, send_msg in tasks:
