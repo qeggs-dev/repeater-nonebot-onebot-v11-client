@@ -28,7 +28,7 @@ class TaskList(CommandPackage):
     """
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
-        task_list = CommandCaller.get_user_runnings(persona_info.namespace)
+        task_list = await CommandCaller.get_user_runnings(persona_info.namespace)
         now_monotonic_time = time.perf_counter_ns()
         if task_list:
             text_buffer: list[str] = []
