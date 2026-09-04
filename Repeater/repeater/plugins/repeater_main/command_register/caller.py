@@ -898,7 +898,7 @@ class CommandCaller:
             raise ValueError(f"Unknown listen type: {package.listen_type}")
     
     @classmethod
-    async def report_message(cls, persona_info: PersonaInfo, send_msg: SendMsg):
+    async def report_message(cls, persona_info: PersonaInfo):
         """
         Report a new message for processing.
         """

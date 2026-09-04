@@ -25,6 +25,5 @@ class FrameworkMessageListener(CommandPackage):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         await CommandCaller.report_message(
-            persona_info = persona_info,
-            send_msg = send_msg
+            persona_info = persona_info
         )
