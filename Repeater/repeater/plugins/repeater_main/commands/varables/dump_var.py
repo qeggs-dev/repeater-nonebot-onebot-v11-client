@@ -36,10 +36,12 @@ class DumpVar(CommandPackage):
         if user_configs.variables is None:
             user_configs.variables = Variables()
 
-        if persona_info.namespace in CommandCaller.variables:
-            variables = CommandCaller.variables[persona_info.namespace]
-        else:
-            await send_msg.send_error("No variables found.")
+        async with CommandCaller.variable_lock:
+            
+            variables = CommandCaller.variables.get(persona_info.namespace)
+            if variables is None:
+                await send_msg.send_error("No variables found.")
+                send_msg.break_handler()
 
-        variables.dump(user_configs, persona_info.message_stripped_str)
+            variables.dump(user_configs, persona_info.message_stripped_str)
         await persona_info.set_user_configs(user_configs)

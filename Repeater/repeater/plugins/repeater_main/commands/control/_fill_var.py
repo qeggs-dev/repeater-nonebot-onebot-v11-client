@@ -10,8 +10,9 @@ def fill_var(info: PersonaInfo, vars: Variables) -> PersonaInfo:
 
     def _fill_var(match_group: re.Match[str]) -> str:
         nonlocal vars
+        variables = vars.copy()
         var_name = match_group.group(1)
-        return vars.get(var_name, "")
+        return variables.get(var_name, "")
 
     messages: list[str] = info.message_cqcode.splitlines()
     new_messages: list[str] = []

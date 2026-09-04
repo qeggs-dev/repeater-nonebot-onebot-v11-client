@@ -47,8 +47,9 @@ class Parallel(CommandPackage):
             await send_msg.send_error(f"Invalid Input Format: {e}")
         except KeyError as e:
             await send_msg.send_error(f"Unknown Command: {e}")
-
-        user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
+        
+        async with CommandCaller.variable_lock:
+            user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         
         tasks: list[asyncio.Task[Any]] = []
         for index, (package, args) in enumerate(command_call):

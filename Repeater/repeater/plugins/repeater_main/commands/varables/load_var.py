@@ -36,10 +36,10 @@ class LoadVar(CommandPackage):
         if user_configs.variables is None:
             await send_msg.send_error("No variables found.")
         else:
-            if persona_info.namespace in CommandCaller.variables:
-                variables = CommandCaller.variables[persona_info.namespace]
-            else:
-                variables = Variables()
-                CommandCaller.variables[persona_info.namespace] = variables
+            async with CommandCaller.variable_lock:
+                variables = CommandCaller.variables.get(persona_info.namespace)
+                if variables is None:
+                    variables = Variables()
+                    CommandCaller.variables[persona_info.namespace] = variables
 
-            variables.load(user_configs, persona_info.message_stripped_str)
+                variables.load(user_configs, persona_info.message_stripped_str)

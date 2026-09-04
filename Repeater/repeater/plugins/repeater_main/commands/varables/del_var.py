@@ -33,15 +33,16 @@ class RemoveVar(CommandPackage):
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         var_name = persona_info.message_stripped_str
-        variables = CommandCaller.variables.get(persona_info.namespace)
-        
-        if variables is None:
-            await send_msg("No variables found.")
-            return
+        async with CommandCaller.variable_lock:
+            variables = CommandCaller.variables.get(persona_info.namespace)
+            
+            if variables is None:
+                await send_msg.send_error("No variables found.")
+                return
 
-        if var_name not in variables:
-            await send_msg(f"Variable \"{var_name}\" not found.")
-            return
+            if var_name not in variables:
+                await send_msg.send_error(f"Variable \"{var_name}\" not found.")
+                return
 
-        del variables[var_name]
-        await send_msg(f"Variable \"{var_name}\" removed.")
+            del variables[var_name]
+        await send_msg.send_error(f"Variable \"{var_name}\" removed.")

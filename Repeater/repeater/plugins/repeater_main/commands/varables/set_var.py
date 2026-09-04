@@ -42,8 +42,9 @@ class SetVar(CommandPackage):
             assert isinstance(name, str), f"name must be str, but got {type(name).__name__}"
             assert isinstance(value, str), f"value must be str, but got {type(value).__name__}"
 
-            variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
-            variables[name] = value
+            async with CommandCaller.variable_lock:
+                variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
+                variables[name] = value
 
             await send_msg.send_prompt("Variable set successfully.")
         else:

@@ -66,7 +66,8 @@ class Cascade(CommandPackage):
         
         last_result: PersonaInfo = persona_info.copy(args = persona_info.make_message())
         last_code: int | None = None
-        user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
+        async with CommandCaller.variable_lock:
+            user_variables = CommandCaller.variables.setdefault(persona_info.namespace, Variables())
         for index, (package_instance, info) in enumerate(tasks):
             copyed_send_msg = send_msg.copy(
                 component = package_instance.component
