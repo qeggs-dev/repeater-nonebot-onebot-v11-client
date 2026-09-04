@@ -9,6 +9,9 @@ from .sub_cmd_exit import (
     SubCmdTimeout
 )
 from .listen_all import FrameworkMessageListener
+from .typings import (
+    New
+)
 
 __all__ = [
     "CommandCaller",
@@ -20,4 +23,5 @@ __all__ = [
     "SubCmdCacelled",
     "SubCmdTimeout",
     "FrameworkMessageListener",
+    "New",
 ]
