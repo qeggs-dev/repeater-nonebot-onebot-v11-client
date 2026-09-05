@@ -3,7 +3,7 @@ from itertools import chain
 
 from ....logger import logger
 from ....clients import ChatClient, ChatSendMsg, ChatResponse
-from ....assist import PersonaInfo, SendMsg, Response
+from ....assist import PersonaInfo, FileInfo, SendMsg, Response, Downloader
 from ....cmd_info import CmdTypes
 from ....client_configs import storage_configs
 from ....command_register import CommandPackage
@@ -14,6 +14,9 @@ class BaseChat(CommandPackage):
     empty_exit: ClassVar[bool] = True
     no_input: ClassVar[bool] = False
 
+    def __init__(self):
+        self.downloader = Downloader(usage_global_client = True)
+
     async def empty_message(
         self,
         persona_info: PersonaInfo,
@@ -23,17 +26,16 @@ class BaseChat(CommandPackage):
         if self.empty_exit:
             send_msg.break_handler()
     
-    @staticmethod
     async def open_file(
+        self,
         persona_info: PersonaInfo
-    ) -> tuple[list[str], list[str]]:
-        not_open_files: list[str] = []
+    ) -> tuple[list[str], list[FileInfo]]:
+        not_open_files: list[FileInfo] = []
         reply_msgs_texts: list[str] = []
 
-        for file_id in persona_info.get_file_ids():
-            info = await persona_info.get_file_info(file_id)
-            name = info.file_name
-            size = int(info.file_size)
+        for file_info in persona_info.get_file_infos():
+            name = file_info.name
+            size = file_info.size
 
             if storage_configs.max_text_file_size is not None:
                 if size > storage_configs.max_text_file_size:
@@ -41,17 +43,14 @@ class BaseChat(CommandPackage):
                         "File {name} is too large to open as text file",
                         name = name
                     )
-                    not_open_files.append(name)
+                    not_open_files.append(file_info)
                     continue
             try:
                 logger.info(
                     "Opening file {name}",
                     name = name
                 )
-                file_data = await persona_info.open_text_file(
-                    info,
-                    storage_configs.text_file_encoding
-                )
+                file_data = await self.downloader.download_text(file_info.url)
                 reply_msgs_text = f"[File {name}]\n[File Content Begin]{file_data}\n[File Content End]"
                 reply_msgs_texts.append(reply_msgs_text)
             except UnicodeDecodeError:
@@ -59,7 +58,7 @@ class BaseChat(CommandPackage):
                     "File {name} was not opened",
                     name = name
                 )
-                not_open_files.append(file_id)
+                not_open_files.append(file_info)
         
         return reply_msgs_texts, not_open_files
 
@@ -81,7 +80,7 @@ class BaseChat(CommandPackage):
             images,
             audios,
             videos,
-            not_open_files
+            [file.url for file in not_open_files]
         )
     
     async def post_parse_text(self, text: str) -> str:
