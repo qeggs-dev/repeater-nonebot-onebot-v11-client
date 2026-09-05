@@ -69,6 +69,12 @@ from .type_check import (
 from .variables import (
     Variables
 )
+from .file_downloader import (
+    Downloader
+)
+from .special_values import (
+    NoGive
+)
 
 __all__ = [
     "at_with_name",
@@ -129,4 +135,8 @@ __all__ = [
     "is_collection",
 
     "Variables",
+
+    "Downloader",
+
+    "NoGive"
 ]
