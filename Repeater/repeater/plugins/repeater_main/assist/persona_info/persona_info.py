@@ -309,6 +309,7 @@ class PersonaInfo:
         async for event in self.get_reply_chain(max_depth):
             instance = self.copy(
                 event = event,
+                args = None,
                 copydata = copydata,
                 deepcopy = deepcopy
             )
