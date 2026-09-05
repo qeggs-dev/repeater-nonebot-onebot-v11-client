@@ -1,10 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class FileInfo(BaseModel):
     """
     文件信息
     """
-    file: str
+    model_config = ConfigDict(
+        extra = "ignore",
+        frozen = True
+    )
+
+    name: str
+    size: int
+    id: str
     url: str
-    file_size: str
-    file_name: str
