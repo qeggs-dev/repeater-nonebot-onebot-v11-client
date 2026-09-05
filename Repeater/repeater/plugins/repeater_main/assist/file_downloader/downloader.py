@@ -1,9 +1,12 @@
 import time
 import httpx
 from ...logger import logger
+from ..network import http_transport
 
 class Downloader:
-    global_client: httpx.AsyncClient = httpx.AsyncClient()
+    global_client: httpx.AsyncClient = httpx.AsyncClient(
+        transport = http_transport,
+    )
 
     def __init__(self, usage_global_client: bool = True):
         self.client: httpx.AsyncClient
@@ -11,7 +14,9 @@ class Downloader:
         if usage_global_client:
             self.client = self.global_client
         else:
-            self.client = httpx.AsyncClient()
+            self.client = httpx.AsyncClient(
+                transport = http_transport,
+            )
 
     async def download_text(self, url: str, timeout: int | float | None = 5) -> str:
         start_time = time.perf_counter_ns()
