@@ -445,6 +445,12 @@ class CommandCaller:
             now = datetime.now()
             next_time = cron_iter.get_next(datetime)
             delta = next_time - now
+            logger.info(
+                "{command} next runtime is {next_time}(wait {delta} seconds)",
+                command = package.component,
+                next_time = next_time,
+                delta = delta.total_seconds()
+            )
             await asyncio.sleep(delta.total_seconds())
             await cls.horizontal_call(
                 package = package,

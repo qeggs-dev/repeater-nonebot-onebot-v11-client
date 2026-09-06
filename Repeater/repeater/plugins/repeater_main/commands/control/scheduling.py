@@ -20,6 +20,29 @@ class Scheduling(CommandPackage):
     description = f"""
         Create a scheduled task using a cron expression.
 
+        6 Digital CRON Expression:
+        ```
+        * * * * * 0
+        │ │ │ │ │ └ second (0 - 59)
+        │ │ │ │ └── weekday (0 - 7, 0 and 7 = Sunday)
+        │ │ │ └──── month (1 - 12)
+        │ │ └────── day (1 - 31)
+        │ └──────── hour (0 - 23)
+        └────────── minute (0 - 59)
+        ```
+
+        5 Digital CRON Expression:
+        ```
+        0 * * * *
+        │ │ │ │ └── weekday (0 - 7, 0 and 7 = Sunday)
+        │ │ │ └──── month (1 - 12)
+        │ │ └────── day (1 - 31)
+        │ └──────── hour (0 - 23)
+        └────────── minute (0 - 59)
+        ```
+        If the month does not have the required date (such as the 31st, 30th, 29th, etc.) , the system skips the month and matches the next month that has the required date.
+        The scheduler runs entirely in memory and is canceled if the server is down or if the command is canceled.
+
         Usage:
         ```
         /{cmd} {{cron_expression}} command [args]
@@ -27,7 +50,7 @@ class Scheduling(CommandPackage):
         PS: The curly braces need to be retained here to ensure that the cron expression resolves properly.
     """
 
-    pattern = re.compile(r"^(?P<cron_expression>\{.*\})\s*(?P<components_or_trigger>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
+    pattern = re.compile(r"^\{(?P<cron_expression>.*)\}\s*(?P<components_or_trigger>[/\w_\.]+)\s*(?P<args>.*)$", re.IGNORECASE | re.DOTALL | re.UNICODE)
 
     async def handler(self, persona_info: PersonaInfo, send_msg: SendMsg):
         msg = str(persona_info.message)

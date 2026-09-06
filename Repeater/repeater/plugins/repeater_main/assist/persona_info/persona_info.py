@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import httpx
 import aiofiles
 
 from nonebot import get_bots
@@ -36,6 +37,8 @@ from .cached_apis import CachedAPI
 from ..user_config import UserConfigLoader, UserConfigs
 from ..permission_checker import PermissionChecker
 from ...client_configs import storage_configs
+from ..special_values import NoGive
+from ._copy_value import copy_value
 
 class PersonaInfo:
     """
@@ -72,7 +75,8 @@ class PersonaInfo:
             bot: Bot,
             event: MessageEvent,
             args: str | Message | None = None,
-            enter_type: EnterType = EnterType.Command
+            enter_type: EnterType = EnterType.Command,
+            http_client: httpx.AsyncClient | None = None
         ) -> None:
         """
         创建一个 PersonaInfo 对象
@@ -118,7 +122,7 @@ class PersonaInfo:
             ("bot", self._bot),
             ("event", self._message_event),
             ("args", self._args),
-            ("enter_type", self._enter_type)
+            ("enter_type", self._enter_type),
         ]
         return f"{self.__class__.__name__}({', '.join([f'{k}={v!r}' for k, v in args_map if v is not None])})"
     
@@ -171,10 +175,10 @@ class PersonaInfo:
     
     def copy(
             self,
-            bot: Bot | None = None,
-            event: MessageEvent | None = None,
-            args: Message | None = None,
-            copyargs: bool = True,
+            bot: Bot | NoGive = NoGive(),
+            event: MessageEvent | NoGive = NoGive(),
+            args: Message | None | NoGive = NoGive(),
+            enter_type: EnterType | NoGive = NoGive(),
             copydata: bool = False,
             deepcopy: bool = False
         ) -> PersonaInfo:
@@ -188,33 +192,47 @@ class PersonaInfo:
         :param copydata: 复制数据
         :param deepcopy: 是否深拷贝复制数据 (需要 `copydata` 为 `True`)
         """
-        if not copydata:
-            if bot is None:
-                bot = self.bot
-            if event is None:
-                event = self.event
-            if copyargs and args is None:
-                args = self._args
-        elif deepcopy:
-            if bot is None:
-                bot = copy.deepcopy(self.bot)
-            if event is None:
-                event = copy.deepcopy(self.event)
-            if copyargs and args is None:
-                args = copy.deepcopy(self._args)
-        else:
-            if bot is None:
-                bot = self.bot
-            if event is None:
-                event = self.event.model_copy()
-            if copyargs and args is None and self._args is not None:
-                args = self._args.copy()
-        
+        new_bot = copy_value(
+            value = bot,
+            get_new_value_deep = lambda: copy.deepcopy(self.bot),
+            get_new_value_copy = lambda: copy.copy(self.bot),
+            get_new_value = lambda: self.bot,
+            copydata = copydata,
+            deepcopy = deepcopy
+        )
+
+        new_event = copy_value(
+            value = event,
+            get_new_value_deep = lambda: self._message_event.model_copy(deep = True),
+            get_new_value_copy = lambda: self._message_event.model_copy(),
+            get_new_value = lambda: self._message_event,
+            copydata = copydata,
+            deepcopy = deepcopy
+        )
+
+        new_args = copy_value(
+            value = args,
+            get_new_value_deep = lambda: copy.deepcopy(self._args) if self._args is not None else None,
+            get_new_value_copy = lambda: self._args.copy() if self._args is not None else None,
+            get_new_value = lambda: self.args,
+            copydata = copydata,
+            deepcopy = deepcopy
+        )
+
+        new_enter_type = copy_value(
+            value = enter_type,
+            get_new_value_deep = lambda: self._enter_type,
+            get_new_value_copy = lambda: self._enter_type,
+            get_new_value = lambda: self._enter_type,
+            copydata = copydata,
+            deepcopy = deepcopy
+        )
         
         return self.__class__(
-            bot = bot,
-            event = event,
-            args = args
+            bot = new_bot,
+            event = new_event,
+            args = new_args,
+            enter_type = new_enter_type,
         )
     
     def __eq__(self, other: object) -> bool:
@@ -248,6 +266,7 @@ class PersonaInfo:
             self,
             max_depth: int | None = None,
             break_chain: Callable[[PersonaInfo], bool] = lambda _: False,
+            postcheck: bool = False,
             copydata: bool = False,
             deepcopy: bool = False
         ) -> list[PersonaInfo]:
@@ -259,6 +278,7 @@ class PersonaInfo:
 
         :param max_depth: 最大迭代深度
         :param break_chain: 断开链的回调函数
+        :param postcheck: 将原本在前面的 break 检查移动到后方
         :param copydata: 是否复制数据
         :param deepcopy: 是否深拷贝数据
         """
@@ -268,9 +288,14 @@ class PersonaInfo:
             copydata = copydata,
             deepcopy = deepcopy
         ):
-            if break_chain(persona_info):
-                break
-            reference_chain.append(persona_info)
+            if postcheck:
+                reference_chain.append(persona_info)
+                if break_chain(persona_info):
+                    break
+            else:
+                if break_chain(persona_info):
+                    break
+                reference_chain.append(persona_info)
         return reference_chain[::-1]
     
     async def from_reply_chain(
@@ -292,7 +317,6 @@ class PersonaInfo:
             instance = self.copy(
                 event = event,
                 args = None,
-                copyargs = False,
                 copydata = copydata,
                 deepcopy = deepcopy
             )
@@ -753,79 +777,19 @@ class PersonaInfo:
                 urls.append(msg.data["url"])
         return urls
     
-    def get_file_ids(self) -> list[str]:
+    def get_file_infos(self) -> list[FileInfo]:
         """
         获取消息内的文件消息段
 
         :return: 文件的 URL 列表
         """
-        ids: list[str] = []
+        urls: list[FileInfo] = []
         for msg in self.message:
             if msg.type == "file":
-                ids.append(msg.data["file_id"])
-        return ids
-    
-    def get_file_urls(self) -> list[str]:
-        """
-        获取消息内的文件消息段
-
-        :return: 文件的 URL 列表
-        """
-        urls: list[str] = []
-        for msg in self.message:
-            if msg.type == "file":
-                urls.append(msg.data["url"])
+                urls.append(
+                    FileInfo(**msg.data)
+                )
         return urls
-    
-    async def get_file_info(self, file_id: str) -> FileInfo:
-        """
-        根据文件 ID
-
-        :param file_id: 文件 ID
-        """
-        response = await self._cached_api.get_file(file = file_id)
-        return FileInfo(**response)
-    
-    async def get_file_name(self, file_id: str) -> str:
-        """
-        获取文件名
-
-        :param file_id: 文件 ID
-        :return: 文件名
-        """
-        file_info = await self.get_file_info(file_id)
-        return file_info.file_name
-    
-    async def get_file_size(self, file_id: str) -> int:
-        """
-        获取文件大小
-
-        :param file_id: 文件 ID
-        :return: 文件大小
-        """
-        file_info = await self.get_file_info(file_id)
-        return int(file_info.file_size)
-    
-    async def open_file(self, file_info: FileInfo) -> bytes:
-        """
-        打开文件
-
-        :param file_info: 文件信息
-        :return: 文件内容
-        """
-        async with aiofiles.open(file_info.file, "rb") as f:
-            return await f.read()
-    
-    async def open_text_file(self, file_info: FileInfo, encoding: str = "utf-8") -> str:
-        """
-        打开文本文件
-
-        :param file_info: 文件信息
-        :param encoding: 编码
-        :return: 文件内容
-        """
-        async with aiofiles.open(file_info.file, "r", encoding = encoding) as f:
-            return await f.read()
     
     async def get_reply_chain(self, max_depth: int | None = None) -> AsyncGenerator[MessageEvent, None]:
         """

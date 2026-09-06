@@ -32,7 +32,7 @@ class TokenCalculatorText(TokenCalculator):
             text_count: int,
             most_frequent: list[str]
         ):
-        most_frequent_text = "\n  - ".join(most_frequent)
+        most_frequent_text = "  - " + "\n  - ".join(most_frequent)
         await send_msg.send_mixed_render(
             "\n".join(
                 [
