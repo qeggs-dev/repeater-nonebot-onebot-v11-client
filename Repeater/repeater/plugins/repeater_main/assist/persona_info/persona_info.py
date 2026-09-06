@@ -266,6 +266,7 @@ class PersonaInfo:
             self,
             max_depth: int | None = None,
             break_chain: Callable[[PersonaInfo], bool] = lambda _: False,
+            postcheck: bool = False,
             copydata: bool = False,
             deepcopy: bool = False
         ) -> list[PersonaInfo]:
@@ -277,6 +278,7 @@ class PersonaInfo:
 
         :param max_depth: 最大迭代深度
         :param break_chain: 断开链的回调函数
+        :param postcheck: 将原本在前面的 break 检查移动到后方
         :param copydata: 是否复制数据
         :param deepcopy: 是否深拷贝数据
         """
@@ -286,9 +288,14 @@ class PersonaInfo:
             copydata = copydata,
             deepcopy = deepcopy
         ):
-            if break_chain(persona_info):
-                break
-            reference_chain.append(persona_info)
+            if postcheck:
+                reference_chain.append(persona_info)
+                if break_chain(persona_info):
+                    break
+            else:
+                if break_chain(persona_info):
+                    break
+                reference_chain.append(persona_info)
         return reference_chain[::-1]
     
     async def from_reply_chain(
